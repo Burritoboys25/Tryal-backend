@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: h2ak_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - h2ak_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  h2ak_network:
+    driver: bridge
