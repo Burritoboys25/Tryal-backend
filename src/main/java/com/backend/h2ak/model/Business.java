@@ -41,4 +41,74 @@ public class Business {
     @Column(name = "updated_at")
     @UpdateTimestamp
     LocalDateTime updatedAt;
+
+    //  !TODO: is this needed?
+    public Business() {
+    }
+
+    public Business(String stripeAccountId, String name, String email, String website, String address, String phoneNumber) {
+        this.stripeAccountId = stripeAccountId;
+        this.name = name;
+        this.email = email;
+        this.website = website;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public UUID getBusinessId() {
+        return businessId;
+    }
+
+//  !TODO: is this needed?
+    public void setBusinessId(UUID businessId) {
+        this.businessId = businessId;
+    }
+
+    public String getStripeAccountId() {
+        return stripeAccountId;
+    }
+
+    public void setStripeAccountId(String stripeAccountId) {
+        this.stripeAccountId = stripeAccountId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }

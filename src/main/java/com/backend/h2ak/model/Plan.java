@@ -48,6 +48,10 @@ public class Plan {
     @UpdateTimestamp
     LocalDateTime updatedAt;
 
+    //  !TODO: is this needed?
+    public Plan() {
+    }
+
     public Plan(String name, String description, Double price, Integer monthlyCredits, Boolean rolloverCreditsAllowed, Boolean isActive, String stripeProductId) {
         this.name = name;
         this.description = description;
@@ -55,6 +59,71 @@ public class Plan {
         this.monthlyCredits = monthlyCredits;
         this.rolloverCreditsAllowed = rolloverCreditsAllowed;
         this.isActive = isActive;
+        this.stripeProductId = stripeProductId;
+    }
+
+    public UUID getPlanId() {
+        return planId;
+    }
+
+//  !TODO: is this needed?
+    public void setPlanId(UUID planId) {
+        this.planId = planId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public Integer getMonthlyCredits() {
+        return monthlyCredits;
+    }
+
+    public void setMonthlyCredits(Integer monthlyCredits) {
+        this.monthlyCredits = monthlyCredits;
+    }
+
+    public Boolean getRolloverCreditsAllowed() {
+        return rolloverCreditsAllowed;
+    }
+
+    public void setRolloverCreditsAllowed(Boolean rolloverCreditsAllowed) {
+        this.rolloverCreditsAllowed = rolloverCreditsAllowed;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public String getStripeProductId() {
+        return stripeProductId;
+    }
+
+    public void setStripeProductId(String stripeProductId) {
         this.stripeProductId = stripeProductId;
     }
 }

@@ -29,4 +29,38 @@ public class Category {
     @Column(name = "updated_at")
     @UpdateTimestamp
     LocalDateTime updatedAt;
+
+    //  !TODO: is this needed?
+    public Category() {
+    }
+
+    public Category(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public UUID getCategoryId() {
+        return categoryId;
+    }
+
+//  !TODO: is this needed?
+    public void setCategoryId(UUID categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
