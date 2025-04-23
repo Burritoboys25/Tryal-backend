@@ -9,14 +9,14 @@ import java.util.List;
 
 @Component
 public class BusinessService {
-    private final BusinessRepository businessRepository;
-
-    @Autowired
-    public BusinessService(BusinessRepository businessRepository) {
-        this.businessRepository = businessRepository;
-    }
-
-    public List<Business> getBusinesses() {
-        return businessRepository.findAll();
-    }
+//    private final BusinessRepository businessRepository;
+//
+//    @Autowired
+//    public BusinessService(BusinessRepository businessRepository) {
+//        this.businessRepository = businessRepository;
+//    }
+//
+//    public List<Business> getBusinesses() {
+//        return businessRepository.findAll();
+//    }
 }

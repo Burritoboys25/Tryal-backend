@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface BusinessRepository extends JpaRepository<Business, UUID> {
     void deleteByBusinessId(UUID id);
 
-    Optional<Business> findByBusiness(UUID id);
+//    Optional<Business> findByBusiness(UUID id);
 }

@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface CategoryRepository extends JpaRepository<Category, UUID> {
     void deleteByCategoryId(UUID id);
 
-    Optional<Category> findByCategoryId(UUID id);
+//    Optional<Category> findByCategoryId(UUID id);
 }

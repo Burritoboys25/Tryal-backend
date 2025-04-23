@@ -9,14 +9,14 @@ import java.util.List;
 
 @Component
 public class UserService {
-    private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
+//    private final UserRepository userRepository;
+//
+//    @Autowired
+//    public UserService(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
+//
+//    public List<User> getUsers() {
+//        return userRepository.findAll();
+//    }
 }
