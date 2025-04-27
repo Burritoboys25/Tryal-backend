@@ -36,13 +36,12 @@ public class Business {
 
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    //  !TODO: is this needed?
     public Business() {
     }
 
@@ -59,7 +58,6 @@ public class Business {
         return businessId;
     }
 
-//  !TODO: is this needed?
     public void setBusinessId(UUID businessId) {
         this.businessId = businessId;
     }

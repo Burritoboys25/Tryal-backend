@@ -47,13 +47,12 @@ public class User {
 
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    //  !TODO: is this needed?
     public User() {
     }
 
@@ -72,7 +71,6 @@ public class User {
         return userId;
     }
 
-//  !TODO: is this needed?
     public void setUserId(UUID userId) {
         this.userId = userId;
     }

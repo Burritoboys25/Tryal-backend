@@ -24,13 +24,12 @@ public class Category {
 
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    //  !TODO: is this needed?
     public Category() {
     }
 
@@ -43,7 +42,6 @@ public class Category {
         return categoryId;
     }
 
-//  !TODO: is this needed?
     public void setCategoryId(UUID categoryId) {
         this.categoryId = categoryId;
     }

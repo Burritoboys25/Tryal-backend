@@ -42,13 +42,12 @@ public class Plan {
 
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 
-    //  !TODO: is this needed?
     public Plan() {
     }
 
@@ -66,7 +65,6 @@ public class Plan {
         return planId;
     }
 
-//  !TODO: is this needed?
     public void setPlanId(UUID planId) {
         this.planId = planId;
     }
