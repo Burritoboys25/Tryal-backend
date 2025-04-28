@@ -9,7 +9,4 @@ import java.util.UUID;
 
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, UUID> {
-    void deleteByPlanId(UUID id);
-
-//    Optional<Plan> findByPlanId(UUID id);
 }
