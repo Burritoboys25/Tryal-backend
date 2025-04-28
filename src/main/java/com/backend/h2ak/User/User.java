@@ -1,4 +1,4 @@
-package com.backend.h2ak.model;
+package com.backend.h2ak.User;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,8 +25,11 @@ public class User {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column(name = "email")
     private String email;
@@ -64,8 +67,9 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email, String phoneNumber, String passwordHash, LocalDate dataOfBirth, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
-        this.name = name;
+    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dataOfBirth, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.passwordHash = passwordHash;
@@ -83,12 +87,20 @@ public class User {
         this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
