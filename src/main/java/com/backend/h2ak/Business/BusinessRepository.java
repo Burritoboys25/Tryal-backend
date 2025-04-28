@@ -1,10 +1,8 @@
-package com.backend.h2ak.repository;
+package com.backend.h2ak.Business;
 
-import com.backend.h2ak.model.Business;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository

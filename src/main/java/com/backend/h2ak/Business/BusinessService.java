@@ -1,11 +1,6 @@
-package com.backend.h2ak.service;
+package com.backend.h2ak.Business;
 
-import com.backend.h2ak.model.Business;
-import com.backend.h2ak.repository.BusinessRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class BusinessService {

@@ -1,4 +1,4 @@
-package com.backend.h2ak.model;
+package com.backend.h2ak.Plan;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
