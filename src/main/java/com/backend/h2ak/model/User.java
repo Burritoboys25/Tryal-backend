@@ -13,6 +13,13 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 public class User {
+
+    public enum Gender {
+        Male,
+        Female,
+        Other
+    }
+
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "user_id")
@@ -33,8 +40,9 @@ public class User {
     @Column(name = "date_of_birth")
     private LocalDate dataOfBirth;
 
-//    @Column(name = "gender")
-//TODO: How to do ENUM types??    private Enum gender;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private Gender gender;
 
     @Column(name = "profile_image_url")
     private String profileImageUrl;
