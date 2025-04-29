@@ -1,4 +1,6 @@
-package com.backend.h2ak.Plan;
+package com.backend.h2ak.Plan.Service;
+
+import com.backend.h2ak.Plan.Plan;
 
 import java.util.List;
 import java.util.UUID;
