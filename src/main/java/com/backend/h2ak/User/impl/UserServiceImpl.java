@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUserById(UUID userId, User user) {
-        if(getUserById(userId) != null) {
+        if (getUserById(userId) != null) {
             User updatedUser = getUserById(userId);
 
             if (user.getFirstName() != null) {
