@@ -1,8 +1,7 @@
-package com.backend.h2ak.User.impl;
+package com.backend.h2ak.User.Service;
 
 import com.backend.h2ak.User.User;
 import com.backend.h2ak.User.UserRepository;
-import com.backend.h2ak.User.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,4 +1,6 @@
-package com.backend.h2ak.User;
+package com.backend.h2ak.User.Service;
+
+import com.backend.h2ak.User.User;
 
 import java.util.List;
 import java.util.UUID;
