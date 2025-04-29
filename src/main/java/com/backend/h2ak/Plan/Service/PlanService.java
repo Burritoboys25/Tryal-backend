@@ -10,5 +10,5 @@ public interface PlanService {
     Plan getPlanById(UUID planId);
     Plan createPlan(Plan plan);
     Plan updatePlanById(UUID planId, Plan plan);
-    boolean deletePlanById(UUID plan);
+    boolean deletePlanById(UUID planId);
 }
