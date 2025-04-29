@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUserById(UUID userId) {
-        if(getUserById(userId) != null){
+        if (getUserById(userId) != null) {
             userRepository.deleteById(userId);
             return true;
         }
