@@ -1,17 +1,12 @@
 package com.backend.h2ak.Plan;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
+import java.util.UUID;
 
-@Component
-public class PlanService {
-//    private final PlanRepository planRepository;
-//
-//    @Autowired
-//    public PlanService(PlanRepository planRepository) {
-//        this.planRepository = planRepository;
-//    }
-//
-//    public List<Plan> getPlans() {
-//        return planRepository.findAll();
-//    }
+public interface PlanService {
+    List<Plan> getAllPlans();
+    Plan getPlanById(UUID planId);
+    Plan createPlan(Plan plan);
+    Plan updatePlanById(UUID planId, Plan plan);
+    boolean deletePlanById(UUID plan);
 }
