@@ -1,4 +1,4 @@
-package com.backend.h2ak.Business;
+package com.backend.h2ak.business;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
