@@ -1,6 +1,6 @@
-package com.backend.h2ak.Plan;
+package com.backend.h2ak.plan;
 
-import com.backend.h2ak.Plan.Service.PlanService;
+import com.backend.h2ak.plan.service.PlanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.backend.h2ak.Plan;
+package com.backend.h2ak.plan;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
