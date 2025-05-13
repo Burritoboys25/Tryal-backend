@@ -1,6 +1,6 @@
-package com.backend.h2ak.Category.Service;
+package com.backend.h2ak.category.service;
 
-import com.backend.h2ak.Category.Category;
+import com.backend.h2ak.category.Category;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package com.backend.h2ak.Category.Service;
+package com.backend.h2ak.category.service;
 
-import com.backend.h2ak.Category.Category;
-import com.backend.h2ak.Category.CategoryRepository;
+import com.backend.h2ak.category.Category;
+import com.backend.h2ak.category.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

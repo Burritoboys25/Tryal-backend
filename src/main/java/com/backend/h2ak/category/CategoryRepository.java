@@ -1,4 +1,4 @@
-package com.backend.h2ak.Category;
+package com.backend.h2ak.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

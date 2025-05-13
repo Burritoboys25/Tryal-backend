@@ -1,6 +1,6 @@
-package com.backend.h2ak.Category;
+package com.backend.h2ak.category;
 
-import com.backend.h2ak.Category.Service.CategoryService;
+import com.backend.h2ak.category.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
