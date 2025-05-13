@@ -1,6 +1,6 @@
-package com.backend.h2ak.User;
+package com.backend.h2ak.user;
 
-import com.backend.h2ak.User.Service.UserService;
+import com.backend.h2ak.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

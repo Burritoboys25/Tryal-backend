@@ -1,4 +1,4 @@
-package com.backend.h2ak.User;
+package com.backend.h2ak.user;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
