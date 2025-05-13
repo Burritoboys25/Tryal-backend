@@ -1,5 +1,7 @@
 package com.backend.h2ak.user;
 
+import com.backend.h2ak.user.dto.UserDTO;
+import com.backend.h2ak.user.mapper.UserMapper;
 import com.backend.h2ak.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,9 +23,12 @@ public class UserController {
 
     // get all Users
     @GetMapping()
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         try {
-            List<User> users = new ArrayList<User>(userService.getAllUsers());
+            List<UserDTO> users = userService.getAllUsers()
+                    .stream()
+                    .map(UserMapper::mapUserDto)
+                    .collect(Collectors.toList());
 
             if (users.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
