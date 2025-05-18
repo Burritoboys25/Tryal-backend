@@ -61,6 +61,10 @@ public class UserServiceImpl implements UserService {
                 updatedUser.setDataOfBirth(user.getDataOfBirth());
             }
 
+            if (user.getGender() != null) {
+                updatedUser.setGender(user.getGender());
+            }
+
             if (user.getProfileImageUrl() != null) {
                 updatedUser.setProfileImageUrl(user.getProfileImageUrl());
             }

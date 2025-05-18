@@ -15,9 +15,9 @@ import java.util.UUID;
 public class User {
 
     public enum Gender {
-        Male,
-        Female,
-        Other
+        male,
+        female,
+        other
     }
 
     @Id
@@ -31,7 +31,7 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "phone_number")
@@ -67,13 +67,14 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dataOfBirth, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dataOfBirth, Gender gender, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.passwordHash = passwordHash;
         this.dataOfBirth = dataOfBirth;
+        this.gender = gender;
         this.profileImageUrl = profileImageUrl;
         this.creditBalance = creditBalance;
         this.stripeCustomerId = stripeCustomerId;
@@ -133,6 +134,14 @@ public class User {
 
     public void setDataOfBirth(LocalDate dataOfBirth) {
         this.dataOfBirth = dataOfBirth;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public String getProfileImageUrl() {

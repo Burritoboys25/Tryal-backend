@@ -14,6 +14,7 @@ public class UserMapper {
         userDTO.setPhoneNumber(user.getPhoneNumber());
         userDTO.setPasswordHash(user.getPasswordHash());
         userDTO.setDateOfBirth(user.getDataOfBirth());
+        userDTO.setGender(String.valueOf(user.getGender()));
         userDTO.setProfileImageUrl(user.getProfileImageUrl());
         userDTO.setCreditBalance(user.getCreditBalance());
         userDTO.setStripeCustomerId(user.getStripeCustomerId());

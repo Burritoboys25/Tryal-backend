@@ -11,6 +11,7 @@ public class UserDTO {
     private String phoneNumber;
     private String passwordHash;
     private LocalDate dateOfBirth;
+    private String gender;
     private String profileImageUrl;
     private Integer creditBalance;
     private String stripeCustomerId;
@@ -69,6 +70,14 @@ public class UserDTO {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getProfileImageUrl() {
