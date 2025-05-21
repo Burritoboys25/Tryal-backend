@@ -25,26 +25,26 @@ public class User {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = true)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = true)
     private String lastName;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", unique = true, nullable = true)
     private String email;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = true)
     private String phoneNumber;
 
-    @Column(name = "password_hash")
+    @Column(name = "password_hash", nullable = true)
     private String passwordHash;
 
-    @Column(name = "date_of_birth")
+    @Column(name = "date_of_birth", nullable = true)
     private LocalDate dataOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = true)
     private Gender gender;
 
     @Column(name = "profile_image_url")

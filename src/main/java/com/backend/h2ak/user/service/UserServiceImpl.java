@@ -2,6 +2,8 @@ package com.backend.h2ak.user.service;
 
 import com.backend.h2ak.user.User;
 import com.backend.h2ak.user.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +13,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
+        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     @Override
@@ -27,6 +32,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
+        String encodedPassword = this.passwordEncoder.encode(user.getPasswordHash());
+        user.setPasswordHash(encodedPassword);
         userRepository.save(user);
 
         return user;
