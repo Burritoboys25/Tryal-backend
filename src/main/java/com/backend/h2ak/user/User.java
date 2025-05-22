@@ -41,7 +41,7 @@ public class User {
     private String passwordHash;
 
     @Column(name = "date_of_birth", nullable = true)
-    private LocalDate dataOfBirth;
+    private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", nullable = true)
@@ -67,13 +67,13 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dataOfBirth, Gender gender, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dateOfBirth, Gender gender, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.passwordHash = passwordHash;
-        this.dataOfBirth = dataOfBirth;
+        this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.profileImageUrl = profileImageUrl;
         this.creditBalance = creditBalance;
@@ -128,12 +128,12 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public LocalDate getDataOfBirth() {
-        return dataOfBirth;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDataOfBirth(LocalDate dataOfBirth) {
-        this.dataOfBirth = dataOfBirth;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Gender getGender() {

@@ -13,7 +13,7 @@ public class UserMapper {
         userDTO.setEmail(user.getEmail());
         userDTO.setPhoneNumber(user.getPhoneNumber());
         userDTO.setPasswordHash(user.getPasswordHash());
-        userDTO.setDateOfBirth(user.getDataOfBirth());
+        userDTO.setDateOfBirth(user.getDateOfBirth());
         userDTO.setGender(String.valueOf(user.getGender()));
         userDTO.setProfileImageUrl(user.getProfileImageUrl());
         userDTO.setCreditBalance(user.getCreditBalance());

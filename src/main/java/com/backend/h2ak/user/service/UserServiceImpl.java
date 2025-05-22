@@ -64,8 +64,8 @@ public class UserServiceImpl implements UserService {
                 updatedUser.setPasswordHash(user.getPasswordHash());
             }
 
-            if (user.getDataOfBirth() != null) {
-                updatedUser.setDataOfBirth(user.getDataOfBirth());
+            if (user.getDateOfBirth() != null) {
+                updatedUser.setDateOfBirth(user.getDateOfBirth());
             }
 
             if (user.getGender() != null) {
