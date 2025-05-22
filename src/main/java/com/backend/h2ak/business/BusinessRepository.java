@@ -1,4 +1,4 @@
-package com.backend.h2ak.User;
+package com.backend.h2ak.business;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface BusinessRepository extends JpaRepository<Business, UUID> {
 }

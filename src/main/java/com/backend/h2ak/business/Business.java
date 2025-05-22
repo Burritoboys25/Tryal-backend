@@ -1,4 +1,4 @@
-package com.backend.h2ak.Business;
+package com.backend.h2ak.business;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

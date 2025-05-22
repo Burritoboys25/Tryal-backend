@@ -1,4 +1,4 @@
-package com.backend.h2ak.Category;
+package com.backend.h2ak.category;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;

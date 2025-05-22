@@ -1,7 +1,7 @@
-package com.backend.h2ak.Plan.Service;
+package com.backend.h2ak.plan.service;
 
-import com.backend.h2ak.Plan.Plan;
-import com.backend.h2ak.Plan.PlanRepository;
+import com.backend.h2ak.plan.Plan;
+import com.backend.h2ak.plan.PlanRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

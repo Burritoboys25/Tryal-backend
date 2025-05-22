@@ -1,6 +1,6 @@
-package com.backend.h2ak.Business;
+package com.backend.h2ak.business;
 
-import com.backend.h2ak.Business.Service.BusinessService;
+import com.backend.h2ak.business.service.BusinessService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

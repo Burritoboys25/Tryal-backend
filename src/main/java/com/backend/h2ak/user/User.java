@@ -1,4 +1,4 @@
-package com.backend.h2ak.User;
+package com.backend.h2ak.user;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,9 +15,9 @@ import java.util.UUID;
 public class User {
 
     public enum Gender {
-        Male,
-        Female,
-        Other
+        male,
+        female,
+        other
     }
 
     @Id
@@ -25,26 +25,26 @@ public class User {
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = true)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = true)
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = true)
     private String email;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", nullable = true)
     private String phoneNumber;
 
-    @Column(name = "password_hash")
+    @Column(name = "password_hash", nullable = true)
     private String passwordHash;
 
-    @Column(name = "date_of_birth")
-    private LocalDate dataOfBirth;
+    @Column(name = "date_of_birth", nullable = true)
+    private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", nullable = true)
     private Gender gender;
 
     @Column(name = "profile_image_url")
@@ -67,13 +67,14 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dataOfBirth, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dateOfBirth, Gender gender, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.passwordHash = passwordHash;
-        this.dataOfBirth = dataOfBirth;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
         this.profileImageUrl = profileImageUrl;
         this.creditBalance = creditBalance;
         this.stripeCustomerId = stripeCustomerId;
@@ -127,12 +128,20 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public LocalDate getDataOfBirth() {
-        return dataOfBirth;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
     }
 
-    public void setDataOfBirth(LocalDate dataOfBirth) {
-        this.dataOfBirth = dataOfBirth;
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public String getProfileImageUrl() {

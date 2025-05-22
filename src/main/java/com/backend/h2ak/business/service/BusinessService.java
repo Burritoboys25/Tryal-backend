@@ -1,6 +1,6 @@
-package com.backend.h2ak.Business.Service;
+package com.backend.h2ak.business.service;
 
-import com.backend.h2ak.Business.Business;
+import com.backend.h2ak.business.Business;
 
 import java.util.List;
 import java.util.UUID;
