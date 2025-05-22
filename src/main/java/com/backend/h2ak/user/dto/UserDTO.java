@@ -9,7 +9,6 @@ public class UserDTO {
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String passwordHash;
     private LocalDate dateOfBirth;
     private String gender;
     private String profileImageUrl;
@@ -54,14 +53,6 @@ public class UserDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
     }
 
     public LocalDate getDateOfBirth() {
