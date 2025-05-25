@@ -1,4 +1,4 @@
-# Backend Repository for H2AK
+# Backend Repository for Tryal
 
 
 ## Run Postgres with pgAdmin Locally
