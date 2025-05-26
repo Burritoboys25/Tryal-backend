@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.backend</groupId>
-	<artifactId>h2ak</artifactId>
+	<artifactId>tryal</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>h2ak</name>
-	<description>Backend project for h2ak.</description>
+	<name>tryal</name>
+	<description>Backend project for tryal.</description>
 	<url/>
 	<licenses>
 		<license/>
