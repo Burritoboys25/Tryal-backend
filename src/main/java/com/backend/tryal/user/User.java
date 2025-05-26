@@ -34,7 +34,7 @@ public class User {
     @Column(name = "email", unique = true, nullable = true)
     private String email;
 
-    @Column(name = "phone_number", nullable = true)
+    @Column(name = "phone_number", unique = true, nullable = true)
     private String phoneNumber;
 
     @Column(name = "password_hash", nullable = true)
