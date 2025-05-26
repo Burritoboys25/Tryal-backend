@@ -1,6 +1,7 @@
 package com.backend.tryal.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -16,12 +17,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Value("${spring.application.environment}")
+    private String envVariable;
 
     @Autowired
     private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        if (envVariable.equals("dev")) {
+            return http.build();
+        }
 
         return http.csrf(customizer -> customizer.disable())
             .authorizeHttpRequests(request -> request
@@ -31,11 +38,6 @@ public class SecurityConfig {
             .httpBasic(Customizer.withDefaults())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .build();
-
-//        http.formLogin(Customizer.withDefaults());
-
-//        !UNCOMMENT below to disable security
-//        return http.build();
     }
 
     @Bean
