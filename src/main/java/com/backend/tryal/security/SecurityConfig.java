@@ -27,7 +27,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         if (envVariable.equals("dev")) {
-            return http.build();
+            return http.csrf(customizer -> customizer.disable())
+                    .authorizeHttpRequests(request -> request
+                            .anyRequest().permitAll()
+                    )
+                    .httpBasic(Customizer.withDefaults())
+                    .build();
         }
 
         return http.csrf(customizer -> customizer.disable())
