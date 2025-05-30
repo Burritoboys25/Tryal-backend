@@ -1,5 +1,7 @@
 package com.backend.tryal.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,7 +19,22 @@ public class User {
     public enum Gender {
         male,
         female,
-        other
+        other;
+
+        @JsonCreator
+        public static Gender fromValue(String value) {
+            for (Gender gender : Gender.values()) {
+                if (gender.name().equalsIgnoreCase(value)) {
+                    return gender;
+                }
+            }
+            throw new IllegalArgumentException("Invalid gender: " + value);
+        }
+
+        @JsonValue
+        public String toValue() {
+            return this.name();
+        }
     }
 
     @Id
@@ -34,7 +51,7 @@ public class User {
     @Column(name = "email", unique = true, nullable = true)
     private String email;
 
-    @Column(name = "phone_number", nullable = true)
+    @Column(name = "phone_number", unique = true, nullable = true)
     private String phoneNumber;
 
     @Column(name = "password_hash", nullable = true)
