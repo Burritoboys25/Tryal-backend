@@ -60,25 +60,35 @@ public class ExperienceController {
         }
     }
 
-    // TODO: create experience
+    // create experience
     @PostMapping()
     public ResponseEntity<ExperienceResponse> createExperience(@RequestBody ExperienceRequestDTO experienceRequestDTO, @RequestParam UUID businessId) {
         try {
+            ExperienceDTO experienceDTO = ExperienceMapper.mapExperienceDto(experienceService.createExperience(experienceRequestDTO, businessId));
 
+            if(experienceDTO == null){
+                return new ResponseEntity<>(new ExperienceResponse(null, "Business with id: " + businessId +  " not found."), HttpStatus.NOT_FOUND);
+            }
 
-            return new ResponseEntity<>(new ExperienceResponse(null, "Experience created successfully."), HttpStatus.OK);
+            return new ResponseEntity<>(new ExperienceResponse(experienceDTO, "Experience created successfully."), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // TODO: patch experience
+    // patch experience
     @PatchMapping("/{experienceId}")
     public ResponseEntity<ExperienceResponse> updateExperienceById(@RequestBody ExperienceRequestDTO experienceRequestDTO, @PathVariable UUID experienceId) {
         try {
+            Experience updatedExperience = experienceService.updateExperienceById(experienceRequestDTO, experienceId);
 
+            if(updatedExperience == null){
+                return new ResponseEntity<>(new ExperienceResponse(null, "Experience not found."), HttpStatus.NOT_FOUND);
+            }
 
-            return new ResponseEntity<>(new ExperienceResponse(null, "Experience updated successfully."), HttpStatus.OK);
+            ExperienceDTO experienceDTO = ExperienceMapper.mapExperienceDto(updatedExperience);
+
+            return new ResponseEntity<>(new ExperienceResponse(experienceDTO, "Experience updated successfully."), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
