@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping("/user")
     public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserSignupDTO signupDTO) {
         try {
-            UserDTO newUser = UserMapper.mapUserDto(userService.createUser(signupDTO));
+            UserDTO newUser = UserMapper.mapUserDTO(userService.createUser(signupDTO));
             return new ResponseEntity<>(new UserResponse(newUser, "User created successfully."), HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(new UserResponse(null, e.getMessage()), HttpStatus.BAD_REQUEST);

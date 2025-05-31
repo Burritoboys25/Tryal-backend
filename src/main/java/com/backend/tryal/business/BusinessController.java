@@ -1,6 +1,7 @@
 package com.backend.tryal.business;
 
 import com.backend.tryal.business.service.BusinessService;
+import com.backend.tryal.experience.Experience;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,25 @@ public class BusinessController {
 
     public BusinessController(BusinessService businessService) {
         this.businessService = businessService;
+    }
+
+    // get all experiences of a business
+    @GetMapping("/{businessId}/experiences")
+    public ResponseEntity<List<Experience>> getAllBusinessExperiences(@PathVariable UUID businessId) {
+        try {
+
+            List<Experience> experiences = businessService.getAllBusinessExperiences(businessId);
+
+            if(experiences == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }else if(experiences.isEmpty()){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(experiences, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // get all Businesses

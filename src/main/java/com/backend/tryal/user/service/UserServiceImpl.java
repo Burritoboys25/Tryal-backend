@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Email is already taken.");
         }
 
-        User user = UserMapper.mapSignupDtoToUser(signupDTO);
+        User user = UserMapper.mapSignupDTOToUser(signupDTO);
         String encodedPassword = this.passwordEncoder.encode(signupDTO.getPassword());
         user.setPasswordHash(encodedPassword);
 
