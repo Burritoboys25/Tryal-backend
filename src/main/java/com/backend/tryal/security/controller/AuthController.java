@@ -3,9 +3,11 @@ package com.backend.tryal.security.controller;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserDTO;
+import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import com.backend.tryal.user.response.UserResponse;
 import com.backend.tryal.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,17 +26,14 @@ public class AuthController {
         this.userRepository = userRepository;
     }
 
-    // Create User
+    // Signup User
     @PostMapping("/user")
-    public ResponseEntity<UserResponse> createUser(@RequestBody User user) {
+    public ResponseEntity<UserResponse> signupUser(@Valid @RequestBody UserSignupDTO signupDTO) {
         try {
-            if (userRepository.existsByEmail(user.getEmail())) {
-                return new ResponseEntity<>(new UserResponse(null, "Email is already taken."), HttpStatus.BAD_REQUEST);
-            }
-
-
-            UserDTO newUser = UserMapper.mapUserDto(userService.createUser(user));
+            UserDTO newUser = UserMapper.mapUserDto(userService.createUser(signupDTO));
             return new ResponseEntity<>(new UserResponse(newUser, "User created successfully."), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(new UserResponse(null, e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
