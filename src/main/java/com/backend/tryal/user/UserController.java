@@ -27,7 +27,7 @@ public class UserController {
         try {
             List<UserDTO> users = userService.getAllUsers()
                     .stream()
-                    .map(UserMapper::mapUserDto)
+                    .map(UserMapper::mapUserDTO)
                     .collect(Collectors.toList());
 
             if (users.isEmpty()) {
@@ -50,7 +50,7 @@ public class UserController {
                 return new ResponseEntity<>(new UserResponse(null, "User not found."),HttpStatus.NOT_FOUND);
             }
 
-            UserDTO userDTO = UserMapper.mapUserDto(user);
+            UserDTO userDTO = UserMapper.mapUserDTO(user);
 
             return new ResponseEntity<>(new UserResponse(userDTO, "User found."), HttpStatus.OK);
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class UserController {
                 return new ResponseEntity<>(new UserResponse(null, "User not found."), HttpStatus.NOT_FOUND);
             }
 
-            UserDTO userDTO = UserMapper.mapUserDto(updatedUser);
+            UserDTO userDTO = UserMapper.mapUserDTO(updatedUser);
 
             return new ResponseEntity<>(new UserResponse(userDTO, "User updated successfully."), HttpStatus.OK);
         } catch (Exception e) {

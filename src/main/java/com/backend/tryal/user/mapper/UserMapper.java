@@ -5,7 +5,7 @@ import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserDTO;
 
 public class UserMapper {
-    public static UserDTO mapUserDto(User user) {
+    public static UserDTO mapUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
 
         userDTO.setUserId(user.getUserId());
@@ -22,7 +22,7 @@ public class UserMapper {
         return userDTO;
     }
 
-    public static User mapSignupDtoToUser(UserSignupDTO signupDto) {
+    public static User mapSignupDTOToUser(UserSignupDTO signupDto) {
         User user = new User();
 
         user.setFirstName(signupDto.getFirstName());
