@@ -1,11 +1,14 @@
 package com.backend.tryal.business;
 
+import com.backend.tryal.experience.Experience;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -34,6 +37,9 @@ public class Business {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Experience> experiences = new ArrayList<>();
+
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -45,13 +51,15 @@ public class Business {
     public Business() {
     }
 
-    public Business(String stripeAccountId, String name, String email, String website, String address, String phoneNumber) {
+    public Business(UUID businessId, String stripeAccountId, String name, String email, String website, String address, String phoneNumber, List<Experience> experiences) {
+        this.businessId = businessId;
         this.stripeAccountId = stripeAccountId;
         this.name = name;
         this.email = email;
         this.website = website;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.experiences = experiences;
     }
 
     public UUID getBusinessId() {
@@ -108,5 +116,21 @@ public class Business {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public List<Experience> getExperiences() {
+        return experiences;
+    }
+
+    public void setExperiences(List<Experience> experiences) {
+        this.experiences = experiences;
     }
 }
