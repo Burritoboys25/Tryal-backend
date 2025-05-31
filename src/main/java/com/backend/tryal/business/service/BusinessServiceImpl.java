@@ -21,7 +21,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public List<Experience> getAllBusinessExperiences(UUID businessId) {
-        Business business = businessRepository.findById(businessId).orElse(null);
+        Business business = getBusinessById(businessId);
 
         if (business == null) {
             return null;

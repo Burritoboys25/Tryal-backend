@@ -2,7 +2,6 @@ package com.backend.tryal.experience.dto;
 
 import com.backend.tryal.experience.Experience;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 public class ExperienceDTO {
@@ -95,11 +94,11 @@ public class ExperienceDTO {
         this.creditPrice = creditPrice;
     }
 
-    public Boolean getActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
     }
 }
