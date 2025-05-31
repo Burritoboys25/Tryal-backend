@@ -1,5 +1,6 @@
 package com.backend.tryal.user.mapper;
 
+import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserDTO;
 
@@ -19,5 +20,15 @@ public class UserMapper {
         userDTO.setStripeCustomerId(user.getStripeCustomerId());
 
         return userDTO;
+    }
+
+    public static User mapSignupDtoToUser(UserSignupDTO signupDto) {
+        User user = new User();
+
+        user.setFirstName(signupDto.getFirstName());
+        user.setLastName(signupDto.getLastName());
+        user.setEmail(signupDto.getEmail());
+
+        return user;
     }
 }

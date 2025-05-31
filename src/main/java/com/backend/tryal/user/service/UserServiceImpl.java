@@ -2,6 +2,8 @@ package com.backend.tryal.user.service;
 
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import com.backend.tryal.user.dto.UserSignupDTO;
+import com.backend.tryal.user.mapper.UserMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,12 +33,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
-        String encodedPassword = this.passwordEncoder.encode(user.getPasswordHash());
-        user.setPasswordHash(encodedPassword);
-        userRepository.save(user);
+    public User createUser(UserSignupDTO signupDTO) throws IllegalArgumentException{
+        if (userRepository.existsByEmail(signupDTO.getEmail())) {
+            throw new IllegalArgumentException("Email is already taken.");
+        }
 
-        return user;
+        User user = UserMapper.mapSignupDtoToUser(signupDTO);
+        String encodedPassword = this.passwordEncoder.encode(signupDTO.getPassword());
+        user.setPasswordHash(encodedPassword);
+
+        return userRepository.save(user);
     }
 
     @Override
