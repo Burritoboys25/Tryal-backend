@@ -58,17 +58,6 @@ public class UserController {
         }
     }
 
-    // Create User
-    @PostMapping()
-    public ResponseEntity<UserResponse> createUser(@RequestBody User user) {
-        try {
-            UserDTO newUser = UserMapper.mapUserDto(userService.createUser(user));
-            return new ResponseEntity<>(new UserResponse(newUser, "User created successfully."), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     // Patch User
     @PatchMapping("/{userId}")
     public ResponseEntity<UserResponse> updateUserById(@RequestBody User user, @PathVariable UUID userId) {
