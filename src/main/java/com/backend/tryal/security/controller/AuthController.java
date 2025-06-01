@@ -1,5 +1,7 @@
 package com.backend.tryal.security.controller;
 
+import com.backend.tryal.security.dto.RefreshTokenRequest;
+import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
@@ -38,7 +40,15 @@ public class AuthController {
 
     // Login User
     @PostMapping("/login/user")
-    public String login(@RequestBody UserLoginDTO loginDTO) {
-        return userService.verifyUser(loginDTO);
+    public ResponseEntity<?> loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
+        TokenPair tokenPair = userService.loginUser(loginDTO);
+        return ResponseEntity.ok(tokenPair);
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        TokenPair tokenPair = userService.refreshToken(refreshTokenRequest);
+
+        return ResponseEntity.ok(tokenPair);
     }
 }

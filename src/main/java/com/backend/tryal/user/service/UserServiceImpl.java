@@ -1,15 +1,21 @@
 package com.backend.tryal.user.service;
 
+import com.backend.tryal.security.dto.RefreshTokenRequest;
+import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     AuthenticationManager authManager;
+
+    @Autowired
+    UserDetailsService userDetailsService;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -58,14 +67,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String verifyUser(UserLoginDTO loginDTO) {
+    public TokenPair loginUser(UserLoginDTO loginDTO) {
+        // Authenticate user
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
 
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(loginDTO.getEmail());
+        // Set authentication in security context
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        // Generate Token Pair
+        return jwtService.generateTokenPair(authentication);
+    }
+
+    public TokenPair refreshToken(@Valid RefreshTokenRequest refreshTokenRequest) {
+        String refreshToken = refreshTokenRequest.getRefreshToken();
+
+        // check if still valid refresh token
+        if (!jwtService.isRefreshToken(refreshToken)) {
+            throw new IllegalArgumentException("Invalid refresh token");
         }
 
-        return "Fail";
+        String user = jwtService.extractUsernameFromToken(refreshToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user);
+
+        if (userDetails == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        null,
+                        userDetails.getAuthorities()
+                );
+
+        String accessToken = jwtService.generateAccessToken(authentication);
+        return new TokenPair(accessToken, refreshToken);
     }
 
     @Override
