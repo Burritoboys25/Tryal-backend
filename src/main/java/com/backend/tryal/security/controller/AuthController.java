@@ -3,6 +3,7 @@ package com.backend.tryal.security.controller;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserDTO;
+import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import com.backend.tryal.user.response.UserResponse;
@@ -19,11 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final UserService userService;
-    private final UserRepository userRepository;
 
-    public AuthController(UserService userService, UserRepository userRepository) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     // Signup User
@@ -37,5 +36,11 @@ public class AuthController {
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // Login User
+    @PostMapping("/login/user")
+    public String login(@RequestBody UserLoginDTO loginDTO) {
+        return userService.verifyUser(loginDTO);
     }
 }

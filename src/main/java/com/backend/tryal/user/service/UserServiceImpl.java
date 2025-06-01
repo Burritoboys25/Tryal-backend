@@ -1,9 +1,15 @@
 package com.backend.tryal.user.service;
 
+import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +22,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    AuthenticationManager authManager;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -43,6 +55,17 @@ public class UserServiceImpl implements UserService {
         user.setPasswordHash(encodedPassword);
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public String verifyUser(UserLoginDTO loginDTO) {
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
+
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(loginDTO.getEmail());
+        }
+
+        return "Fail";
     }
 
     @Override
