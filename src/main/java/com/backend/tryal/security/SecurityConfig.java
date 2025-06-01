@@ -31,7 +31,6 @@ public class SecurityConfig {
                     .authorizeHttpRequests(request -> request
                             .anyRequest().permitAll()
                     )
-                    .httpBasic(Customizer.withDefaults())
                     .build();
         }
 
