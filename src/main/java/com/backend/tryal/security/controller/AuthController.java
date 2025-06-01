@@ -1,7 +1,5 @@
 package com.backend.tryal.security.controller;
 
-import com.backend.tryal.user.User;
-import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
