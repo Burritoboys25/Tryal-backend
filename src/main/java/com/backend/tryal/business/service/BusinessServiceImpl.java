@@ -3,10 +3,7 @@ package com.backend.tryal.business.service;
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.experience.Experience;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -62,6 +59,10 @@ public class BusinessServiceImpl implements BusinessService {
 
             if (business.getEmail() != null) {
                 updatedBusiness.setEmail(business.getEmail());
+            }
+
+            if (business.getPasswordHash() != null) {
+                updatedBusiness.setPasswordHash(business.getPasswordHash());
             }
 
             if (business.getWebsite() != null) {
