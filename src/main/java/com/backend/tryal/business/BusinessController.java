@@ -5,13 +5,10 @@ import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.business.response.BusinessResponse;
 import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.experience.Experience;
-import com.backend.tryal.user.mapper.UserMapper;
-import com.backend.tryal.user.response.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
