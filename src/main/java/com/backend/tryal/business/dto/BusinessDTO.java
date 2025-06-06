@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class BusinessDTO {
     private UUID businessId;
+    private String stripeAccountId;
     private String name;
     private String email;
     private String website;
@@ -20,6 +21,14 @@ public class BusinessDTO {
 
     public void setBusinessId(UUID businessId) {
         this.businessId = businessId;
+    }
+
+    public String getStripeAccountId() {
+        return stripeAccountId;
+    }
+
+    public void setStripeAccountId(String stripeAccountId) {
+        this.stripeAccountId = stripeAccountId;
     }
 
     public String getName() {

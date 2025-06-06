@@ -8,6 +8,7 @@ public class BusinessMapper {
         BusinessDTO businessDTO = new BusinessDTO();
 
         businessDTO.setBusinessId(business.getBusinessId());
+        businessDTO.setStripeAccountId(business.getStripeAccountId());
         businessDTO.setName(business.getName());
         businessDTO.setEmail(business.getEmail());
         businessDTO.setWebsite(business.getWebsite());
