@@ -2,6 +2,7 @@ package com.backend.tryal.business.mapper;
 
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.dto.BusinessDTO;
+import com.backend.tryal.business.dto.BusinessSignupDTO;
 
 public class BusinessMapper {
     public static BusinessDTO mapBusinessDTO(Business business) {
@@ -17,5 +18,14 @@ public class BusinessMapper {
         businessDTO.setExperiences(business.getExperiences());
 
         return businessDTO;
+    }
+
+    public static Business mapSignupDTOToBusiness(BusinessSignupDTO signupDTO) {
+        Business business = new Business();
+
+        business.setName(signupDTO.getName());
+        business.setEmail(signupDTO.getEmail());
+
+        return business;
     }
 }
