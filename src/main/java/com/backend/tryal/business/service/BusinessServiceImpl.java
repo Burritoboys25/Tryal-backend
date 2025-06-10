@@ -76,6 +76,13 @@ public class BusinessServiceImpl implements BusinessService {
                 updatedBusiness.setPhoneNumber(business.getPhoneNumber());
             }
 
+            if (business.getLongitude() != null) {
+                updatedBusiness.setLongitude(business.getLongitude());
+            }
+
+            if (business.getLatitude() != null) {
+                updatedBusiness.setLatitude(business.getLongitude());
+            }
             businessRepository.save(updatedBusiness);
             return updatedBusiness;
         }

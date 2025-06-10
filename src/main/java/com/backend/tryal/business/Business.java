@@ -48,10 +48,16 @@ public class Business {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
     public Business() {
     }
 
-    public Business(UUID businessId, String stripeAccountId, String name, String email, String website, String address, String phoneNumber, List<Experience> experiences) {
+    public Business(UUID businessId, String stripeAccountId, String name, String email, String website, String address, String phoneNumber, List<Experience> experiences, Double longitude, Double latitude) {
         this.businessId = businessId;
         this.stripeAccountId = stripeAccountId;
         this.name = name;
@@ -60,6 +66,8 @@ public class Business {
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.experiences = experiences;
+        this.longitude = longitude;
+        this.latitude = latitude;
     }
 
     public UUID getBusinessId() {
@@ -133,4 +141,9 @@ public class Business {
     public void setExperiences(List<Experience> experiences) {
         this.experiences = experiences;
     }
+
+    public Double getLongitude() { return longitude; };
+    public void setLongitude(Double longitude) {this.longitude = longitude;}
+    public Double getLatitude() { return latitude;}
+    public void setLatitude(Double latitude)  { this.latitude = latitude; }
 }
