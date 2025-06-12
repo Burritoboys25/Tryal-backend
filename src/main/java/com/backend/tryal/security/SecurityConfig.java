@@ -2,14 +2,15 @@ package com.backend.tryal.security;
 
 import com.backend.tryal.security.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,7 +26,12 @@ public class SecurityConfig {
     private String envVariable;
 
     @Autowired
+    @Qualifier("customUserDetailsService") // Inject CustomUserDetailsService
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    @Qualifier("customBusinessDetailsService") // Inject CustomBusinessDetailsService
+    private UserDetailsService businessDetailsService;
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -53,7 +59,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public AuthenticationProvider userAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
         provider.setUserDetailsService(userDetailsService);
@@ -61,7 +67,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
+    public AuthenticationProvider businessAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+        provider.setUserDetailsService(businessDetailsService);
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationProvider userAuthenticationProvider,
+            AuthenticationProvider businessAuthenticationProvider) throws Exception {
+        return new ProviderManager(userAuthenticationProvider, businessAuthenticationProvider);
     }
 }

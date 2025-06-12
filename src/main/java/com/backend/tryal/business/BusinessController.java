@@ -78,17 +78,6 @@ public class BusinessController {
         }
     }
 
-    // Create Business
-    @PostMapping()
-    public ResponseEntity<Business> createBusiness(@RequestBody Business business) {
-        try{
-            Business newBusiness = businessService.createBusiness(business);
-            return new ResponseEntity<>(newBusiness, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     // Patch Business
     @PatchMapping("/{businessId}")
     public ResponseEntity<BusinessResponse> updateBusinessById(@RequestBody Business business, @PathVariable UUID businessId) {

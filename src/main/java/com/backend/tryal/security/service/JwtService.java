@@ -60,8 +60,14 @@ public class JwtService {
     private String generateToken(Authentication authentication, long expirationTime, Map<String, String> claims) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
+        boolean isBusiness = userPrincipal.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("BUSINESS"));
+
         Date now = new Date(); // Time of token creation
         Date expiryDate = new Date(now.getTime() + expirationTime); // Time of token expiration -- set to 60 mins
+
+        // Add accountType to the claims
+        claims.put("accountType", isBusiness ? "BUSINESS" : "USER");
 
         return Jwts.builder()
                 .header()
@@ -87,7 +93,7 @@ public class JwtService {
     }
 
     // Validate if refresh token
-    public boolean isRefreshToken(String token) {
+    public Boolean isRefreshToken(String token) {
         Claims claims = extractAllClaims(token);
 
         if (claims == null) {
@@ -95,6 +101,17 @@ public class JwtService {
         }
 
         return "refresh".equals(claims.get("tokenType"));
+    }
+
+    public Boolean isBusinessUser(String token) {
+        Claims claims = extractAllClaims(token);
+
+        if (claims == null) {
+            return false;
+        }
+
+        //return jwtService.extract(jwt).containsKey("isBusiness");
+        return "BUSINESS".equals(claims.get("accountType"));
     }
 
     private Claims extractAllClaims(String token) {

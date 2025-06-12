@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,10 +20,16 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final UserDetailsService businessDetailsService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(
+            JwtService jwtService,
+            @Qualifier("customUserDetailsService") UserDetailsService userDetailsService,
+            @Qualifier("customBusinessDetailsService") UserDetailsService businessDetailsService
+    ) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.businessDetailsService = businessDetailsService;
     }
 
     @Override
@@ -48,7 +55,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         username = jwtService.extractUsernameFromToken(jwt);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails;
+
+            // Decide which service to use based on claim in the token
+            if (jwtService.isBusinessUser(jwt)) {
+                userDetails = businessDetailsService.loadUserByUsername(username);
+            } else {
+                userDetails = userDetailsService.loadUserByUsername(username);
+            }
+
 
             if (jwtService.validateTokenForUsers(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

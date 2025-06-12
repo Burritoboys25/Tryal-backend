@@ -10,6 +10,7 @@ import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
     AuthenticationManager authManager;
 
     @Autowired
+    @Qualifier("customUserDetailsService")
     UserDetailsService userDetailsService;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -87,6 +89,12 @@ public class UserServiceImpl implements UserService {
         }
 
         String user = jwtService.extractUsernameFromToken(refreshToken);
+        boolean isBusiness = jwtService.isBusinessUser(refreshToken);
+
+        if (isBusiness) {
+            throw new IllegalArgumentException("Invalid account type refresh token");
+        }
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(user);
 
         if (userDetails == null) {
