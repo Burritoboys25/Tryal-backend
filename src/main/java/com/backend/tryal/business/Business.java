@@ -28,6 +28,9 @@ public class Business {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "password_hash")
+    private String passwordHash;
+
     @Column(name = "website")
     private String website;
 
@@ -51,11 +54,12 @@ public class Business {
     public Business() {
     }
 
-    public Business(UUID businessId, String stripeAccountId, String name, String email, String website, String address, String phoneNumber, List<Experience> experiences) {
+    public Business(UUID businessId, String stripeAccountId, String name, String email, String passwordHash, String website, String address, String phoneNumber, List<Experience> experiences) {
         this.businessId = businessId;
         this.stripeAccountId = stripeAccountId;
         this.name = name;
         this.email = email;
+        this.passwordHash = passwordHash;
         this.website = website;
         this.address = address;
         this.phoneNumber = phoneNumber;
@@ -92,6 +96,14 @@ public class Business {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getWebsite() {

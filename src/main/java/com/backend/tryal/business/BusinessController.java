@@ -1,14 +1,17 @@
 package com.backend.tryal.business;
 
+import com.backend.tryal.business.dto.BusinessDTO;
+import com.backend.tryal.business.mapper.BusinessMapper;
+import com.backend.tryal.business.response.BusinessResponse;
 import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.experience.Experience;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/businesses")
@@ -40,9 +43,12 @@ public class BusinessController {
 
     // get all Businesses
     @GetMapping()
-    public ResponseEntity<List<Business>> getAllBusinesses() {
+    public ResponseEntity<List<BusinessDTO>> getAllBusinesses() {
         try {
-            List<Business> businesses = new ArrayList<Business>(businessService.getAllBusinesses());
+            List<BusinessDTO> businesses = businessService.getAllBusinesses()
+                    .stream()
+                    .map(BusinessMapper::mapBusinessDTO)
+                    .collect(Collectors.toList());
 
             if (businesses.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -56,26 +62,17 @@ public class BusinessController {
 
     // get Business by ID
     @GetMapping("/{businessId}")
-    public ResponseEntity<Business> getBusinessById(@PathVariable UUID businessId) {
+    public ResponseEntity<BusinessResponse> getBusinessById(@PathVariable UUID businessId) {
         try {
             Business business = businessService.getBusinessById(businessId);
 
             if (business == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new BusinessResponse(null, "Business not found."),HttpStatus.NOT_FOUND);
             }
 
-            return new ResponseEntity<>(business, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+            BusinessDTO businessDTO = BusinessMapper.mapBusinessDTO(business);
 
-    // Create Business
-    @PostMapping()
-    public ResponseEntity<Business> createBusiness(@RequestBody Business business) {
-        try{
-            Business newBusiness = businessService.createBusiness(business);
-            return new ResponseEntity<>(newBusiness, HttpStatus.CREATED);
+            return new ResponseEntity<>(new BusinessResponse(businessDTO, "Business found."), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -83,15 +80,17 @@ public class BusinessController {
 
     // Patch Business
     @PatchMapping("/{businessId}")
-    public ResponseEntity<Business> updateBusinessById(@RequestBody Business business, @PathVariable UUID businessId) {
+    public ResponseEntity<BusinessResponse> updateBusinessById(@RequestBody Business business, @PathVariable UUID businessId) {
         try {
             Business updatedBusiness = businessService.updateBusinessById(businessId, business);
 
             if (updatedBusiness == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new BusinessResponse(null, "Business not found."), HttpStatus.NOT_FOUND);
             }
 
-            return new ResponseEntity<>(updatedBusiness, HttpStatus.OK);
+            BusinessDTO businessDTO = BusinessMapper.mapBusinessDTO(business);
+
+            return new ResponseEntity<>(new BusinessResponse(businessDTO, "Business updated successfully."), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

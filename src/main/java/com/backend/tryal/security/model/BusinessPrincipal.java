@@ -1,6 +1,6 @@
 package com.backend.tryal.security.model;
 
-import com.backend.tryal.user.User;
+import com.backend.tryal.business.Business;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,45 +8,45 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-public class UserPrincipal implements UserDetails {
-    private final User user;
+public class BusinessPrincipal implements UserDetails {
+    private final Business business;
 
-    public UserPrincipal(User user) {
-        this.user = user;
+    public BusinessPrincipal(Business business) {
+        this.business = business;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        return Collections.singleton(new SimpleGrantedAuthority("BUSINESS"));
     }
 
     @Override
     public String getPassword() {
-        return user.getPasswordHash();
+        return business.getPasswordHash();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return business.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return UserDetails.super.isAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return UserDetails.super.isAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return UserDetails.super.isCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return UserDetails.super.isEnabled();
     }
 }
