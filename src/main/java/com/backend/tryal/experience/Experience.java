@@ -1,12 +1,16 @@
 package com.backend.tryal.experience;
 
 import com.backend.tryal.business.Business;
+import com.backend.tryal.category.Category;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +27,7 @@ public class Experience {
     @Column(name = "experience_id")
     private UUID experienceId;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "business_id")
     private Business business;
@@ -33,6 +38,7 @@ public class Experience {
     @Column(name = "description", nullable = true)
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "skill_level", nullable = true)
     private SkillLevel skillLevel;
 
@@ -56,10 +62,18 @@ public class Experience {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @ManyToMany
+    @JoinTable(
+            name = "experience_categories",
+            joinColumns = @JoinColumn(name = "experience_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
     public Experience() {
     }
 
-    public Experience(UUID experienceId, Business business, String experienceName, String description, SkillLevel skillLevel, Integer capacity, Integer duration, Integer creditPrice, Boolean isActive) {
+    public Experience(UUID experienceId, Business business, String experienceName, String description, SkillLevel skillLevel, Integer capacity, Integer duration, Integer creditPrice, Boolean isActive, Set<Category> categories) {
         this.experienceId = experienceId;
         this.business = business;
         this.experienceName = experienceName;
@@ -69,6 +83,7 @@ public class Experience {
         this.duration = duration;
         this.creditPrice = creditPrice;
         this.isActive = isActive;
+        this.categories = categories;
     }
 
     public UUID getExperienceId() {
@@ -141,6 +156,14 @@ public class Experience {
 
     public void setActive(Boolean active) {
         isActive = active;
+    }
+
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 
     public LocalDateTime getCreatedAt() {

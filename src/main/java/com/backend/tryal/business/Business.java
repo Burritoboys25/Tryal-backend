@@ -1,6 +1,7 @@
 package com.backend.tryal.business;
 
 import com.backend.tryal.experience.Experience;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -37,6 +38,7 @@ public class Business {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Experience> experiences = new ArrayList<>();
 
