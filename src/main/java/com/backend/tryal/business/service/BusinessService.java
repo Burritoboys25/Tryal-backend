@@ -1,6 +1,8 @@
 package com.backend.tryal.business.service;
 
 import com.backend.tryal.business.Business;
+import com.backend.tryal.business.dto.BusinessFilteredRequestDTO;
+import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
 import com.backend.tryal.business.dto.BusinessLoginDTO;
 import com.backend.tryal.business.dto.BusinessSignupDTO;
 import com.backend.tryal.experience.Experience;
@@ -19,4 +21,6 @@ public interface BusinessService {
     TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
     Business updateBusinessById(UUID businessId, Business business);
     boolean deleteBusinessById(UUID businessId);
+
+    List<BusinessFilteredResponseDTO> getFilteredBusinesses(BusinessFilteredRequestDTO filters);
 }

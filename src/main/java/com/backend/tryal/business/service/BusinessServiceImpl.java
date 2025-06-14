@@ -2,9 +2,12 @@ package com.backend.tryal.business.service;
 
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
+import com.backend.tryal.business.dto.BusinessFilteredRequestDTO;
+import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
 import com.backend.tryal.business.dto.BusinessLoginDTO;
 import com.backend.tryal.business.dto.BusinessSignupDTO;
 import com.backend.tryal.business.mapper.BusinessMapper;
+import com.backend.tryal.category.Category;
 import com.backend.tryal.experience.Experience;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
@@ -22,6 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -180,4 +184,44 @@ public class BusinessServiceImpl implements BusinessService {
 
         return false;
     }
+
+    @Override
+    public List<BusinessFilteredResponseDTO> getFilteredBusinesses(BusinessFilteredRequestDTO filters) {
+        List<Business> businesses = businessRepository.findFilteredBusinesses(
+                filters.getCategoryIds(),
+                filters.getMinDuration(),
+                filters.getSkillLevel()
+        );
+
+        List<BusinessFilteredResponseDTO> response = new ArrayList<>();
+
+        for (Business business : businesses) {
+            List<Experience> filteredExperiences = new ArrayList<>();
+
+            for (Experience experience : business.getExperiences()) {
+                boolean matchesSkill = filters.getSkillLevel() == null || experience.getSkillLevel().equals(filters.getSkillLevel());
+                boolean matchesDuration = filters.getMinDuration() == null || experience.getDuration() >= filters.getMinDuration();
+                boolean matchesCategory = filters.getCategoryIds() == null;
+
+                if (!matchesCategory) {
+                    for (Category category : experience.getCategories()) {
+                        if (filters.getCategoryIds().contains(category.getCategoryId())) {
+                            matchesCategory = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (matchesSkill && matchesDuration && matchesCategory) {
+                    filteredExperiences.add(experience);
+                }
+            }
+
+            BusinessFilteredResponseDTO dto = BusinessMapper.mapFilteredResponse(business, filteredExperiences);
+            response.add(dto);
+        }
+
+        return response;
+    }
+
 }
