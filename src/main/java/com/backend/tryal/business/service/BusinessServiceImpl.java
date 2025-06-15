@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,6 +45,17 @@ public class BusinessServiceImpl implements BusinessService {
     public BusinessServiceImpl(BusinessRepository businessRepository) {
         this.businessRepository = businessRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
+    }
+
+    @Override
+    public List<Experience> getAllBusinessExperiences(UUID businessId) {
+        Business business = getBusinessById(businessId);
+
+        if (business == null) {
+            return null;
+        }
+
+        return business.getExperiences();
     }
 
     @Override
