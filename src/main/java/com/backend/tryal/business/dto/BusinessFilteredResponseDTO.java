@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 public class BusinessFilteredResponseDTO {
-    private UUID id;
+    private UUID businessId;
     private String name;
     private String address;
     private Double latitude;

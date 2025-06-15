@@ -59,6 +59,7 @@ public class BusinessMapper {
     public static BusinessFilteredResponseDTO mapFilteredResponse(Business business, List<Experience> experiences) {
 
         BusinessFilteredResponseDTO dto = new BusinessFilteredResponseDTO();
+        dto.setBusinessId(business.getBusinessId());
         dto.setName(business.getName());
         dto.setAddress(business.getAddress());
         dto.setLatitude(business.getLatitude());
