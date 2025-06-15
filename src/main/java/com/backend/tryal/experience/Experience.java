@@ -19,7 +19,8 @@ public class Experience {
     public enum SkillLevel {
         BEGINNER,
         INTERMEDIATE,
-        ADVANCED
+        ADVANCED,
+        EXPERT
     }
 
     @Id
