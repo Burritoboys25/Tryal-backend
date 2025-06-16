@@ -59,17 +59,6 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public List<Experience> getAllBusinessExperiences(UUID businessId) {
-        Business business = getBusinessById(businessId);
-
-        if (business == null) {
-            return null;
-        }
-
-        return business.getExperiences();
-    }
-
-    @Override
     public List<Business> getAllBusinesses() {
         return businessRepository.findAll();
     }
