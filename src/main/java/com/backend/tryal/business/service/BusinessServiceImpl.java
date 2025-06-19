@@ -187,10 +187,23 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public List<BusinessFilteredResponseDTO> getFilteredBusinesses(BusinessFilteredRequestDTO filters) {
+        Integer limit = filters.getLimit();
+
+        // Normalize filters: treat empty lists as null
+        List<Experience.SkillLevel> skillLevel = filters.getSkillLevel();
+        if (skillLevel != null && skillLevel.isEmpty()) {
+            skillLevel = null; // treat empty as null and return all;
+        }
+
+        List<Long> categoryIds = filters.getCategoryIds();
+        if (categoryIds != null && categoryIds.isEmpty()) {
+            categoryIds = null; // treat empty as null and return all;;
+        }
+
         List<Business> businesses = businessRepository.findFilteredBusinesses(
-                filters.getCategoryIds(),
+                categoryIds,
                 filters.getMinDuration(),
-                filters.getSkillLevel()
+                skillLevel
         );
 
         List<BusinessFilteredResponseDTO> response = new ArrayList<>();
@@ -199,26 +212,36 @@ public class BusinessServiceImpl implements BusinessService {
             List<Experience> filteredExperiences = new ArrayList<>();
 
             for (Experience experience : business.getExperiences()) {
-                boolean matchesSkill = filters.getSkillLevel() == null || experience.getSkillLevel().equals(filters.getSkillLevel());
-                boolean matchesDuration = filters.getMinDuration() == null || experience.getDuration() >= filters.getMinDuration();
-                boolean matchesCategory = filters.getCategoryIds() == null;
+                boolean matchesSkill = skillLevel == null || skillLevel.contains(experience.getSkillLevel());
+                boolean matchesDuration = filters.getMinDuration() == null || experience.getDuration() <= filters.getMinDuration();
 
-                if (!matchesCategory) {
+                boolean matchesCategory = false;
+                if (categoryIds == null) {
+                    matchesCategory = true; // no filter = allow all
+                } else {
                     for (Category category : experience.getCategories()) {
-                        if (filters.getCategoryIds().contains(category.getCategoryId())) {
+                        if (categoryIds.contains(category.getCategoryId())) {
                             matchesCategory = true;
                             break;
                         }
                     }
                 }
 
+
                 if (matchesSkill && matchesDuration && matchesCategory) {
                     filteredExperiences.add(experience);
                 }
             }
+            // Only include businesses that still have at least one valid experience
+            if (!filteredExperiences.isEmpty()) {
+                BusinessFilteredResponseDTO dto = BusinessMapper.mapFilteredResponse(business, filteredExperiences);
+                response.add(dto);
+            }
 
-            BusinessFilteredResponseDTO dto = BusinessMapper.mapFilteredResponse(business, filteredExperiences);
-            response.add(dto);
+        }
+
+        if (limit != null && limit > 0 && response.size() > limit) {
+            return response.subList(0, limit);
         }
 
         return response;
