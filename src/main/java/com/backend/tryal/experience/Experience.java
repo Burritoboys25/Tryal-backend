@@ -2,8 +2,10 @@ package com.backend.tryal.experience;
 
 import com.backend.tryal.business.Business;
 import com.backend.tryal.category.Category;
+import com.backend.tryal.groupType.GroupType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -13,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "experiences")
 public class Experience {
@@ -71,10 +74,18 @@ public class Experience {
     )
     private Set<Category> categories = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "experience_group_types",
+            joinColumns = @JoinColumn(name = "experience_id"),
+            inverseJoinColumns = @JoinColumn(name = "group_type_id")
+    )
+    private Set<GroupType> groupTypes = new HashSet<>();
+
     public Experience() {
     }
 
-    public Experience(UUID experienceId, Business business, String experienceName, String description, SkillLevel skillLevel, Integer capacity, Integer duration, Integer creditPrice, Boolean isActive, Set<Category> categories) {
+    public Experience(UUID experienceId, Business business, String experienceName, String description, SkillLevel skillLevel, Integer capacity, Integer duration, Integer creditPrice, Boolean isActive, Set<Category> categories, Set<GroupType> groupTypes) {
         this.experienceId = experienceId;
         this.business = business;
         this.experienceName = experienceName;
@@ -85,93 +96,13 @@ public class Experience {
         this.creditPrice = creditPrice;
         this.isActive = isActive;
         this.categories = categories;
-    }
-
-    public UUID getExperienceId() {
-        return experienceId;
-    }
-
-    public void setExperienceId(UUID experienceId) {
-        this.experienceId = experienceId;
-    }
-
-    public Business getBusiness() {
-        return business;
-    }
-
-    public void setBusiness(Business business) {
-        this.business = business;
-    }
-
-    public String getExperienceName() {
-        return experienceName;
-    }
-
-    public void setExperienceName(String experienceName) {
-        this.experienceName = experienceName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public SkillLevel getSkillLevel() {
-        return skillLevel;
-    }
-
-    public void setSkillLevel(SkillLevel skillLevel) {
-        this.skillLevel = skillLevel;
-    }
-
-    public Integer getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(Integer capacity) {
-        this.capacity = capacity;
-    }
-
-    public Integer getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public Integer getCreditPrice() {
-        return creditPrice;
-    }
-
-    public void setCreditPrice(Integer creditPrice) {
-        this.creditPrice = creditPrice;
+        this.groupTypes = groupTypes;
     }
 
     public Boolean getActive() {
         return isActive;
     }
-
     public void setActive(Boolean active) {
         isActive = active;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
     }
 }
