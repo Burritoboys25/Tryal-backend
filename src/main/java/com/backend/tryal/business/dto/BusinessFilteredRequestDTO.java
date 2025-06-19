@@ -10,5 +10,6 @@ import java.util.List;
 public class BusinessFilteredRequestDTO {
     private List<Long> categoryIds;
     private Integer minDuration;
-    private Experience.SkillLevel skillLevel;
+    private List<Experience.SkillLevel> skillLevel;
+    private Integer limit;
 }
