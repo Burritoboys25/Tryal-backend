@@ -113,8 +113,10 @@ public class BusinessController {
     }
 
     @PostMapping("/filter")
-    public ResponseEntity<BusinessListResponse> getFilteredBusinesses( @RequestBody BusinessFilteredRequestDTO filters) {
-
+    public ResponseEntity<BusinessListResponse> getFilteredBusinesses( @RequestBody BusinessFilteredRequestDTO filters, @RequestParam(required = false) Integer limit) {
+        if (limit != null) {
+            filters.setLimit(limit);
+        }
         try {
             List<BusinessFilteredResponseDTO> result = businessService.getFilteredBusinesses(filters);
 
