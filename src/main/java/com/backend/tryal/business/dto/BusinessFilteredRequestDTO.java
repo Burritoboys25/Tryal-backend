@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class BusinessFilteredRequestDTO {
     private List<Long> categoryIds;
-    private Integer minDuration;
+    private Integer duration;
     private List<Experience.SkillLevel> skillLevel;
     private Integer limit;
 }

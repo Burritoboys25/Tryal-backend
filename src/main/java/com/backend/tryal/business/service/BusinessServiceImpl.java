@@ -202,7 +202,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         List<Business> businesses = businessRepository.findFilteredBusinesses(
                 categoryIds,
-                filters.getMinDuration(),
+                filters.getDuration(),
                 skillLevel
         );
 
@@ -213,7 +213,7 @@ public class BusinessServiceImpl implements BusinessService {
 
             for (Experience experience : business.getExperiences()) {
                 boolean matchesSkill = skillLevel == null || skillLevel.contains(experience.getSkillLevel());
-                boolean matchesDuration = filters.getMinDuration() == null || experience.getDuration() <= filters.getMinDuration();
+                boolean matchesDuration = filters.getDuration() == null || experience.getDuration() <= filters.getDuration();
 
                 boolean matchesCategory = false;
                 if (categoryIds == null) {
