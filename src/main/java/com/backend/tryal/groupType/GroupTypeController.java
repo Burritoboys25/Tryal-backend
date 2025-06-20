@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/groupType")
+@RequestMapping("/api/groupTypes")
 public class GroupTypeController {
     private final GroupTypeService groupTypeService;
 
-    public GroupTypeController(GroupTypeService groupTypeService, GroupTypeService groupTypeService1) {
+    public GroupTypeController(GroupTypeService groupTypeService) {
         this.groupTypeService = groupTypeService;
     }
 
