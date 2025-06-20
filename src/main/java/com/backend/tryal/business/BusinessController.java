@@ -112,14 +112,21 @@ public class BusinessController {
         }
     }
 
-    @PostMapping("/filter")
-    public ResponseEntity<BusinessListResponse> getFilteredBusinesses( @RequestBody BusinessFilteredRequestDTO filters, @RequestParam(required = false) Integer limit) {
-        if (limit != null) {
-            filters.setLimit(limit);
-        }
+    @GetMapping("/filter")
+    public ResponseEntity<BusinessListResponse> getFilteredBusinesses(
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) Integer duration,
+            @RequestParam(required = false) List<Experience.SkillLevel> skillLevel,
+            @RequestParam(required = false) Integer limit
+    ) {
+        BusinessFilteredRequestDTO filters = new BusinessFilteredRequestDTO();
+        filters.setCategoryIds(categoryIds);
+        filters.setSkillLevel(skillLevel);
+        filters.setDuration(duration);
+        filters.setLimit(limit);
+
         try {
             List<BusinessFilteredResponseDTO> result = businessService.getFilteredBusinesses(filters);
-
             if (result.isEmpty()) {
                 return new ResponseEntity<>(
                         new BusinessListResponse(result, "No business matched the search criteria. Don't worry it works."),
