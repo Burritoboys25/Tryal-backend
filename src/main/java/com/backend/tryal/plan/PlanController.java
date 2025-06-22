@@ -52,7 +52,7 @@ public class PlanController {
 
     // Create Plan
     @PostMapping()
-    public ResponseEntity<Plan> createUser(@RequestBody Plan plan) {
+    public ResponseEntity<Plan> createPlan(@RequestBody Plan plan) {
         try{
             Plan newPlan = planService.createPlan(plan);
             return new ResponseEntity<>(newPlan, HttpStatus.CREATED);
