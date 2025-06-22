@@ -18,13 +18,20 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
 
     @Query("SELECT DISTINCT b FROM Business b " +
             "JOIN b.experiences e " +
-            "JOIN e.categories c " +
-            "WHERE (:categoryIds IS NULL OR c.categoryId IN :categoryIds) " +
+            "JOIN e.categories ec " +
+            "JOIN e.groupTypes gt " +
+            "WHERE (:categoryIds IS NULL OR ec.categoryId IN :categoryIds) " +
+            "AND (:groupTypeIds IS NULL OR gt.groupTypeId = :groupTypeIds) " +
+            "AND (:skillLevels IS NULL OR e.skillLevel IN :skillLevels) " +
             "AND (:duration IS NULL OR e.duration <= :duration) " +
-            "AND (:skillLevel IS NULL OR e.skillLevel IN :skillLevel)")
+            "AND (:creditsMin IS NULL OR e.creditPrice >= :creditsMin) " +
+            "AND (:creditsMax IS NULL OR e.creditPrice <= :creditsMax)")
     List<Business> findFilteredBusinesses(
             @Param("categoryIds") List<Long> categoryIds,
+            @Param("groupTypeIds") Integer groupTypeIds,
+            @Param("skillLevels") List<Experience.SkillLevel> skillLevels,
             @Param("duration") Integer duration,
-            @Param("skillLevel") List<Experience.SkillLevel> skillLevel
+            @Param("creditsMin") Integer creditsMin,
+            @Param("creditsMax") Integer creditsMax
     );
 }

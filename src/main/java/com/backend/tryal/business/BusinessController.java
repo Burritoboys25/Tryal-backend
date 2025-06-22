@@ -115,14 +115,20 @@ public class BusinessController {
     @GetMapping("/filter")
     public ResponseEntity<BusinessListResponse> getFilteredBusinesses(
             @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) Integer groupTypeIds,
             @RequestParam(required = false) Integer duration,
             @RequestParam(required = false) List<Experience.SkillLevel> skillLevel,
-            @RequestParam(required = false) Integer limit
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer creditsMin,
+            @RequestParam(required = false) Integer creditsMax
     ) {
         BusinessFilteredRequestDTO filters = new BusinessFilteredRequestDTO();
         filters.setCategoryIds(categoryIds);
+        filters.setGroupTypeIds(groupTypeIds);
         filters.setSkillLevel(skillLevel);
         filters.setDuration(duration);
+        filters.setCreditsMin(creditsMin);
+        filters.setCreditsMax(creditsMax);
         filters.setLimit(limit);
 
         try {
