@@ -1,6 +1,5 @@
 package com.backend.tryal.business.dto;
 
-import com.backend.tryal.category.dto.FilteredCategoryDTO;
 import com.backend.tryal.experience.Experience;
 import lombok.Data;
 
@@ -14,13 +13,8 @@ public class BusinessFilteredResponseDTO {
     private String address;
     private Double latitude;
     private Double longitude;
-    List<FilteredExperience> filteredExperiences;
-
-    @Data
-    public static class FilteredExperience {
-        private Integer duration;
-        private Experience.SkillLevel skillLevel;
-        private List<FilteredCategoryDTO> categories;
-    }
+    private List<String> categories;
+    private List<Experience.SkillLevel> skillLevels;
+    private Integer minCredits;
+    private Integer maxCredits;
 }
-
