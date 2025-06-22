@@ -5,11 +5,9 @@ import com.backend.tryal.business.dto.BusinessDTO;
 import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
 import com.backend.tryal.business.dto.BusinessSignupDTO;
 import com.backend.tryal.category.Category;
-import com.backend.tryal.category.dto.FilteredCategoryDTO;
 import com.backend.tryal.experience.Experience;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BusinessMapper {
     public static BusinessDTO mapBusinessDTO(Business business) {
@@ -37,27 +35,7 @@ public class BusinessMapper {
 
     // Private method used with mapFilteredResponse below. Maps categories to experience. Experience DTO is then added to
     // Business filter response
-    private static BusinessFilteredResponseDTO.FilteredExperience getFilteredExperience(Experience e) {
-        BusinessFilteredResponseDTO.FilteredExperience expDto = new BusinessFilteredResponseDTO.FilteredExperience();
-        expDto.setSkillLevel(e.getSkillLevel());
-        expDto.setDuration(e.getDuration());
-
-        // Map Category name and description to experience
-        List<FilteredCategoryDTO> categoryDTOs = new ArrayList<>();
-        for (Category cat: e.getCategories()) {
-            FilteredCategoryDTO catDto = new FilteredCategoryDTO();
-            catDto.setName(cat.getName());
-            catDto.setDescription(cat.getDescription());
-            categoryDTOs.add(catDto);
-        }
-
-        expDto.setCategories(categoryDTOs);
-        return expDto;
-    }
-
-    // Maps the experience to business. Returns the response when filtering for businesses on explore page.
-    public static BusinessFilteredResponseDTO mapFilteredResponse(Business business, List<Experience> experiences) {
-
+    public static BusinessFilteredResponseDTO mapToBusinessFilteredResponseDTO(Business business, List<Experience> filteredExperiences){
         BusinessFilteredResponseDTO dto = new BusinessFilteredResponseDTO();
         dto.setBusinessId(business.getBusinessId());
         dto.setName(business.getName());
@@ -65,13 +43,26 @@ public class BusinessMapper {
         dto.setLatitude(business.getLatitude());
         dto.setLongitude(business.getLongitude());
 
-        List<BusinessFilteredResponseDTO.FilteredExperience> experienceDTOs = new ArrayList<>();
+        // Collect unique category names
+        Set<String> categoryNames = filteredExperiences.stream()
+                .flatMap(experience -> experience.getCategories().stream())
+                .map(Category :: getName)
+                .collect(Collectors.toSet());
+        dto.setCategories(new ArrayList<>(categoryNames));
 
-        for (Experience e: experiences) {
-            BusinessFilteredResponseDTO.FilteredExperience expDto = getFilteredExperience(e);
-            experienceDTOs.add(expDto);
-        }
-        dto.setFilteredExperiences(experienceDTOs);
+        // Collect unique skill levels
+        Set<Experience.SkillLevel> skillLevels = filteredExperiences.stream()
+                .map(Experience :: getSkillLevel)
+                .collect(Collectors.toSet());
+        dto.setSkillLevels(new ArrayList<>(skillLevels));
+
+        // Calculate min and max
+        List<Integer> creditValues = filteredExperiences.stream()
+                .map(Experience::getCreditPrice)
+                .toList();
+        dto.setMinCredits(Collections.min(creditValues));
+        dto.setMaxCredits(Collections.max(creditValues));
+
         return dto;
     }
 }

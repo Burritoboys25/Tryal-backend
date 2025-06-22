@@ -2,10 +2,7 @@ package com.backend.tryal.business.service;
 
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
-import com.backend.tryal.business.dto.BusinessFilteredRequestDTO;
-import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
-import com.backend.tryal.business.dto.BusinessLoginDTO;
-import com.backend.tryal.business.dto.BusinessSignupDTO;
+import com.backend.tryal.business.dto.*;
 import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.category.Category;
 import com.backend.tryal.experience.Experience;
@@ -202,8 +199,11 @@ public class BusinessServiceImpl implements BusinessService {
 
         List<Business> businesses = businessRepository.findFilteredBusinesses(
                 categoryIds,
+                filters.getGroupTypeIds(),
+                skillLevel,
                 filters.getDuration(),
-                skillLevel
+                filters.getCreditsMin(),
+                filters.getCreditsMax()
         );
 
         List<BusinessFilteredResponseDTO> response = new ArrayList<>();
@@ -234,7 +234,7 @@ public class BusinessServiceImpl implements BusinessService {
             }
             // Only include businesses that still have at least one valid experience
             if (!filteredExperiences.isEmpty()) {
-                BusinessFilteredResponseDTO dto = BusinessMapper.mapFilteredResponse(business, filteredExperiences);
+                BusinessFilteredResponseDTO dto = BusinessMapper.mapToBusinessFilteredResponseDTO(business, filteredExperiences);
                 response.add(dto);
             }
 
