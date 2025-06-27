@@ -36,7 +36,7 @@ public class CategoryController {
 
     // get Category by ID
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable UUID categoryId) {
+    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId) {
         try {
             Category category = categoryService.getCategoryById(categoryId);
 
@@ -63,7 +63,7 @@ public class CategoryController {
 
     // Patch Category
     @PatchMapping("/{categoryId}")
-    public ResponseEntity<Category> updateCategoryById(@RequestBody Category category, @PathVariable UUID categoryId) {
+    public ResponseEntity<Category> updateCategoryById(@RequestBody Category category, @PathVariable Long categoryId) {
         try {
             Category updatedCategory = categoryService.updateCategoryById(categoryId, category);
 
@@ -79,7 +79,7 @@ public class CategoryController {
 
     // Delete Category
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<String> deleteCategoryById(@PathVariable UUID categoryId) {
+    public ResponseEntity<String> deleteCategoryById(@PathVariable Long categoryId) {
         try {
             if (categoryService.deleteCategoryById(categoryId)) {
                 return new ResponseEntity<>("Category deleted successfully.", HttpStatus.OK);

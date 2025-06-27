@@ -1,4 +1,4 @@
-package com.backend.tryal.category;
+package com.backend.tryal.groupType;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "group_types")
+public class GroupType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "category_id")
-    private Long categoryId;
+    @Column(name = "group_type_id")
+    private Long groupTypeId;
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;
@@ -26,14 +26,13 @@ public class Category {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(updatable = false, name = "updated_at")
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public Category() {
-    }
+    public GroupType() {}
 
-    public Category(String name, String description) {
+    public GroupType(String name, String description) {
         this.name = name;
         this.description = description;
     }

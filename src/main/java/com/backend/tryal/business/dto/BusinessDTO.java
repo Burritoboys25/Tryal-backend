@@ -1,8 +1,5 @@
 package com.backend.tryal.business.dto;
 
-import com.backend.tryal.experience.Experience;
-
-import java.util.List;
 import java.util.UUID;
 
 public class BusinessDTO {
@@ -13,7 +10,6 @@ public class BusinessDTO {
     private String website;
     private String address;
     private String phoneNumber;
-    private List<Experience> experiences;
 
     public UUID getBusinessId() {
         return businessId;
@@ -71,11 +67,4 @@ public class BusinessDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<Experience> getExperiences() {
-        return experiences;
-    }
-
-    public void setExperiences(List<Experience> experiences) {
-        this.experiences = experiences;
-    }
 }
