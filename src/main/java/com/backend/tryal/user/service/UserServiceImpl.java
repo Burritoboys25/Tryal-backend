@@ -1,5 +1,6 @@
 package com.backend.tryal.user.service;
 
+import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
@@ -40,6 +41,9 @@ public class UserServiceImpl implements UserService {
     @Qualifier("customUserDetailsService")
     UserDetailsService userDetailsService;
 
+    @Autowired
+    BusinessRepository businessRepository;
+
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
@@ -57,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(UserSignupDTO signupDTO) throws IllegalArgumentException{
-        if (userRepository.existsByEmail(signupDTO.getEmail())) {
+        if (userRepository.existsByEmail(signupDTO.getEmail()) || businessRepository.existsByEmail(signupDTO.getEmail())) {
             throw new IllegalArgumentException("Email is already taken.");
         }
 
