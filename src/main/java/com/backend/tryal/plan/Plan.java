@@ -40,6 +40,9 @@ public class Plan {
     @Column(name = "stripe_product_id")
     private String stripeProductId;
 
+    @Column(name = "stripe_price_id")
+    private String stripePriceId;
+
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -51,7 +54,7 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(String name, String description, Double price, Integer monthlyCredits, Boolean rolloverCreditsAllowed, Boolean isActive, String stripeProductId) {
+    public Plan(String name, String description, Double price, Integer monthlyCredits, Boolean rolloverCreditsAllowed, Boolean isActive, String stripeProductId, String stripePriceId) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -59,6 +62,7 @@ public class Plan {
         this.rolloverCreditsAllowed = rolloverCreditsAllowed;
         this.isActive = isActive;
         this.stripeProductId = stripeProductId;
+        this.stripePriceId = stripePriceId;
     }
 
     public UUID getPlanId() {
@@ -123,5 +127,13 @@ public class Plan {
 
     public void setStripeProductId(String stripeProductId) {
         this.stripeProductId = stripeProductId;
+    }
+
+    public String getStripePriceId() {
+        return stripePriceId;
+    }
+
+    public void setStripePriceId(String stripePriceId) {
+        this.stripePriceId = stripePriceId;
     }
 }
