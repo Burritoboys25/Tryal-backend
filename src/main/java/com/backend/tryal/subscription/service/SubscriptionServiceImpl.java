@@ -1,7 +1,10 @@
 package com.backend.tryal.subscription.service;
 
+import com.backend.tryal.plan.Plan;
+import com.backend.tryal.plan.PlanRepository;
 import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.subscription.SubscriptionRepository;
+import com.backend.tryal.subscription.dto.SubscriptionDTO;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -13,10 +16,12 @@ import java.util.UUID;
 public class SubscriptionServiceImpl implements SubscriptionService{
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
+    private final PlanRepository planRepository;
 
-    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserRepository userRepository) {
+    public SubscriptionServiceImpl(SubscriptionRepository subscriptionRepository, UserRepository userRepository, PlanRepository planRepository) {
         this.subscriptionRepository = subscriptionRepository;
         this.userRepository = userRepository;
+        this.planRepository = planRepository;
     }
     @Override
     public List<Subscription> getAllSubscriptions() {
@@ -39,36 +44,46 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public Subscription createSubscription(UUID userId, Subscription subscription) {
+    public Subscription createSubscription(UUID userId, SubscriptionDTO subscriptionRequestDTO) {
         User user = userRepository.findById(userId).orElse(null);
+        Plan plan = planRepository.findById(subscriptionRequestDTO.getPlanId()).orElse(null);
 
         if(user == null){
             return null;
+        }else if(plan == null){
+            return null;
         }
 
+        Subscription subscription = new Subscription();
         subscription.setUser(user);
+        subscription.setPlan(plan);
+        subscription.setSubscriptionStatus(subscriptionRequestDTO.getSubscriptionStatus());
+        subscription.setAutoRenew(subscriptionRequestDTO.getAutoRenew());
+        subscription.setStripeSubscriptionId(subscriptionRequestDTO.getStripeSubscriptionId());
+        subscription.setStartAt(subscriptionRequestDTO.getStartAt());
+        subscription.setEndAt(subscriptionRequestDTO.getEndAt());
 
         return subscriptionRepository.save(subscription);
     }
 
     @Override
-    public Subscription updateSubscriptionById(UUID subscriptionId, Subscription subscription) {
-        if(getSubscriptionById(subscriptionId) == null || subscription.getAutoRenew() == null || subscription.getEndAt() == null || subscription.getSubscriptionStatus() == null){
+    public Subscription updateSubscriptionById(UUID subscriptionId, SubscriptionDTO subscriptionRequestDTO) {
+        if(getSubscriptionById(subscriptionId) == null || subscriptionRequestDTO.getAutoRenew() == null || subscriptionRequestDTO.getEndAt() == null || subscriptionRequestDTO.getSubscriptionStatus() == null){
             return null;
         }
 
         Subscription updatedSubscription = getSubscriptionById(subscriptionId);
 
-        if(subscription.getSubscriptionStatus() != null){
-            updatedSubscription.setSubscriptionStatus(subscription.getSubscriptionStatus());
+        if(subscriptionRequestDTO.getSubscriptionStatus() != null){
+            updatedSubscription.setSubscriptionStatus(subscriptionRequestDTO.getSubscriptionStatus());
         }
 
-        if(subscription.getAutoRenew() != null){
-            updatedSubscription.setAutoRenew(subscription.getAutoRenew());
+        if(subscriptionRequestDTO.getAutoRenew() != null){
+            updatedSubscription.setAutoRenew(subscriptionRequestDTO.getAutoRenew());
         }
 
-        if(subscription.getEndAt() != null){
-            updatedSubscription.setEndAt(subscription.getEndAt());
+        if(subscriptionRequestDTO.getEndAt() != null){
+            updatedSubscription.setEndAt(subscriptionRequestDTO.getEndAt());
         }
 
         return subscriptionRepository.save(updatedSubscription);

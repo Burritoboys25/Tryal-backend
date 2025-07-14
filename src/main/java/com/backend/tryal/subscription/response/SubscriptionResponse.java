@@ -6,6 +6,9 @@ public class SubscriptionResponse {
     private SubscriptionDTO subscriptionDTO;
     private String message;
 
+    public SubscriptionResponse() {
+    }
+
     public SubscriptionResponse(SubscriptionDTO subscriptionDTO, String message){
         this.subscriptionDTO = subscriptionDTO;
         this.message = message;

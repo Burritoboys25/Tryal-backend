@@ -12,12 +12,13 @@ public class SubscriptionDTO {
     private UUID planId;
     private Subscription.SubscriptionStatus subscriptionStatus;
     private Boolean autoRenew;
+    private String stripeSubscriptionId;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 
     public SubscriptionDTO(){}
 
-    public SubscriptionDTO(UUID subscriptionId, UUID userId, UUID planId, Subscription.SubscriptionStatus subscriptionStatus, Boolean autoRenew, LocalDateTime startAt, LocalDateTime endAt) {
+    public SubscriptionDTO(UUID subscriptionId, UUID userId, UUID planId, Subscription.SubscriptionStatus subscriptionStatus, Boolean autoRenew, String stripeSubscriptionId, LocalDateTime startAt, LocalDateTime endAt) {
         this.subscriptionId = subscriptionId;
         this.userId = userId;
         this.planId = planId;
@@ -25,6 +26,7 @@ public class SubscriptionDTO {
         this.autoRenew = autoRenew;
         this.startAt = startAt;
         this.endAt = endAt;
+        this.stripeSubscriptionId = stripeSubscriptionId;
     }
 
     public UUID getSubscriptionId() {
@@ -81,5 +83,13 @@ public class SubscriptionDTO {
 
     public void setEndAt(LocalDateTime endAt) {
         this.endAt = endAt;
+    }
+
+    public String getStripeSubscriptionId() {
+        return stripeSubscriptionId;
+    }
+
+    public void setStripeSubscriptionId(String stripeSubscriptionId) {
+        this.stripeSubscriptionId = stripeSubscriptionId;
     }
 }

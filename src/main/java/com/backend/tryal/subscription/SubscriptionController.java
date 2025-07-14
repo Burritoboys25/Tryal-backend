@@ -1,7 +1,5 @@
 package com.backend.tryal.subscription;
 
-import com.backend.tryal.experience.Experience;
-import com.backend.tryal.experience.response.ExperienceResponse;
 import com.backend.tryal.subscription.dto.SubscriptionDTO;
 import com.backend.tryal.subscription.mapper.SubscriptionMapper;
 import com.backend.tryal.subscription.response.SubscriptionResponse;
@@ -96,13 +94,13 @@ public class SubscriptionController {
 
     //create a user subscription
     @PostMapping("/users/{userId}")
-    public ResponseEntity<SubscriptionResponse> createSubscription(@PathVariable UUID userId, @RequestBody Subscription subscription) {
+    public ResponseEntity<SubscriptionResponse> createSubscription(@PathVariable UUID userId, @RequestBody SubscriptionDTO subscriptionRequestDTO) {
         try{
             SubscriptionDTO subscriptionDTO = SubscriptionMapper
-                    .mapSubscriptionDTO(userId, subscriptionService.createSubscription(userId, subscription));
+                    .mapSubscriptionDTO(userId, subscriptionService.createSubscription(userId, subscriptionRequestDTO));
 
             if(subscriptionDTO == null){
-                return new ResponseEntity<>(new SubscriptionResponse(null, "User with id: " + userId +  " not found."), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(new SubscriptionResponse(null, "User or plan not found."), HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(new SubscriptionResponse(subscriptionDTO, "Subscription created successfully."), HttpStatus.CREATED);
@@ -113,9 +111,9 @@ public class SubscriptionController {
 
     //patch subscription
     @PatchMapping("/{subscriptionId}")
-    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable UUID subscriptionId, @RequestBody Subscription subscription) {
+    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable UUID subscriptionId, @RequestBody SubscriptionDTO subscriptionRequestDTO) {
         try{
-            Subscription updatedSubscription = subscriptionService.updateSubscriptionById(subscriptionId, subscription);
+            Subscription updatedSubscription = subscriptionService.updateSubscriptionById(subscriptionId, subscriptionRequestDTO);
 
             if(updatedSubscription == null){
                 return new ResponseEntity<>(new SubscriptionResponse(null, "Subscription not found or the update request was invalid."), HttpStatus.NOT_FOUND);
