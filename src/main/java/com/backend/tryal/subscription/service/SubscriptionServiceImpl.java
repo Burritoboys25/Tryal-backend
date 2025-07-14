@@ -29,48 +29,48 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public List<Subscription> getSubscriptionsByUser(UUID userId, Boolean activeSubscription) {
-        if (activeSubscription == null) {
-            return subscriptionRepository.findByUserId(userId);
-        }
+    public List<Subscription> getSubscriptionsByUser(UUID userId) {
+        return subscriptionRepository.findByUserId(userId);
+    }
 
+    @Override
+    public List<Subscription> getSubscriptionsByUser(UUID userId, Boolean activeSubscription) {
         return subscriptionRepository.findByUserIdAndActive(userId, activeSubscription);
     }
 
     @Override
-    public Subscription createSubscription(UUID userId, Subscription subcriptionRequestDTO) {
+    public Subscription createSubscription(UUID userId, Subscription subscription) {
         User user = userRepository.findById(userId).orElse(null);
 
         if(user == null){
             return null;
         }
 
-        //TODO:
-        //Subscription subscription = SubscriptionMapper.mapRequestDTOToSubscription(subcriptionRequestDTO, user);
+        subscription.setUser(user);
 
-        return subscriptionRepository.save(subcriptionRequestDTO);
+        return subscriptionRepository.save(subscription);
     }
 
     @Override
-    public Subscription updateSubscriptionById(UUID subscriptionId, Subscription subcriptionRequestDTO) {
-        if(getSubscriptionById(subscriptionId) != null){
-            Subscription updatedSubscription = getSubscriptionById(subscriptionId);
-
-            if(subcriptionRequestDTO.getSubscriptionStatus() != null){
-                updatedSubscription.setSubscriptionStatus(subcriptionRequestDTO.getSubscriptionStatus());
-            }
-
-            if(subcriptionRequestDTO.getAutoRenew() != null){
-                updatedSubscription.setAutoRenew(subcriptionRequestDTO.getAutoRenew());
-            }
-
-            if(subcriptionRequestDTO.getEndAt() != null){
-                updatedSubscription.setEndAt(subcriptionRequestDTO.getEndAt());
-            }
-
-            return subscriptionRepository.save(updatedSubscription);
+    public Subscription updateSubscriptionById(UUID subscriptionId, Subscription subscription) {
+        if(getSubscriptionById(subscriptionId) == null || subscription.getAutoRenew() == null || subscription.getEndAt() == null || subscription.getSubscriptionStatus() == null){
+            return null;
         }
 
-        return null;
+        Subscription updatedSubscription = getSubscriptionById(subscriptionId);
+
+        if(subscription.getSubscriptionStatus() != null){
+            updatedSubscription.setSubscriptionStatus(subscription.getSubscriptionStatus());
+        }
+
+        if(subscription.getAutoRenew() != null){
+            updatedSubscription.setAutoRenew(subscription.getAutoRenew());
+        }
+
+        if(subscription.getEndAt() != null){
+            updatedSubscription.setEndAt(subscription.getEndAt());
+        }
+
+        return subscriptionRepository.save(updatedSubscription);
     }
 }

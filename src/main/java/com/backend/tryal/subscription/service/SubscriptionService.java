@@ -12,7 +12,8 @@ public interface SubscriptionService {
     List<Subscription> getAllSubscriptions();
 
     Subscription getSubscriptionById(UUID subscriptionId);
+    List<Subscription> getSubscriptionsByUser(UUID userId);
     List<Subscription> getSubscriptionsByUser(UUID userId, Boolean activeSubscription);
-    Subscription createSubscription(UUID userId, Subscription subcriptionRequestDTO);
+    Subscription createSubscription(UUID userId, Subscription subscription);
     Subscription updateSubscriptionById(UUID subscriptionId, Subscription subcriptionRequestDTO);
 }
