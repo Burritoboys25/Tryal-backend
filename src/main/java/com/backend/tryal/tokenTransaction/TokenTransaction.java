@@ -1,6 +1,5 @@
 package com.backend.tryal.tokenTransaction;
 
-import com.backend.tryal.plan.Plan;
 import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -30,12 +29,12 @@ public class TokenTransaction {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "amount", nullable = true)
-    private Long amount;
+    @Column(name = "creditAmount", nullable = true)
+    private Long creditAmount;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "reason", nullable = true)
-    private TokenTransaction.TransactionReason reason;
+    @Column(name = "transactionReason", nullable = true)
+    private TokenTransaction.TransactionReason transactionReason;
 
     //TODO: booking_id
     //@JsonBackReference
@@ -51,4 +50,55 @@ public class TokenTransaction {
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public TokenTransaction() {
+    }
+
+    public TokenTransaction(UUID tokenTransId, User user, Long creditAmount, TransactionReason transactionReason, Subscription subscription) {
+        this.tokenTransId = tokenTransId;
+        this.user = user;
+        this.creditAmount = creditAmount;
+        this.transactionReason = transactionReason;
+        this.subscription = subscription;
+    }
+
+    public UUID getTokenTransId() {
+        return tokenTransId;
+    }
+
+    public void setTokenTransId(UUID tokenTransId) {
+        this.tokenTransId = tokenTransId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Long getCreditAmount() {
+        return creditAmount;
+    }
+
+    public void setCreditAmount(Long creditAmount) {
+        this.creditAmount = creditAmount;
+    }
+
+    public TransactionReason getTransactionReason() {
+        return transactionReason;
+    }
+
+    public void setTransactionReason(TransactionReason transactionReason) {
+        this.transactionReason = transactionReason;
+    }
+
+    public Subscription getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
+    }
 }
