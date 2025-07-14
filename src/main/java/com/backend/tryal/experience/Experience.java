@@ -98,4 +98,11 @@ public class Experience {
         this.categories = categories;
         this.groupTypes = groupTypes;
     }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
 }
