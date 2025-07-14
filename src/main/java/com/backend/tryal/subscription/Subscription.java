@@ -1,6 +1,5 @@
 package com.backend.tryal.subscription;
 
-import com.backend.tryal.experience.Experience;
 import com.backend.tryal.plan.Plan;
 import com.backend.tryal.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -12,6 +11,8 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
+@Table(name = "subscriptions")
 public class Subscription {
     public enum SubscriptionStatus {
         PENDING,
