@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -11,6 +12,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "plans")
 public class Plan {
@@ -58,70 +60,6 @@ public class Plan {
         this.monthlyCredits = monthlyCredits;
         this.rolloverCreditsAllowed = rolloverCreditsAllowed;
         this.isActive = isActive;
-        this.stripeProductId = stripeProductId;
-    }
-
-    public UUID getPlanId() {
-        return planId;
-    }
-
-    public void setPlanId(UUID planId) {
-        this.planId = planId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Integer getMonthlyCredits() {
-        return monthlyCredits;
-    }
-
-    public void setMonthlyCredits(Integer monthlyCredits) {
-        this.monthlyCredits = monthlyCredits;
-    }
-
-    public Boolean getRolloverCreditsAllowed() {
-        return rolloverCreditsAllowed;
-    }
-
-    public void setRolloverCreditsAllowed(Boolean rolloverCreditsAllowed) {
-        this.rolloverCreditsAllowed = rolloverCreditsAllowed;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public String getStripeProductId() {
-        return stripeProductId;
-    }
-
-    public void setStripeProductId(String stripeProductId) {
         this.stripeProductId = stripeProductId;
     }
 }

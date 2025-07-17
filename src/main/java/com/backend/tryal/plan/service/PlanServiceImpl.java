@@ -57,8 +57,8 @@ public class PlanServiceImpl implements PlanService {
                 updatedPlan.setRolloverCreditsAllowed(plan.getRolloverCreditsAllowed());
             }
 
-            if (plan.getActive() != null) {
-                updatedPlan.setActive(plan.getActive());
+            if (plan.getIsActive() != null) {
+                updatedPlan.setIsActive(plan.getIsActive());
             }
 
             if (plan.getStripeProductId() != null) {
