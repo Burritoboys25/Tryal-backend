@@ -73,8 +73,8 @@ public class ExperienceServiceImpl implements ExperienceService{
                 updatedExperience.setCreditPrice(experienceRequestDTO.getCreditPrice());
             }
 
-            if(experienceRequestDTO.getActive() != null){
-                updatedExperience.setActive(experienceRequestDTO.getActive());
+            if(experienceRequestDTO.getIsActive() != null){
+                updatedExperience.setIsActive(experienceRequestDTO.getIsActive());
             }
 
             return experienceRepository.save(updatedExperience);
