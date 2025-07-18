@@ -9,6 +9,7 @@ import com.backend.tryal.experience.Experience;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
+import com.backend.tryal.user.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +44,9 @@ public class BusinessServiceImpl implements BusinessService {
     @Qualifier("customBusinessDetailsService")
     UserDetailsService userDetailsService;
 
+    @Autowired
+    UserRepository userRepository;
+
     public BusinessServiceImpl(BusinessRepository businessRepository) {
         this.businessRepository = businessRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
@@ -71,7 +75,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Business createBusiness(BusinessSignupDTO signupDTO) throws IllegalArgumentException {
-        if (businessRepository.existsByEmail(signupDTO.getEmail())) {
+        if (businessRepository.existsByEmail(signupDTO.getEmail()) || userRepository.existsByEmail(signupDTO.getEmail())) {
             throw new IllegalArgumentException("Email is already taken.");
         }
 

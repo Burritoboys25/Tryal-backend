@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PlanService {
-    List<Plan> getAllPlans();
+    List<Plan> getAllActivePlans();
     Plan getPlanById(UUID planId);
     Plan createPlan(Plan plan);
-    Plan updatePlanById(UUID planId, Plan plan);
-    boolean deletePlanById(UUID planId);
+    boolean deactivatePlanById(UUID planId);
+    boolean reactivatePlanById(UUID planId);
 }
