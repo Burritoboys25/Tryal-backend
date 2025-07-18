@@ -21,11 +21,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BusinessServiceImpl implements BusinessService {
@@ -248,4 +248,17 @@ public class BusinessServiceImpl implements BusinessService {
         return response;
     }
 
+    @Override
+    public List<String> getBusinessCategories(UUID businessId) {
+        List<Experience> experiences = getAllBusinessExperiences(businessId);
+        if (experiences == null || experiences.isEmpty()) {
+            return List.of(); // Return an empty list if no experiences are found
+        }
+
+        return experiences.stream()
+                .flatMap(experience -> experience.getCategories().stream())
+                .map(Category::getName)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }

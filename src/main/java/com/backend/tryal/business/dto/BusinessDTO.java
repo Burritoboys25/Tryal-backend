@@ -10,6 +10,8 @@ public class BusinessDTO {
     private String website;
     private String address;
     private String phoneNumber;
+    private Integer minCredits;
+    private Integer maxCredits;
 
     public UUID getBusinessId() {
         return businessId;
@@ -67,4 +69,19 @@ public class BusinessDTO {
         this.phoneNumber = phoneNumber;
     }
 
+    public Integer getMinCredits() {
+        return minCredits;
+    }
+
+    public void setMinCredits(Integer minCredits) {
+        this.minCredits = minCredits;
+    }
+
+    public Integer getMaxCredits() {
+        return maxCredits;
+    }
+
+    public void setMaxCredits(Integer maxCredits) {
+        this.maxCredits = maxCredits;
+    }
 }

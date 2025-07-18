@@ -1,8 +1,3 @@
--- Mock sql data. To run this file on build uncomment out these lines in application.properties
--- #spring.jpa.defer-datasource-initialization=true
--- #spring.sql.init.mode=always
-
-
 -- Categories
 INSERT INTO categories (category_id, name, description) VALUES
   (1, 'Arts & Crafts', 'Creative, hands-on art activities'),
@@ -15,6 +10,13 @@ INSERT INTO categories (category_id, name, description) VALUES
   (8, 'Wellness & Mindfulness', 'Mindful activities and relaxation'),
   (9, 'Historical & Cultural', 'Events focused on tradition and history'),
   (10, 'Boozy (21+)', 'Alcohol-focused experiences for adults');
+
+  -- Group Types Table Insert
+INSERT INTO group_types (group_type_id, name, description) VALUES
+  (1, 'Solo Friendly', 'Great for individuals who want to explore experiences on their own'),
+  (2, 'Couples & Date Night', 'Perfect for romantic evenings or bonding as a pair'),
+  (3, 'Family Friendly', 'Ideal for parents, kids, and multi-generational fun'),
+  (4, 'Group & Team Building', 'Designed for friend groups, work teams, or social circles');
 
 
 INSERT INTO businesses (business_id, name, longitude, latitude, email, address, phone_number, website) VALUES
@@ -162,3 +164,73 @@ INSERT INTO experiences (experience_id, business_id, experience_name, descriptio
   ('47685f54-1eb7-4c68-9281-a37baf6675a8', 9),
   ('645aff81-6f12-4fb8-8559-f05a8a7ae6b2', 1),
   ('b080741a-9d41-47d4-a4c7-7d29eb4b3240', 5);
+
+  INSERT INTO experience_group_types (experience_id, group_type_id) VALUES
+  ('1676081d-f345-4d0e-af47-57abfec8a658', 3),
+  ('0e967892-44f0-4e0c-8e97-03da8f2ad99e', 4),
+  ('0e967892-44f0-4e0c-8e97-03da8f2ad99e', 3),
+  ('27685b7b-5238-4468-8312-f8de94c5ffc1', 2),
+  ('020d1759-85b7-4081-8aac-1dfeb94a839f', 2),
+  ('0e2d4ffe-0f13-4111-8715-a374cb5a571d', 1),
+  ('81d94171-707d-416c-9f82-9ea2f7447489', 4),
+  ('81d94171-707d-416c-9f82-9ea2f7447489', 1),
+  ('c40ed9a1-8c15-4661-8249-f57eb29b6a47', 4),
+  ('fe9797f7-506e-4a90-ad35-827b012e2733', 1),
+  ('367b9ab5-82c9-403c-b841-8d1baec31877', 4),
+  ('b48c0e62-2578-49e7-8e0a-852dcf441064', 3),
+  ('0b0111c0-e99c-474e-bd65-51a6bf75694e', 1),
+  ('377e08ee-cf0f-4822-968d-8ade925a8a80', 2),
+  ('ae56322d-b286-409c-b470-2b0c41462993', 1),
+  ('abb97f02-68d1-44fa-99e4-4e64fe1a6f8c', 2),
+  ('3830d172-2212-4889-9d8b-91e378522aaf', 3),
+  ('d7db72b2-466e-42b7-b97f-7184f9e7f0bc', 4),
+  ('d7db72b2-466e-42b7-b97f-7184f9e7f0bc', 2),
+  ('5e99ffb4-851b-429e-a1c4-e877e866286f', 2),
+  ('b68d4eb4-dd0d-422e-8c23-57f3f80f2fcd', 1),
+  ('d0f13547-47d0-48b3-897a-47bf9455fb58', 2),
+  ('861214d1-3664-4568-9421-0f1e72a11875', 1),
+  ('0b9f56e8-a38f-4dc5-b101-a18417c562b7', 1),
+  ('78d29898-8bcb-41fc-b49e-837a9cdb49d0', 1),
+  ('c9052f8e-b193-4eef-8553-dec860dcee15', 2),
+  ('c9052f8e-b193-4eef-8553-dec860dcee15', 1),
+  ('5da7e82a-5fbe-4ca0-81b4-9c9e261b6859', 2),
+  ('ad0bd2d2-b12c-4265-9891-d174d2c06e83', 1),
+  ('9e669fd2-83d9-4855-b2ac-cff249cc2874', 1),
+  ('0754dbe8-efc2-45ce-9e16-d82bb0803a1a', 1),
+  ('18665e4b-a0f3-4d31-97ca-20a558357dc1', 2),
+  ('25465315-8349-41e9-be78-f2ddedc81599', 3),
+  ('8851f484-0627-4e31-a3dd-f4390575e505', 4),
+  ('550f4d54-8a22-4418-b632-ec61209a568d', 2),
+  ('550f4d54-8a22-4418-b632-ec61209a568d', 3),
+  ('f6773307-7fb4-41e9-8026-180923dda4eb', 3),
+  ('b0f8dcb7-4615-4e82-a911-c297540ba0cd', 4),
+  ('851a45fa-175d-43e5-80c8-5baf01ac1656', 3),
+  ('4b48771e-9aef-4e1e-9825-7fc7152366c3', 3),
+  ('ea015913-4464-46bf-8239-81dc0f8c535f', 1),
+  ('1982832e-ce5d-4de0-a350-b2040f7c0fd6', 2),
+  ('a12b374e-e615-4325-8f39-90c3b76f90e7', 2),
+  ('a327941e-9886-43b8-b0f5-8d290598f8f5', 4),
+  ('e83db39a-3101-4742-8118-ff6b6938410a', 4),
+  ('dd6fc19f-136a-4430-8064-e9d30dab0ad6', 2),
+  ('8d30613a-f33c-4570-be9a-a08db81f765a', 1),
+  ('0d7f9d3e-b5a2-486b-b600-c2f0ca068cff', 1),
+  ('d745b22c-885e-4850-b78b-1af9d8ad4d64', 3),
+  ('4da7c0d1-88d6-46be-8dd3-5d4e62e9625f', 1),
+  ('fa11fbbe-d9d4-4bba-bf68-72615be38b63', 3),
+  ('5e36ae7d-a846-4b3b-9f4c-6737c59096e9', 1),
+  ('d64c0a3a-0c89-4525-b699-dc40b3386c9a', 1),
+  ('00677740-7187-4731-8703-13b9d4fef8e9', 3),
+  ('5343aeba-4578-4b6c-88ce-e0c7c396abfb', 2),
+  ('5343aeba-4578-4b6c-88ce-e0c7c396abfb', 1),
+  ('7cc9db48-7a7a-48a3-9a82-ac0b852f7548', 3),
+  ('35dc4bc3-2665-46f8-be00-bbd30e0ca823', 2),
+  ('a6cab9f0-3f55-4186-84db-9796143eee67', 2),
+  ('6707ad62-b50e-41ac-9d61-530003d3f5e2', 3),
+  ('69561a8f-6f45-46b0-942f-001321280d58', 2),
+  ('d891bc64-d39d-427f-990d-c096fa56e1f1', 4),
+  ('7ac29220-e019-40d2-9d68-93abd9c420c3', 2),
+  ('430cebb7-876e-4d42-9c21-26f3b6e0106a', 4),
+  ('5118f6a1-ba52-403b-9038-4b4c6419d5b7', 2),
+  ('47685f54-1eb7-4c68-9281-a37baf6675a8', 3),
+  ('645aff81-6f12-4fb8-8559-f05a8a7ae6b2', 1),
+  ('b080741a-9d41-47d4-a4c7-7d29eb4b3240', 2);
