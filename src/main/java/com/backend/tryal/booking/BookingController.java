@@ -1,6 +1,7 @@
 package com.backend.tryal.booking;
 
 import com.backend.tryal.booking.dto.BookingDTO;
+import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.booking.mapper.BookingMapper;
 import com.backend.tryal.booking.service.BookingService;
 import com.backend.tryal.booking.response.BookingResponse;
@@ -52,6 +53,22 @@ public class BookingController {
             BookingDTO bookingDTO = BookingMapper.mapBookingDto(booking);
 
             return new ResponseEntity<>(new BookingResponse(bookingDTO, "booking found."), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // get booking by ID
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<UserBookingDTO>> getUserBookings(@PathVariable UUID userId) {
+        try {
+            List<UserBookingDTO> userBookings = bookingService.getUserBookings(userId);
+
+            if (userBookings.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+
+            return new ResponseEntity<>(userBookings, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -4,6 +4,7 @@ import com.backend.tryal.booking.Booking;
 import com.backend.tryal.booking.BookingRepository;
 import com.backend.tryal.booking.dto.BookingDTO;
 import com.backend.tryal.booking.dto.BookingRequestDTO;
+import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.timeslot.Timeslot;
 import com.backend.tryal.user.User;
 
@@ -37,4 +38,6 @@ public class BookingMapper {
 
         return booking;
     }
+
+    //public static UserBookingDTO mapUserBookingDto(Booking)
 }

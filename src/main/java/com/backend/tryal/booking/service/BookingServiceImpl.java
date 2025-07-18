@@ -3,6 +3,7 @@ package com.backend.tryal.booking.service;
 import com.backend.tryal.booking.Booking;
 import com.backend.tryal.booking.BookingRepository;
 import com.backend.tryal.booking.dto.BookingRequestDTO;
+import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.booking.mapper.BookingMapper;
 import com.backend.tryal.timeslot.Timeslot;
 import com.backend.tryal.timeslot.TimeslotRepository;
@@ -33,6 +34,11 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking getBookingById(UUID bookingId) {
         return bookingRepository.findById(bookingId).orElse(null);
+    }
+
+    @Override
+    public List<UserBookingDTO> getUserBookings(UUID userId) {
+        return bookingRepository.findBookingByUserId(userId);
     }
 
     @Override
