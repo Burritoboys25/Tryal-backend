@@ -4,17 +4,19 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
 @Table(name = "categories")
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "category_id")
-    private Long categoryId;
+    private UUID categoryId;
 
     @Column(name = "name", unique = true, nullable = false)
     private String name;

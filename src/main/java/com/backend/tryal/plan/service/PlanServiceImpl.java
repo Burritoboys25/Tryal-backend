@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PlanServiceImpl implements PlanService {
@@ -16,8 +17,8 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<Plan> getAllPlans() {
-        return planRepository.findAll();
+    public List<Plan> getAllActivePlans() {
+        return planRepository.findAll().stream().filter(plan -> plan.getActive() == true).collect(Collectors.toList());
     }
 
     @Override
@@ -33,51 +34,30 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public Plan updatePlanById(UUID planId, Plan plan) {
-        if (getPlanById(planId) != null) {
-            Plan updatedPlan = getPlanById(planId);
+    public boolean deactivatePlanById(UUID planId) {
+        Plan plan = getPlanById(planId);
 
-            if (plan.getName() != null) {
-                updatedPlan.setName(plan.getName());
-            }
-
-            if (plan.getDescription() != null) {
-                updatedPlan.setDescription(plan.getDescription());
-            }
-
-            if (plan.getPrice() != null) {
-                updatedPlan.setPrice(plan.getPrice());
-            }
-
-            if (plan.getMonthlyCredits() != null) {
-                updatedPlan.setMonthlyCredits(plan.getMonthlyCredits());
-            }
-
-            if (plan.getRolloverCreditsAllowed() != null) {
-                updatedPlan.setRolloverCreditsAllowed(plan.getRolloverCreditsAllowed());
-            }
-
-            if (plan.getIsActive() != null) {
-                updatedPlan.setIsActive(plan.getIsActive());
-            }
-
-            if (plan.getStripeProductId() != null) {
-                updatedPlan.setStripeProductId(plan.getStripeProductId());
-            }
-
-            planRepository.save(updatedPlan);
-            return updatedPlan;
+        if(plan == null){
+            return false;
         }
-        return null;
+
+        plan.setIsActive(false);
+        planRepository.save(plan);
+
+        return true;
     }
 
     @Override
-    public boolean deletePlanById(UUID planId) {
-        if (getPlanById(planId) != null) {
-            planRepository.deleteById(planId);
-            return true;
+    public boolean reactivatePlanById(UUID planId) {
+        Plan plan = getPlanById(planId);
+
+        if(plan == null){
+            return false;
         }
 
-        return false;
+        plan.setIsActive(true);
+        planRepository.save(plan);
+
+        return true;
     }
 }
