@@ -18,7 +18,7 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public List<Plan> getAllActivePlans() {
-        return planRepository.findAll().stream().filter(plan -> plan.getActive() == true).collect(Collectors.toList());
+        return planRepository.findAll().stream().filter(plan -> plan.getIsActive() == true).collect(Collectors.toList());
     }
 
     @Override
