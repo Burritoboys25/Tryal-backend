@@ -6,4 +6,5 @@ import lombok.Data;
 public class BookingRequestDTO {
     private String stripeTransferId;
     private String bookingStatus;
+    private String party;
 }

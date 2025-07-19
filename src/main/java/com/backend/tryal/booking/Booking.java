@@ -42,6 +42,10 @@ public class Booking {
     @Column(name = "booking_status", nullable = true)
     private Booking.BookingStatus bookingStatus;
 
+    @Column(name = "party", nullable = true)
+    private Integer party;
+
+
     @Column(name = "stripe_transfer_id", nullable = true)
     private String stripeTransferId;
 
@@ -56,11 +60,12 @@ public class Booking {
     public Booking() {
     }
 
-    public Booking(String stripeTransferId, BookingStatus bookingStatus, Timeslot timeslot, User user, UUID bookingId) {
+    public Booking(String stripeTransferId, BookingStatus bookingStatus, Timeslot timeslot, User user, UUID bookingId, Integer party) {
         this.stripeTransferId = stripeTransferId;
         this.bookingStatus = bookingStatus;
         this.timeslot = timeslot;
         this.user = user;
         this.bookingId = bookingId;
+        this.party = party;
     }
 }

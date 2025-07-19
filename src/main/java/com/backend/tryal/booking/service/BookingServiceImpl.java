@@ -71,6 +71,10 @@ public class BookingServiceImpl implements BookingService {
                 updatedBooking.setBookingStatus(Booking.BookingStatus.valueOf(bookingRequestDTO.getBookingStatus()));
             }
 
+            if (bookingRequestDTO.getParty() != null) {
+                updatedBooking.setParty(Integer.valueOf(bookingRequestDTO.getParty()));
+            }
+
             bookingRepository.save(updatedBooking);
             return updatedBooking;
         }

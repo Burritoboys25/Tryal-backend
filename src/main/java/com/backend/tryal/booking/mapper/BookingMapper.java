@@ -1,10 +1,8 @@
 package com.backend.tryal.booking.mapper;
 
 import com.backend.tryal.booking.Booking;
-import com.backend.tryal.booking.BookingRepository;
 import com.backend.tryal.booking.dto.BookingDTO;
 import com.backend.tryal.booking.dto.BookingRequestDTO;
-import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.timeslot.Timeslot;
 import com.backend.tryal.user.User;
 
@@ -23,6 +21,7 @@ public class BookingMapper {
 
         bookingDTO.setStripeTransferId(booking.getStripeTransferId());
         bookingDTO.setBookingStatus(bookingDTO.getBookingStatus());
+        bookingDTO.setParty(bookingDTO.getParty());
 
         return bookingDTO;
     }
@@ -33,8 +32,9 @@ public class BookingMapper {
         booking.setUser(user);
         booking.setTimeslot(timeslot);
 
-        booking.setStripeTransferId(booking.getStripeTransferId());
-        booking.setBookingStatus(booking.getBookingStatus());
+        booking.setStripeTransferId(bookingRequestDTO.getStripeTransferId());
+        booking.setBookingStatus(Booking.BookingStatus.valueOf(bookingRequestDTO.getBookingStatus()));
+        booking.setParty(Integer.valueOf(bookingRequestDTO.getParty()));
 
         return booking;
     }

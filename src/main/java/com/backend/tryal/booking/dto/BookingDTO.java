@@ -11,4 +11,5 @@ public class BookingDTO {
     private UUID timeslotId;
     private String stripeTransferId;
     private String bookingStatus;
+    private Integer party;
 }

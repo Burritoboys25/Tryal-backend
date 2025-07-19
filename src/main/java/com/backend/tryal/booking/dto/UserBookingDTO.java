@@ -15,6 +15,7 @@ public class UserBookingDTO {
     private String businessName;
     private String address;
     private Integer creditPrice;
+    private Integer party;
     private LocalDate timeslotDate;
     private LocalTime startTime;
 }
