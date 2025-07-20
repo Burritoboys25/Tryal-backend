@@ -18,7 +18,7 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public List<Plan> getAllActivePlans() {
-        return planRepository.findAll().stream().filter(plan -> plan.getActive() == true).collect(Collectors.toList());
+        return planRepository.findAll().stream().filter(plan -> plan.getIsActive() == true).collect(Collectors.toList());
     }
 
     @Override
@@ -41,7 +41,7 @@ public class PlanServiceImpl implements PlanService {
             return false;
         }
 
-        plan.setActive(false);
+        plan.setIsActive(false);
         planRepository.save(plan);
 
         return true;
@@ -55,7 +55,7 @@ public class PlanServiceImpl implements PlanService {
             return false;
         }
 
-        plan.setActive(true);
+        plan.setIsActive(true);
         planRepository.save(plan);
 
         return true;
