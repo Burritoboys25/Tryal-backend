@@ -1,7 +1,10 @@
 package com.backend.tryal.business;
 
 import com.backend.tryal.business.dto.BusinessDTO;
+import com.backend.tryal.business.dto.BusinessFilteredRequestDTO;
+import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
 import com.backend.tryal.business.mapper.BusinessMapper;
+import com.backend.tryal.business.response.BusinessListResponse;
 import com.backend.tryal.business.response.BusinessResponse;
 import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.experience.Experience;
@@ -106,6 +109,50 @@ public class BusinessController {
             return new ResponseEntity<>("Business not found.", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<BusinessListResponse> getFilteredBusinesses(
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) Integer groupTypeIds,
+            @RequestParam(required = false) Integer duration,
+            @RequestParam(required = false) List<Experience.SkillLevel> skillLevel,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) Integer creditsMin,
+            @RequestParam(required = false) Integer creditsMax
+    ) {
+        BusinessFilteredRequestDTO filters = new BusinessFilteredRequestDTO();
+        filters.setCategoryIds(categoryIds);
+        filters.setGroupTypeIds(groupTypeIds);
+        filters.setSkillLevel(skillLevel);
+        filters.setDuration(duration);
+        filters.setCreditsMin(creditsMin);
+        filters.setCreditsMax(creditsMax);
+        filters.setLimit(limit);
+
+        try {
+            List<BusinessFilteredResponseDTO> result = businessService.getFilteredBusinesses(filters);
+            if (result.isEmpty()) {
+                return new ResponseEntity<>(
+                        new BusinessListResponse(result, "No business matched the search criteria. Don't worry it works."),
+                        HttpStatus.OK
+                );
+            }
+            return new ResponseEntity<>(
+                    new BusinessListResponse(result, "Filtered businesses retrieved successfully."),
+                    HttpStatus.OK
+            );
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(
+                    new BusinessListResponse(null, "Invalid input: " + e.getMessage()),
+                    HttpStatus.BAD_REQUEST
+            );
+        } catch (Exception e) {
+            return new ResponseEntity<>(
+                    new BusinessListResponse(null, "Oppsies an unexpected error occured"),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

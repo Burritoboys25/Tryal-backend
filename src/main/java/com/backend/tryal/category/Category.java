@@ -1,6 +1,7 @@
 package com.backend.tryal.category;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -16,7 +18,7 @@ public class Category {
     @Column(name = "category_id")
     private UUID categoryId;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "description")
@@ -35,30 +37,6 @@ public class Category {
 
     public Category(String name, String description) {
         this.name = name;
-        this.description = description;
-    }
-
-    public UUID getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(UUID categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
         this.description = description;
     }
 }

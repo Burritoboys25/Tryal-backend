@@ -20,9 +20,9 @@ public class PlanController {
 
     // get all Plans
     @GetMapping()
-    public ResponseEntity<List<Plan>> getAllPlans() {
+    public ResponseEntity<List<Plan>> getAllActivePlans() {
         try {
-            List<Plan> plans = new ArrayList<Plan>(planService.getAllPlans());
+            List<Plan> plans = new ArrayList<Plan>(planService.getAllActivePlans());
 
             if (plans.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -61,28 +61,25 @@ public class PlanController {
         }
     }
 
-    // Patch Plan
-    @PatchMapping("/{planId}")
-    public ResponseEntity<Plan> updatePlanById(@RequestBody Plan plan, @PathVariable UUID planId) {
+    // Deactivate Plan
+    @PatchMapping("/{planId}/deactivate")
+    public ResponseEntity<String> deactivatePlanById(@PathVariable UUID planId) {
         try {
-            Plan updatedPlan = planService.updatePlanById(planId, plan);
-
-            if (updatedPlan == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            if (planService.deactivatePlanById(planId)) {
+                return new ResponseEntity<>("Plan deactivated successfully.", HttpStatus.OK);
             }
-
-            return new ResponseEntity<>(updatedPlan, HttpStatus.OK);
+            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Delete Plan
-    @DeleteMapping("/{planId}")
-    public ResponseEntity<String> deletePlanById(@PathVariable UUID planId) {
+    // Reactivate Plan
+    @PatchMapping("/{planId}/reactivate")
+    public ResponseEntity<String> reactivatePlanById(@PathVariable UUID planId) {
         try {
-            if (planService.deletePlanById(planId)) {
-                return new ResponseEntity<>("Plan deleted successfully.", HttpStatus.OK);
+            if (planService.reactivatePlanById(planId)) {
+                return new ResponseEntity<>("Plan reactivated successfully.", HttpStatus.OK);
             }
             return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
