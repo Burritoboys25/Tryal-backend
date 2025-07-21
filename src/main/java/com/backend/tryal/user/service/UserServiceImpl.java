@@ -24,7 +24,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -198,22 +197,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean removeUserBookmark(UUID userId, UUID businessId) {
-
         User user = userRepository.findById(userId).orElse(null);
-
         Business business = businessRepository.findById(businessId).orElse(null);
 
-
         if (user != null && business != null) {
-            Set<Business> dummy = new HashSet<>();
-            dummy = user.getBusinesses();
-            System.out.println("Before");
-            dummy.remove(business);
-            System.out.println("After");
-            user.setBusinesses(dummy);
-//            user.getBusinesses().remove(business); // removes the association
-            userRepository.save(user);
-            return true;
+            boolean removed = user.getBusinesses().remove(business); // directly
+            if (removed) {
+                userRepository.save(user); // this persists join table change
+                return true;
+            }
         }
         return false;
     }

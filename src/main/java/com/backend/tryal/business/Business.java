@@ -82,4 +82,17 @@ public class Business {
         this.latitude = latitude;
         this.users = Collections.singleton(user);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Business)) return false;
+        Business b = (Business) o;
+        return businessId != null && businessId.equals(b.businessId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(businessId);
+    }
 }
