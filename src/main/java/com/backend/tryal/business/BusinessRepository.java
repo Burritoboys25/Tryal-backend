@@ -27,8 +27,8 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
             "AND (:creditsMin IS NULL OR e.creditPrice >= :creditsMin) " +
             "AND (:creditsMax IS NULL OR e.creditPrice <= :creditsMax)")
     List<Business> findFilteredBusinesses(
-            @Param("categoryIds") List<Long> categoryIds,
-            @Param("groupTypeIds") Integer groupTypeIds,
+            @Param("categoryIds") List<UUID> categoryIds,
+            @Param("groupTypeIds") UUID groupTypeIds,
             @Param("skillLevels") List<Experience.SkillLevel> skillLevels,
             @Param("duration") Integer duration,
             @Param("creditsMin") Integer creditsMin,
