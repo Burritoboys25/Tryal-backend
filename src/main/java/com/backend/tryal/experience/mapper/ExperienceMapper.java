@@ -21,7 +21,7 @@ public class ExperienceMapper {
         experienceDTO.setCapacity(experience.getCapacity());
         experienceDTO.setDuration(experience.getDuration());
         experienceDTO.setCreditPrice(experience.getCreditPrice());
-        experienceDTO.setActive(experience.getActive());
+        experienceDTO.setIsActive(experience.getIsActive());
 
         return experienceDTO;
     }
@@ -37,7 +37,7 @@ public class ExperienceMapper {
         experience.setCapacity(experienceDTO.getCapacity());
         experience.setDuration(experienceDTO.getDuration());
         experience.setCreditPrice(experienceDTO.getCreditPrice());
-        experience.setActive(experienceDTO.getActive());
+        experience.setIsActive(experienceDTO.getIsActive());
 
         return experience;
     }
