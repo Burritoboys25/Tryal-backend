@@ -1,11 +1,13 @@
 package com.backend.tryal.user.service;
 
+import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
@@ -22,7 +24,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -175,6 +179,42 @@ public class UserServiceImpl implements UserService {
             return true;
         }
 
+        return false;
+    }
+
+    @Override
+    public User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO) {
+        User user = userRepository.findById(bookmarkRequestDTO.getUserId()).orElse(null);
+        Business business = businessRepository.findById(bookmarkRequestDTO.getBusinessId()).orElse(null);
+
+        if (user != null && business != null) {
+            user.getBusinesses().add(business);
+            userRepository.save(user); // Saves the change, updating the bridge table
+            return user;
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean removeUserBookmark(UUID userId, UUID businessId) {
+
+        User user = userRepository.findById(userId).orElse(null);
+
+        Business business = businessRepository.findById(businessId).orElse(null);
+
+
+        if (user != null && business != null) {
+            Set<Business> dummy = new HashSet<>();
+            dummy = user.getBusinesses();
+            System.out.println("Before");
+            dummy.remove(business);
+            System.out.println("After");
+            user.setBusinesses(dummy);
+//            user.getBusinesses().remove(business); // removes the association
+            userRepository.save(user);
+            return true;
+        }
         return false;
     }
 }

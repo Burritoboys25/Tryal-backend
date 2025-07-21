@@ -1,6 +1,8 @@
 package com.backend.tryal.business;
 
 import com.backend.tryal.experience.Experience;
+import com.backend.tryal.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,9 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @Entity
@@ -47,6 +47,10 @@ public class Business {
     @OneToMany(mappedBy = "business", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Experience> experiences = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "businesses")
+    @JsonBackReference
+    private Set<User> users = new HashSet<>();
+
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -64,7 +68,7 @@ public class Business {
     public Business() {
     }
 
-    public Business(UUID businessId, String stripeAccountId, String name, String email, String passwordHash, String website, String address, String phoneNumber, List<Experience> experiences, Double longitude, Double latitude) {
+    public Business(UUID businessId, String stripeAccountId, String name, String email, String passwordHash, String website, String address, String phoneNumber, List<Experience> experiences, Double longitude, Double latitude, User user) {
         this.businessId = businessId;
         this.stripeAccountId = stripeAccountId;
         this.name = name;
@@ -76,5 +80,6 @@ public class Business {
         this.experiences = experiences;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.users = Collections.singleton(user);
     }
 }
