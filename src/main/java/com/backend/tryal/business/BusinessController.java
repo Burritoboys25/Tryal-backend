@@ -114,8 +114,8 @@ public class BusinessController {
 
     @GetMapping("/filter")
     public ResponseEntity<BusinessListResponse> getFilteredBusinesses(
-            @RequestParam(required = false) List<Long> categoryIds,
-            @RequestParam(required = false) Integer groupTypeIds,
+            @RequestParam(required = false) List<UUID> categoryIds,
+            @RequestParam(required = false) UUID groupTypeIds,
             @RequestParam(required = false) Integer duration,
             @RequestParam(required = false) List<Experience.SkillLevel> skillLevel,
             @RequestParam(required = false) Integer limit,

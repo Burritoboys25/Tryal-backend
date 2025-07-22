@@ -5,6 +5,7 @@ import com.backend.tryal.groupType.GroupTypeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class GroupTypeImpl implements GroupTypeService{
@@ -16,7 +17,7 @@ public class GroupTypeImpl implements GroupTypeService{
     public List<GroupType> getAllGroupTypes() {return groupTypeRepository.findAll();}
 
     @Override
-    public GroupType getGroupTypeById(Long groupTypeId) {
+    public GroupType getGroupTypeById(UUID groupTypeId) {
         return groupTypeRepository.findById(groupTypeId).orElse(null);
     }
 
@@ -27,7 +28,7 @@ public class GroupTypeImpl implements GroupTypeService{
     }
 
     @Override
-    public GroupType updateGroupTypeById(Long groupTypeId, GroupType groupType) {
+    public GroupType updateGroupTypeById(UUID groupTypeId, GroupType groupType) {
         if (getGroupTypeById(groupTypeId) != null) {
             GroupType updatedGroupType = getGroupTypeById(groupTypeId);
 
@@ -44,7 +45,7 @@ public class GroupTypeImpl implements GroupTypeService{
     }
 
     @Override
-    public boolean deleteGroupTypeById(Long groupTypeId) {
+    public boolean deleteGroupTypeById(UUID groupTypeId) {
         if (getGroupTypeById(groupTypeId) != null) {
             groupTypeRepository.deleteById(groupTypeId);
             return true;
