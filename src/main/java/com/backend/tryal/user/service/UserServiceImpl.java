@@ -9,6 +9,7 @@ import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
+import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import jakarta.validation.Valid;
@@ -25,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -208,5 +208,11 @@ public class UserServiceImpl implements UserService {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId) {
+        System.out.println("hi");
+        return userRepository.getAllUserBookmarksByUserId(userId);
     }
 }

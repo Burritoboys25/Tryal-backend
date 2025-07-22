@@ -5,8 +5,8 @@ import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
+import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,4 +23,6 @@ public interface UserService {
     User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
 
     boolean removeUserBookmark(UUID userId, UUID businessId);
+
+    List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId);
 }
