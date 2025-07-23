@@ -16,6 +16,10 @@ import java.util.UUID;
 public class Subscription {
     public enum SubscriptionStatus {
         PENDING,
+        INCOMPLETE,
+        INCOMPLETE_EXPIRED,
+        PAST_DUE,
+        UNPAID,
         ACTIVE,
         CANCELLED,
         PAUSED
