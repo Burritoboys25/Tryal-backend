@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/groupTypes")
@@ -34,7 +35,7 @@ public class GroupTypeController {
 
     // Get Category by id
     @GetMapping("/{groupTypeId}")
-    public ResponseEntity<GroupType> getGroupTypeById(@PathVariable Long groupTypeId) {
+    public ResponseEntity<GroupType> getGroupTypeById(@PathVariable UUID groupTypeId) {
         try {
             GroupType groupType = groupTypeService.getGroupTypeById(groupTypeId);
 
@@ -60,7 +61,7 @@ public class GroupTypeController {
 
     @PatchMapping("/{groupTypeId}")
     public ResponseEntity<GroupType> updateGroupType(
-            @PathVariable Long groupTypeId,
+            @PathVariable UUID groupTypeId,
             @RequestBody GroupType updatedGroupType
     ) {
         try {
@@ -74,7 +75,7 @@ public class GroupTypeController {
         }
     }
     @DeleteMapping("/{groupTypeId}")
-    public ResponseEntity<String> deleteGroupTypeById(@PathVariable Long groupTypeId) {
+    public ResponseEntity<String> deleteGroupTypeById(@PathVariable UUID groupTypeId) {
         try {
             boolean deleted = groupTypeService.deleteGroupTypeById(groupTypeId);
             if (!deleted) {
