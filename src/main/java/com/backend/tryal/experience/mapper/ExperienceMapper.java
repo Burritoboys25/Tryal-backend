@@ -18,7 +18,8 @@ public class ExperienceMapper {
         experienceDTO.setExperienceName(experience.getExperienceName());
         experienceDTO.setDescription(experience.getDescription());
         experienceDTO.setSkillLevel(experience.getSkillLevel());
-        experienceDTO.setCapacity(experience.getCapacity());
+        experienceDTO.setMaxCapacity(experience.getMaxCapacity());
+        experienceDTO.setRemainingCapacity(experience.getRemainingCapacity());
         experienceDTO.setDuration(experience.getDuration());
         experienceDTO.setCreditPrice(experience.getCreditPrice());
         experienceDTO.setIsActive(experience.getIsActive());
@@ -34,7 +35,8 @@ public class ExperienceMapper {
         experience.setExperienceName(experienceDTO.getExperienceName());
         experience.setDescription(experienceDTO.getDescription());
         experience.setSkillLevel(experienceDTO.getSkillLevel());
-        experience.setCapacity(experienceDTO.getCapacity());
+        experience.setMaxCapacity(experience.getMaxCapacity());
+        experience.setRemainingCapacity(experience.getRemainingCapacity());
         experience.setDuration(experienceDTO.getDuration());
         experience.setCreditPrice(experienceDTO.getCreditPrice());
         experience.setIsActive(experienceDTO.getIsActive());

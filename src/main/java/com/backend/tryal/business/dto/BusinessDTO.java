@@ -13,4 +13,7 @@ public class BusinessDTO {
     private String website;
     private String address;
     private String phoneNumber;
+
+    private int minCredits;
+    private int maxCredits;
 }
