@@ -1,10 +1,13 @@
 package com.backend.tryal.payment;
 
+import com.backend.tryal.shared.utils.TimeWizard;
+import com.backend.tryal.subscription.Subscription;
+import com.backend.tryal.subscription.SubscriptionRepository;
+import com.backend.tryal.user.User;
+import com.backend.tryal.user.UserRepository;
 import com.stripe.exception.SignatureVerificationException;
-import com.stripe.model.Event;
-import com.stripe.model.EventDataObjectDeserializer;
-import com.stripe.model.Invoice;
-import com.stripe.model.StripeObject;
+import com.stripe.exception.StripeException;
+import com.stripe.model.*;
 import com.stripe.net.Webhook;
 import com.stripe.model.checkout.Session;
 import jakarta.servlet.ServletInputStream;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/webhooks/stripe")
@@ -22,6 +27,14 @@ public class StripeWebhookController {
 
     @Value("${stripe.webhook.secret}")
     private String webhookSecret;
+
+    private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
+
+    public StripeWebhookController(UserRepository userRepository, SubscriptionRepository subscriptionRepository) {
+        this.userRepository = userRepository;
+        this.subscriptionRepository = subscriptionRepository;
+    }
 
     // IMPORTANT: Stripe signs the exact raw request body to generate the webhook signature.
     // Using @RequestBody or reading the body as parsed JSON would alter the payload
@@ -61,10 +74,41 @@ public class StripeWebhookController {
         switch (event.getType()) {
             case "checkout.session.completed":
                 Session session = (Session) stripeObject;
-                System.out.println("Checkout completed: " + session.getCustomerDetails().getEmail());
-                // TODO: Lookup user by email and mark as subscribed
-                // TODO: Save Stripe customer ID and subscription ID to the user record (if not already saved)
-                break;
+                System.out.println("Checkout completed: " + session);
+
+                String userId = session.getMetadata().get("userId");
+                String customerId = session.getCustomer();
+                String subscriptionId = session.getSubscription();
+                String email = session.getCustomerDetails().getEmail();
+
+                System.out.printf("userId: %s/n customerId: %s/n subscriptionId: %s: email: %s", userId, customerId, subscriptionId, email);
+
+                Optional<User> match = userRepository.findById(UUID.fromString(userId));
+
+                if (match.isEmpty()) {
+                    System.out.println("User not found");
+                    return ResponseEntity.status(404).body("User not found");
+                }
+
+                User user = match.get();
+                user.setStripeCustomerId(customerId);
+                userRepository.save(user);
+
+                try {
+                    com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
+                    Subscription newSubscription = new Subscription();
+                    newSubscription.setUser(user);
+                    newSubscription.setStripeSubscriptionId(subscriptionId);
+                    String rawStatus = stripeSubscription.getStatus();
+                    Subscription.SubscriptionStatus status = Subscription.SubscriptionStatus.valueOf(rawStatus.toUpperCase());
+                    newSubscription.setSubscriptionStatus(status);
+                    newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
+                    subscriptionRepository.save(newSubscription);
+                    return ResponseEntity.ok("Subscription saved");
+
+                } catch (StripeException e) {
+                    return ResponseEntity.status(502).body("Error fetching subscription from stripe");
+                }
 
             case "invoice.paid":
                 Invoice invoice = (Invoice) stripeObject;
