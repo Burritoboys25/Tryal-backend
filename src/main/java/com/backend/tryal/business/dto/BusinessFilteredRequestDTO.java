@@ -4,12 +4,13 @@ import com.backend.tryal.experience.Experience;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 // Response pay load of filtered businesses
 @Data
 public class BusinessFilteredRequestDTO {
-    private List<Long> categoryIds;
-    private Integer groupTypeIds;
+    private List<UUID> categoryIds;
+    private UUID groupTypeIds;
     private Integer duration;
     private List<Experience.SkillLevel> skillLevel;
     private Integer creditsMin;

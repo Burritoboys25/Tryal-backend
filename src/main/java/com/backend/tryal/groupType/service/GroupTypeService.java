@@ -3,11 +3,12 @@ package com.backend.tryal.groupType.service;
 import com.backend.tryal.groupType.GroupType;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface GroupTypeService {
     List<GroupType> getAllGroupTypes();
-    GroupType getGroupTypeById(Long groupTypeId);
+    GroupType getGroupTypeById(UUID groupTypeId);
     GroupType createGroupType(GroupType groupType);
-    GroupType updateGroupTypeById(Long groupTypeId, GroupType groupType);
-    boolean deleteGroupTypeById(Long groupTypeId);
+    GroupType updateGroupTypeById(UUID groupTypeId, GroupType groupType);
+    boolean deleteGroupTypeById(UUID groupTypeId);
 }

@@ -197,7 +197,7 @@ public class BusinessServiceImpl implements BusinessService {
             skillLevel = null; // treat empty as null and return all;
         }
 
-        List<Long> categoryIds = filters.getCategoryIds();
+        List<UUID> categoryIds = filters.getCategoryIds();
         if (categoryIds != null && categoryIds.isEmpty()) {
             categoryIds = null; // treat empty as null and return all;;
         }
