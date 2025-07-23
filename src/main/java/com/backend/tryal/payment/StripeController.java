@@ -25,6 +25,8 @@ public class StripeController {
         String priceId = requestBody.get("priceId");
         String userEmail = requestBody.get("email");
         String userId = requestBody.get("userId");
+        String planId = requestBody.get("planId");
+
 
         if(priceId == null || userEmail == null || userId == null ){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -39,8 +41,14 @@ public class StripeController {
                             SessionCreateParams.LineItem.builder()
                                     .setQuantity(1L)
                                     .setPrice(priceId)
-                                    .build())
-                    .putMetadata("userId", userId) // add userId to metadata. Used in webhook to update status
+                                    .build()
+                    )
+                    .setSubscriptionData(
+                            SessionCreateParams.SubscriptionData.builder()
+                                    .putMetadata("userId", userId)
+                                    .putMetadata("planId", planId)
+                                    .build()
+                    )
                     .build();
 
             Session session = Session.create(params);
