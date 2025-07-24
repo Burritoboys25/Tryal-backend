@@ -44,7 +44,7 @@ public class StripeWebhookController {
     // (e.g., formatting, whitespace), which would cause signature verification to fail.
     @PostMapping
     public ResponseEntity<String> handleWebhook(HttpServletRequest request,
-                                                @RequestHeader("Stripe-Signature") String sigHeader) {
+                                                @RequestHeader("Stripe-Signature") String sigHeader) throws StripeException {
         String payload;
 
         try {
@@ -77,48 +77,14 @@ public class StripeWebhookController {
         switch (event.getType()) {
             case "checkout.session.completed":
                 Session session = (Session) stripeObject;
+                paymentService.handleCheckoutCompleted(session);
                 System.out.println("Checkout completed: " + session);
-
-                String userId = session.getMetadata().get("userId");
-                String customerId = session.getCustomer();
-                String subscriptionId = session.getSubscription();
-                String email = session.getCustomerDetails().getEmail();
-
-                System.out.printf("userId: %s/n customerId: %s/n subscriptionId: %s: email: %s", userId, customerId, subscriptionId, email);
-
-                Optional<User> match = userRepository.findById(UUID.fromString(userId));
-
-                if (match.isEmpty()) {
-                    System.out.println("User not found");
-                    return ResponseEntity.status(404).body("User not found");
-                }
-
-                User user = match.get();
-                user.setStripeCustomerId(customerId);
-                userRepository.save(user);
-
-                try {
-                    //TODO: when making new subscription check if user alrady has active subscription
-                    com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
-                    Subscription newSubscription = new Subscription();
-                    newSubscription.setUser(user);
-                    newSubscription.setSubscriptionId(subscriptionId);
-                    String rawStatus = stripeSubscription.getStatus();
-                    Subscription.SubscriptionStatus status = Subscription.SubscriptionStatus.valueOf(rawStatus.toUpperCase());
-                    newSubscription.setSubscriptionStatus(status);
-                    newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
-                    subscriptionRepository.save(newSubscription);
-                    return ResponseEntity.ok("Subscription saved");
-
-                } catch (StripeException e) {
-                    return ResponseEntity.status(502).body("Error fetching subscription from stripe");
-                }
+                return ResponseEntity.ok("Subscription saved");
 
             case "invoice.payment_succeeded":
                 Invoice invoice = (Invoice) stripeObject;
                 paymentService.handleInvoicePaid(invoice);
-
-                break;
+                return ResponseEntity.ok("Invoice paid");
 
             case "invoice.payment_failed":
                 Invoice failedInvoice = (Invoice) stripeObject;

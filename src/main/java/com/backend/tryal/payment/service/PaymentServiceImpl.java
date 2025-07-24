@@ -1,12 +1,20 @@
 package com.backend.tryal.payment.service;
 
 import com.backend.tryal.plan.Plan;
+import com.backend.tryal.shared.utils.TimeWizard;
 import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.subscription.SubscriptionRepository;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import com.stripe.exception.StripeException;
 import com.stripe.model.Invoice;
+import com.stripe.model.checkout.Session;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
@@ -19,61 +27,69 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     @Override
-    public boolean handleInvoicePaid(Invoice invoice) {
-        //TODO: instead of returning boolean, return custom response
+    public void handleInvoicePaid(Invoice invoice) {
         System.out.println("INVOICE INVOICE INVOICE");
-        System.out.println(invoice.getParent().getSubscriptionDetails().getSubscription());
-        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
 
-        if(subscriptionId == null){
-            return false;
+        String subscriptionId;
+        try {
+            subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("Subscription ID not found in invoice");
         }
 
-        Subscription subscription = subscriptionRepository.findById(subscriptionId).orElse(null);
-
-        if(subscription == null){
-            //TODO: refund?
-            return false;
+        if (subscriptionId == null) {
+            throw new IllegalArgumentException("Subscription ID is null in invoice");
         }
 
-        switch (subscription.getSubscriptionStatus()){
-            case PENDING:
-                break;
-            case INCOMPLETE:
-                break;
-            case INCOMPLETE_EXPIRED:
-                break;
-            case PAST_DUE:
-                break;
-            case UNPAID:
-                break;
-            case CANCELLED:
-                break;
-            case PAUSED:
-                break;
-            case ACTIVE:
-                User user = subscription.getUser();
-                Plan plan = subscription.getPlan();
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
 
-                if(user == null){
-                    //TODO: do something
-                    return false;
-                }else if(plan == null){
-                    //TODO: do something
-                    return false;
-                }
+        if (subscription.getSubscriptionStatus() == Subscription.SubscriptionStatus.ACTIVE) {
+            User user = subscription.getUser();
+            Plan plan = subscription.getPlan();
 
-                int creditsToAdd = plan.getMonthlyCredits();
-                int currentCredits = user.getCreditBalance();
+            if (user == null) {
+                throw new EntityNotFoundException("User linked to subscription not found");
+            }
+            if (plan == null) {
+                throw new EntityNotFoundException("Plan linked to subscription not found");
+            }
 
-                user.setCreditBalance(currentCredits + creditsToAdd);
-                userRepository.save(user);
+            int creditsToAdd = plan.getMonthlyCredits();
+            int currentCredits = user.getCreditBalance() != null ? user.getCreditBalance() : 0;
 
-                return true;
-            default:
-                break;
+            user.setCreditBalance(currentCredits + creditsToAdd);
+            userRepository.save(user);
         }
+    }
 
-        return true;
+    @Override
+    public void handleCheckoutCompleted(Session session) throws StripeException {
+        try {
+            String userId = session.getMetadata().get("userId");
+            String customerId = session.getCustomer();
+            String subscriptionId = session.getSubscription();
+
+            User user = userRepository.findById(UUID.fromString(userId))
+                    .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+
+            user.setStripeCustomerId(customerId);
+            userRepository.save(user);
+
+            com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
+
+            Subscription newSubscription = new Subscription();
+            newSubscription.setUser(user);
+            newSubscription.setSubscriptionId(subscriptionId);
+            Subscription.SubscriptionStatus status =
+                    Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
+            newSubscription.setSubscriptionStatus(status);
+            newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
+
+            subscriptionRepository.save(newSubscription);
+
+        } catch (StripeException e) {
+            throw e;
+        }
     }
 }
