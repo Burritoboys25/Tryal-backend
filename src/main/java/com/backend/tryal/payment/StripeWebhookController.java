@@ -98,6 +98,7 @@ public class StripeWebhookController {
                 userRepository.save(user);
 
                 try {
+                    //TODO: when making new subscription check if user alrady has active subscription
                     com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
                     Subscription newSubscription = new Subscription();
                     newSubscription.setUser(user);

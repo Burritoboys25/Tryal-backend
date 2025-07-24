@@ -21,6 +21,8 @@ public class PaymentServiceImpl implements PaymentService{
     @Override
     public boolean handleInvoicePaid(Invoice invoice) {
         //TODO: instead of returning boolean, return custom response
+        System.out.println("INVOICE INVOICE INVOICE");
+        System.out.println(invoice.getParent().getSubscriptionDetails().getSubscription());
         String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
 
         if(subscriptionId == null){
