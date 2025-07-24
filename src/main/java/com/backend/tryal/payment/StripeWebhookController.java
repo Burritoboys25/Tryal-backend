@@ -1,11 +1,6 @@
 package com.backend.tryal.payment;
 
 import com.backend.tryal.payment.service.PaymentService;
-import com.backend.tryal.shared.utils.TimeWizard;
-import com.backend.tryal.subscription.Subscription;
-import com.backend.tryal.subscription.SubscriptionRepository;
-import com.backend.tryal.user.User;
-import com.backend.tryal.user.UserRepository;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
@@ -19,8 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/webhooks/stripe")
@@ -29,13 +22,9 @@ public class StripeWebhookController {
     @Value("${stripe.webhook.secret}")
     private String webhookSecret;
 
-    private final UserRepository userRepository;
-    private final SubscriptionRepository subscriptionRepository;
     private final PaymentService paymentService;
 
-    public StripeWebhookController(UserRepository userRepository, SubscriptionRepository subscriptionRepository, PaymentService paymentService) {
-        this.userRepository = userRepository;
-        this.subscriptionRepository = subscriptionRepository;
+    public StripeWebhookController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }
 

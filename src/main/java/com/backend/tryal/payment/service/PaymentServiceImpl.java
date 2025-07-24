@@ -10,10 +10,8 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Invoice;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
