@@ -43,12 +43,7 @@ public class StripeController {
                                     .setPrice(priceId)
                                     .build()
                     )
-                    .setSubscriptionData(
-                            SessionCreateParams.SubscriptionData.builder()
-                                    .putMetadata("userId", userId)
-                                    .putMetadata("planId", planId)
-                                    .build()
-                    )
+                    .putMetadata("userId", userId)
                     .build();
 
             Session session = Session.create(params);

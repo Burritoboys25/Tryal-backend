@@ -1,5 +1,6 @@
 package com.backend.tryal.payment;
 
+import com.backend.tryal.payment.service.PaymentService;
 import com.backend.tryal.shared.utils.TimeWizard;
 import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.subscription.SubscriptionRepository;
@@ -30,10 +31,12 @@ public class StripeWebhookController {
 
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final PaymentService paymentService;
 
-    public StripeWebhookController(UserRepository userRepository, SubscriptionRepository subscriptionRepository) {
+    public StripeWebhookController(UserRepository userRepository, SubscriptionRepository subscriptionRepository, PaymentService paymentService) {
         this.userRepository = userRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.paymentService = paymentService;
     }
 
     // IMPORTANT: Stripe signs the exact raw request body to generate the webhook signature.
@@ -98,7 +101,7 @@ public class StripeWebhookController {
                     com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
                     Subscription newSubscription = new Subscription();
                     newSubscription.setUser(user);
-                    newSubscription.setStripeSubscriptionId(subscriptionId);
+                    newSubscription.setSubscriptionId(subscriptionId);
                     String rawStatus = stripeSubscription.getStatus();
                     Subscription.SubscriptionStatus status = Subscription.SubscriptionStatus.valueOf(rawStatus.toUpperCase());
                     newSubscription.setSubscriptionStatus(status);
@@ -110,11 +113,10 @@ public class StripeWebhookController {
                     return ResponseEntity.status(502).body("Error fetching subscription from stripe");
                 }
 
-            case "invoice.paid":
+            case "invoice.payment_succeeded":
                 Invoice invoice = (Invoice) stripeObject;
-                System.out.println("Invoice paid: " + invoice.getId());
-                // TODO: Add function for crediting accounts based on userId
-                // TODO: Ensure subscription status is active
+                paymentService.handleInvoicePaid(invoice);
+
                 break;
 
             case "invoice.payment_failed":
