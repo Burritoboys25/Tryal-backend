@@ -26,9 +26,8 @@ public class Subscription {
     }
 
     @Id
-    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "subscription_id")
-    private UUID subscriptionId;
+    private String subscriptionId;
 
     @JsonBackReference
     @OneToOne(fetch = FetchType.LAZY)
@@ -46,9 +45,6 @@ public class Subscription {
 
     @Column(name = "auto_renew", nullable = true)
     private Boolean autoRenew;
-
-    @Column(name = "stripe_subscription_id")
-    private String stripeSubscriptionId;
 
     @Column(name = "start_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -68,22 +64,21 @@ public class Subscription {
     public Subscription(){
     }
 
-    public Subscription(UUID subscriptionId, User user, Plan plan, SubscriptionStatus subscriptionStatus, Boolean autoRenew, String stripeSubscriptionId, LocalDateTime startAt, LocalDateTime endAt) {
+    public Subscription(String subscriptionId, User user, Plan plan, SubscriptionStatus subscriptionStatus, Boolean autoRenew, LocalDateTime startAt, LocalDateTime endAt) {
         this.subscriptionId = subscriptionId;
         this.user = user;
         this.plan = plan;
         this.subscriptionStatus = subscriptionStatus;
         this.autoRenew = autoRenew;
-        this.stripeSubscriptionId = stripeSubscriptionId;
         this.startAt = startAt;
         this.endAt = endAt;
     }
 
-    public UUID getSubscriptionId() {
+    public String getSubscriptionId() {
         return subscriptionId;
     }
 
-    public void setSubscriptionId(UUID subscriptionId) {
+    public void setSubscriptionId(String subscriptionId) {
         this.subscriptionId = subscriptionId;
     }
 
@@ -117,14 +112,6 @@ public class Subscription {
 
     public void setAutoRenew(Boolean autoRenew) {
         this.autoRenew = autoRenew;
-    }
-
-    public String getStripeSubscriptionId() {
-        return stripeSubscriptionId;
-    }
-
-    public void setStripeSubscriptionId(String stripeSubscriptionId) {
-        this.stripeSubscriptionId = stripeSubscriptionId;
     }
 
     public LocalDateTime getStartAt() {

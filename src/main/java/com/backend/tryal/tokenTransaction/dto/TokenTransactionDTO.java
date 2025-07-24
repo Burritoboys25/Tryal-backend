@@ -10,12 +10,12 @@ public class TokenTransactionDTO {
     private Long creditAmount;
     private TokenTransaction.TransactionReason transactionReason;
     private UUID bookingId;
-    private UUID subscriptionId;
+    private String subscriptionId;
 
     public TokenTransactionDTO() {
     }
 
-    public TokenTransactionDTO(UUID tokenTransId, UUID userId, Long creditAmount, TokenTransaction.TransactionReason transactionReason, UUID bookingId, UUID subscriptionId) {
+    public TokenTransactionDTO(UUID tokenTransId, UUID userId, Long creditAmount, TokenTransaction.TransactionReason transactionReason, UUID bookingId, String subscriptionId) {
         this.tokenTransId = tokenTransId;
         this.userId = userId;
         this.creditAmount = creditAmount;
@@ -64,11 +64,11 @@ public class TokenTransactionDTO {
         this.bookingId = bookingId;
     }
 
-    public UUID getSubscriptionId() {
+    public String getSubscriptionId() {
         return subscriptionId;
     }
 
-    public void setSubscriptionId(UUID subscriptionId) {
+    public void setSubscriptionId(String subscriptionId) {
         this.subscriptionId = subscriptionId;
     }
 }
