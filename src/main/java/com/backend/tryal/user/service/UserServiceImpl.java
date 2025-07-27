@@ -212,7 +212,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId) {
-        System.out.println("hi");
         return userRepository.getAllUserBookmarksByUserId(userId);
     }
 }
