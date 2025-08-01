@@ -42,7 +42,7 @@ public class Plan {
     @Column(name = "stripe_product_id")
     private String stripeProductId;
 
-    @Column(name = "stripe_price_id")
+    @Column(name = "stripe_price_id", unique = true, nullable = false)
     private String stripePriceId;
 
     @Column(updatable = false, name = "created_at")

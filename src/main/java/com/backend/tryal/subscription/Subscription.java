@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,7 +25,7 @@ public class Subscription {
     }
 
     @Id
-    @Column(name = "subscription_id")
+    @Column(name = "subscription_id", nullable = false, updatable = false)
     private String subscriptionId;
 
     @JsonBackReference
