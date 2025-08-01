@@ -2,6 +2,8 @@ package com.backend.tryal.plan.service;
 
 import com.backend.tryal.plan.Plan;
 import com.backend.tryal.plan.PlanRepository;
+import com.backend.tryal.plan.dto.PlanDTO;
+import com.backend.tryal.plan.mapper.PlanMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +19,11 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<Plan> getAllActivePlans() {
-        return planRepository.findAll().stream().filter(plan -> plan.getIsActive() == true).collect(Collectors.toList());
+    public List<PlanDTO> getAllActivePlans() {
+        return planRepository.findAll().stream()
+                .filter(Plan::getIsActive)
+                .map(PlanMapper::mapPlanDTO)
+                .collect(Collectors.toList());
     }
 
     @Override

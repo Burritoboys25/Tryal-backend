@@ -1,5 +1,6 @@
 package com.backend.tryal.plan;
 
+import com.backend.tryal.plan.dto.PlanDTO;
 import com.backend.tryal.plan.service.PlanService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,9 @@ public class PlanController {
 
     // get all Plans
     @GetMapping()
-    public ResponseEntity<List<Plan>> getAllActivePlans() {
+    public ResponseEntity<List<PlanDTO>> getAllActivePlans() {
         try {
-            List<Plan> plans = new ArrayList<Plan>(planService.getAllActivePlans());
+            List<PlanDTO> plans = new ArrayList<PlanDTO>(planService.getAllActivePlans());
 
             if (plans.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
