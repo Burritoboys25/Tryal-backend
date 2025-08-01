@@ -2,6 +2,10 @@ package com.backend.tryal.payment;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
+
+import com.backend.tryal.plan.Plan;
+import com.backend.tryal.plan.service.PlanService;
 import com.stripe.Stripe;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -18,18 +22,29 @@ public class StripeController {
 
     private final String domain = "http://localhost:3000";
 
+    private final PlanService planService;
+
+    public StripeController(PlanService planService) {
+        this.planService = planService;
+    }
+
     @PostMapping()
     public ResponseEntity<?> createCheckoutSession(@RequestBody Map<String, String> requestBody) {
         Stripe.apiKey = stripeSecretKey;
 
-        String priceId = requestBody.get("priceId");
         String userEmail = requestBody.get("email");
         String userId = requestBody.get("userId");
         String planId = requestBody.get("planId");
 
 
-        if(priceId == null || userEmail == null || userId == null ){
+        if(planId == null || userEmail == null || userId == null ){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Plan plan = planService.getPlanById(UUID.fromString(planId));
+
+        if (plan == null || plan.getStripePriceId() == null) {
+            return new ResponseEntity<>("Invalid plan", HttpStatus.BAD_REQUEST);
         }
 
         try{
@@ -40,10 +55,11 @@ public class StripeController {
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setQuantity(1L)
-                                    .setPrice(priceId)
+                                    .setPrice(plan.getStripePriceId())
                                     .build()
                     )
                     .putMetadata("userId", userId)
+                    .putMetadata("planId", planId)
                     .build();
 
             Session session = Session.create(params);

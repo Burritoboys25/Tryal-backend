@@ -159,6 +159,7 @@ public class PaymentServiceImpl implements PaymentService{
 
         try {
             String userId = session.getMetadata().get("userId");
+            String planId = session.getMetadata().get("planId");
             String customerId = session.getCustomer();
             String subscriptionId = session.getSubscription();
 
@@ -168,10 +169,14 @@ public class PaymentServiceImpl implements PaymentService{
             user.setStripeCustomerId(customerId);
             userRepository.save(user);
 
+            Plan plan = planRepository.findById(UUID.fromString(planId))
+                    .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
+
             com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
 
             Subscription newSubscription = new Subscription();
             newSubscription.setUser(user);
+            newSubscription.setPlan(plan);
             newSubscription.setSubscriptionId(subscriptionId);
             Subscription.SubscriptionStatus status =
                     Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
