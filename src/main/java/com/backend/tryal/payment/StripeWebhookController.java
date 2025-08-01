@@ -67,32 +67,27 @@ public class StripeWebhookController {
             case "checkout.session.completed":
                 Session session = (Session) stripeObject;
                 paymentService.handleCheckoutCompleted(session);
-                System.out.println("Checkout completed: " + session);
-                return ResponseEntity.ok("Subscription saved");
+                return ResponseEntity.ok("Subscription saved.");
 
             case "invoice.payment_succeeded":
                 Invoice invoice = (Invoice) stripeObject;
                 paymentService.handleInvoicePaid(invoice);
-                return ResponseEntity.ok("Invoice paid");
+                return ResponseEntity.ok("Invoice payment succeeded.");
 
             case "invoice.payment_failed":
                 Invoice failedInvoice = (Invoice) stripeObject;
-                System.out.println("Invoice payment failed: " + failedInvoice.getId());
-                // TODO: Update user status as at-risk or inactive
-                // TODO: Stop token crediting or access
-                break;
+                paymentService.handleInvoiceFailed(failedInvoice);
+                return ResponseEntity.ok("Invoice payment failed.");
 
             case "customer.subscription.updated":
-                // Requires fetching full Subscription object (not included in event data directly)
-                System.out.println("Subscription updated");
-                // TODO: Update user's subscription tier/plan in the database
-                break;
+                com.stripe.model.Subscription updatedSubscription = (com.stripe.model.Subscription) stripeObject;
+                paymentService.handleSubscriptionUpdated(updatedSubscription);
+                return ResponseEntity.ok("Subscription updated handled");
 
             case "customer.subscription.deleted":
-                System.out.println("Subscription canceled or deleted");
-                // TODO: Mark user as unsubscribed
-                // TODO: Stop access and token crediting
-                break;
+                com.stripe.model.Subscription deletedSubscription = (com.stripe.model.Subscription) stripeObject;
+                paymentService.handleSubscriptionDeleted(deletedSubscription);
+                return ResponseEntity.ok("Subscription deleted.");
 
             case "customer.subscription.created":
                 System.out.println("Subscription created");
