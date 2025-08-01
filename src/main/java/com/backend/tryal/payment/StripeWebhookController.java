@@ -70,6 +70,7 @@ public class StripeWebhookController {
                 return ResponseEntity.ok("Subscription saved.");
 
             case "invoice.payment_succeeded":
+                //TODO: Top-off credit invoice
                 Invoice invoice = (Invoice) stripeObject;
                 paymentService.handleInvoicePaid(invoice);
                 return ResponseEntity.ok("Invoice payment succeeded.");
