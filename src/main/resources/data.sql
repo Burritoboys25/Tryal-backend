@@ -239,3 +239,31 @@ INSERT INTO experience_group_types (experience_id, group_type_id) VALUES
 ('47685f54-1eb7-4c68-9281-a37baf6675a8', '22222222-2222-2222-2222-222222222222'),
 ('645aff81-6f12-4fb8-8559-f05a8a7ae6b2', '00000000-0000-0000-0000-000000000000'),
 ('b080741a-9d41-47d4-a4c7-7d29eb4b3240', '11111111-1111-1111-1111-111111111111');
+
+INSERT INTO plans (
+  plan_id,
+  name,
+  description,
+  is_active,
+  monthly_credits,
+  price,
+  rollover_credits_allowed,
+  stripe_price_id,
+  stripe_product_id,
+  updated_at,
+  created_at
+) VALUES
+-- Starter
+('00000000-0000-0000-0000-000000000001', 'Starter', 'Starter plan with 8 credits', TRUE, 8, 25.00, FALSE, 'price_1RcwFMClkdHHtOgpUvgC9U0h', NULL, NOW(), NOW()),
+
+-- Basic
+('00000000-0000-0000-0000-000000000002', 'Basic', 'Basic plan with 16 credits', TRUE, 16, 45.00, FALSE, 'price_1RcwFrClkdHHtOgpiLgcQ30q', NULL, NOW(), NOW()),
+
+-- Standard
+('00000000-0000-0000-0000-000000000003', 'Standard', 'Standard plan with 30 credits', TRUE, 30, 75.00, FALSE, 'price_1RcwG9ClkdHHtOgpslbGXSoq', NULL, NOW(), NOW()),
+
+-- Premium
+('00000000-0000-0000-0000-000000000004', 'Premium', 'Premium plan with 50 credits', TRUE, 50, 110.00, FALSE, 'price_1RcwGUClkdHHtOgpyC1YJb9J', NULL, NOW(), NOW()),
+
+-- Elite
+('00000000-0000-0000-0000-000000000005', 'Elite', 'Elite plan with 72 credits', TRUE, 72, 150.00, FALSE, 'price_1RcwGgClkdHHtOgpe2g5Tqtl', NULL, NOW(), NOW());
