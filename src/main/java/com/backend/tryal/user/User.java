@@ -1,6 +1,8 @@
 package com.backend.tryal.user;
 
+import com.backend.tryal.business.Business;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -11,6 +13,9 @@ import org.hibernate.annotations.UuidGenerator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -75,6 +80,15 @@ public class User {
     @Column(name = "stripe_customer_id")
     private String stripeCustomerId;
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_bookmarks", // name of bridge table
+            joinColumns = @JoinColumn(name = "user_id"), // FK from users
+            inverseJoinColumns = @JoinColumn(name = "business_id") // FK from businesses
+    )
+    @JsonManagedReference
+    private Set<Business> businesses = new HashSet<>();
+
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -86,7 +100,7 @@ public class User {
     public User() {
     }
 
-    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dateOfBirth, Gender gender, String profileImageUrl, Integer creditBalance, String stripeCustomerId) {
+    public User(String firstName, String lastName, String email, String phoneNumber, String passwordHash, LocalDate dateOfBirth, Gender gender, String profileImageUrl, Integer creditBalance, String stripeCustomerId, Business business) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -97,5 +111,6 @@ public class User {
         this.profileImageUrl = profileImageUrl;
         this.creditBalance = creditBalance;
         this.stripeCustomerId = stripeCustomerId;
+        this.businesses = Collections.singleton(business);
     }
 }

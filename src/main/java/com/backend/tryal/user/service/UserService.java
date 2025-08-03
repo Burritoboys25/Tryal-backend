@@ -3,7 +3,9 @@ package com.backend.tryal.user.service;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.user.User;
+import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
+import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 
 import java.util.List;
@@ -17,4 +19,10 @@ public interface UserService {
     TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
     User updateUserById(UUID userId, User user);
     boolean deleteUserById(UUID userId);
+
+    User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
+
+    boolean removeUserBookmark(UUID userId, UUID businessId);
+
+    List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId);
 }
