@@ -9,6 +9,7 @@ import com.backend.tryal.timeslot.mapper.TimeslotMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,7 +50,7 @@ public class TimeslotServiceImpl implements TimeslotService {
             Timeslot updatedTimeslot = getTimeslotById(timeslotId);
 
             if (timeslotRequestDTO.getTimeslotDate() != null) {
-                updatedTimeslot.setTimeslotDate(timeslotRequestDTO.getTimeslotDate());
+                updatedTimeslot.setTimeslotDate((Date) timeslotRequestDTO.getTimeslotDate());
             }
 
             if (timeslotRequestDTO.getStartTime() != null) {
