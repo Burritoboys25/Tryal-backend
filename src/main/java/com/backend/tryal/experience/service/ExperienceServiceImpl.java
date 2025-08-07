@@ -21,9 +21,10 @@ public class ExperienceServiceImpl implements ExperienceService{
         this.businessRepository = businessRepository;
     }
 
+
     @Override
-    public List<Experience> getAllExperiences() {
-        return experienceRepository.findAll();
+    public List<Experience> getExperiencesByBusinessId(UUID businessId) {
+        return experienceRepository.findByBusiness_BusinessId(businessId);
     }
 
     @Override
@@ -96,4 +97,10 @@ public class ExperienceServiceImpl implements ExperienceService{
 
         return false;
     }
+
+    @Override
+    public List<Experience> getAllExperiences() {
+        return experienceRepository.findAll();
+    }
+
 }
