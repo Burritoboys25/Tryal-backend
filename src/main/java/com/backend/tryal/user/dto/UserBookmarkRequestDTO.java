@@ -8,4 +8,9 @@ import java.util.UUID;
 public class UserBookmarkRequestDTO {
     private UUID userId;
     private UUID businessId;
+
+    public UserBookmarkRequestDTO(UUID userId, UUID businessId) {
+        this.userId = userId;
+        this.businessId = businessId;
+    }
 }
