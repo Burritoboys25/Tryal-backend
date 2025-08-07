@@ -105,6 +105,12 @@ INSERT INTO experiences (experience_id, business_id, experience_name, descriptio
   ('47685f54-1eb7-4c68-9281-a37baf6675a8', 'dddd4444-dddd-dddd-dddd-dddddddd4444', 'Fire Pit S’mores & Stories', 'All levels welcome—just bring curiosity!', 'EXPERT', 14, 11, 120, 4, true, now(), now()),
   ('645aff81-6f12-4fb8-8559-f05a8a7ae6b2', 'eeee5555-eeee-eeee-eeee-eeeeeeee5555', 'Self-Defense for Beginners', 'All levels welcome—just bring curiosity!', 'EXPERT', 29, 22, 120, 6, true, now(), now()),
   ('b080741a-9d41-47d4-a4c7-7d29eb4b3240', 'eeee5555-eeee-eeee-eeee-eeeeeeee5555', 'Acrylic Pour Painting Class', 'A creative, engaging, and energizing activity.', 'EXPERT', 19, 14, 120, 6, true, now(), now());
+  ('e1a11111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'Urban Sketching Workshop', 'Explore cityscapes with guided sketching sessions.', 'BEGINNER', 15, 10, 90, 2, true, now(), now()),
+  ('e2a11111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'Gourmet Chocolate Tasting', 'Sample and learn about fine chocolates.', 'INTERMEDIATE', 20, 18, 60, 3, true, now(), now()),
+  ('e3a11111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'Salsa Dance Night', 'Join a lively salsa dance session for all levels.', 'BEGINNER', 25, 20, 120, 4, true, now(), now()),
+  ('e4a11111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'DIY Candle Making', 'Create custom candles in a hands-on workshop.', 'EXPERT', 12, 8, 75, 3, true, now(), now()),
+  ('e5a11111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'Mindful Yoga Flow', 'Relax and recharge with a guided yoga class.', 'INTERMEDIATE', 18, 15, 60, 2, true, now(), now()),
+  ('e6a11111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'aaaa1111-aaaa-aaaa-aaaa-aaaaaaaa1111', 'Historical Walking Tour', 'Discover local history on a guided walk.', 'BEGINNER', 30, 28, 90, 2, true, now(), now());
 
 INSERT INTO experience_categories (experience_id, category_id) VALUES
     ('1676081d-f345-4d0e-af47-57abfec8a658', '00000000-0000-0000-0000-000000000002'),
