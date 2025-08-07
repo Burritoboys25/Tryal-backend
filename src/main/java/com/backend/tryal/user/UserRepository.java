@@ -1,5 +1,6 @@
 package com.backend.tryal.user;
 
+import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,16 +19,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(
             value = """
         SELECT
-            u.user_id AS userId,
-            bus.business_id AS businessId,
-            bus.name AS businessName,
-            bus.address
-        FROM users u
-        JOIN user_bookmarks ub ON u.user_id = ub.user_id
-        JOIN businesses bus ON ub.business_id = bus.business_id
-        WHERE u.user_id = :userId
+            ub.user_id AS userId,
+            ub.business_id AS businessId
+        FROM user_bookmarks ub
+        WHERE ub.user_id = :userId
         """,
             nativeQuery = true
     )
-    List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(@Param("userId") UUID userId);
+    List<UserBookmarkRequestDTO> getAllUserBookmarksByUserId(@Param("userId") UUID userId);
 }
