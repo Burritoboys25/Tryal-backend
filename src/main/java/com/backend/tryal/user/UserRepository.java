@@ -1,7 +1,6 @@
 package com.backend.tryal.user;
 
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
-import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
