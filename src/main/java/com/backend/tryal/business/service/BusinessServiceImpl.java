@@ -265,4 +265,11 @@ public class BusinessServiceImpl implements BusinessService {
                 .distinct()
                 .collect(Collectors.toList());
     }
+    @Override
+    public BusinessCreditRangeDTO getBusinessCreditRangeById(UUID businessId) {
+        if (getBusinessById(businessId) != null) {
+            return businessRepository.getBusinessCreditRangeById(businessId);
+        }
+        return null;
+    }
 }

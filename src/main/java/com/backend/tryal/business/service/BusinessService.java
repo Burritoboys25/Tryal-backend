@@ -21,4 +21,6 @@ public interface BusinessService {
     boolean deleteBusinessById(UUID businessId);
 
     List<BusinessFilteredResponseDTO> getFilteredBusinesses(BusinessFilteredRequestDTO filters);
+
+    BusinessCreditRangeDTO getBusinessCreditRangeById(UUID businessId);
 }
