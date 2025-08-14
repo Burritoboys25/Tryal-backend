@@ -22,33 +22,22 @@ public class ExperienceController {
         this.experienceService = experienceService;
     }
 
-    // get all experiences
+    // get all experiences or by businessId
     @GetMapping()
-    public ResponseEntity<List<ExperienceDTO>> getAllExperiences() {
+    public ResponseEntity<List<ExperienceDTO>> getExperiences(@RequestParam(required = false) UUID businessId) {
         try {
-            List<ExperienceDTO> experiences = experienceService.getAllExperiences()
-                    .stream()
-                    .map(ExperienceMapper::mapExperienceDto)
-                    .collect(Collectors.toList());
-
-            if (experiences.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            List<ExperienceDTO> experiences;
+            if (businessId != null) {
+                experiences = experienceService.getExperiencesByBusinessId(businessId)
+                        .stream()
+                        .map(ExperienceMapper::mapExperienceDto)
+                        .collect(Collectors.toList());
+            } else {
+                experiences = experienceService.getAllExperiences()
+                        .stream()
+                        .map(ExperienceMapper::mapExperienceDto)
+                        .collect(Collectors.toList());
             }
-
-            return new ResponseEntity<>(experiences, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // get experiences by businessId
-    @GetMapping("/by-business")
-    public ResponseEntity<List<ExperienceDTO>> getExperiencesByBusinessId(@RequestParam UUID businessId) {
-        try {
-            List<ExperienceDTO> experiences = experienceService.getExperiencesByBusinessId(businessId)
-                    .stream()
-                    .map(ExperienceMapper::mapExperienceDto)
-                    .collect(Collectors.toList());
             if (experiences.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -58,8 +47,8 @@ public class ExperienceController {
         }
     }
 
-    // get experience by ID (uses /id/{experienceId} to avoid ambiguity)
-    @GetMapping("/id/{experienceId}")
+    // get experience by ID
+    @GetMapping("/{experienceId}")
     public ResponseEntity<ExperienceResponse> getExperienceById(@PathVariable UUID experienceId) {
         try {
             Experience experience = experienceService.getExperienceById(experienceId);
