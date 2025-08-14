@@ -12,7 +12,8 @@ public class ExperienceDTO {
     private String experienceName;
     private String description;
     private Experience.SkillLevel skillLevel;
-    private Integer capacity;
+    private Integer maxCapacity;
+    private Integer remainingCapacity;
     private Integer duration;
     private Integer creditPrice;
     private Boolean isActive;
@@ -20,13 +21,14 @@ public class ExperienceDTO {
     public ExperienceDTO() {
     }
 
-    public ExperienceDTO(UUID experienceId, UUID businessId, String experienceName, String description, Experience.SkillLevel skillLevel, Integer capacity, Integer duration, Integer creditPrice, Boolean isActive) {
+    public ExperienceDTO(UUID experienceId, UUID businessId, String experienceName, String description, Experience.SkillLevel skillLevel, Integer maxCapacity,Integer remainingCapacity, Integer duration, Integer creditPrice, Boolean isActive) {
         this.experienceId = experienceId;
         this.businessId = businessId;
         this.experienceName = experienceName;
         this.description = description;
         this.skillLevel = skillLevel;
-        this.capacity = capacity;
+        this.maxCapacity = maxCapacity;
+        this.remainingCapacity = remainingCapacity;
         this.duration = duration;
         this.creditPrice = creditPrice;
         this.isActive = isActive;

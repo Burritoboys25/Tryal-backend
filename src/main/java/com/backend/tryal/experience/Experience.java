@@ -46,8 +46,11 @@ public class Experience {
     @Column(name = "skill_level", nullable = true)
     private SkillLevel skillLevel;
 
-    @Column(name = "capacity", nullable = true)
-    private Integer capacity;
+    @Column(name = "max_capacity", nullable = true)
+    private Integer maxCapacity;
+
+    @Column(name = "remaining_capacity", nullable = true)
+    private Integer remainingCapacity;
 
     @Column(name = "duration", nullable = true)
     private Integer duration;
@@ -85,13 +88,14 @@ public class Experience {
     public Experience() {
     }
 
-    public Experience(UUID experienceId, Business business, String experienceName, String description, SkillLevel skillLevel, Integer capacity, Integer duration, Integer creditPrice, Boolean isActive, Set<Category> categories, Set<GroupType> groupTypes) {
+    public Experience(UUID experienceId, Business business, String experienceName, String description, SkillLevel skillLevel, Integer maxCapacity, Integer remainingCapacity, Integer duration, Integer creditPrice, Boolean isActive, Set<Category> categories, Set<GroupType> groupTypes) {
         this.experienceId = experienceId;
         this.business = business;
         this.experienceName = experienceName;
         this.description = description;
         this.skillLevel = skillLevel;
-        this.capacity = capacity;
+        this.maxCapacity = maxCapacity;
+        this.remainingCapacity = remainingCapacity;
         this.duration = duration;
         this.creditPrice = creditPrice;
         this.isActive = isActive;

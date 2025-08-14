@@ -12,6 +12,7 @@ import java.util.UUID;
 public interface BusinessService {
     List<Experience> getAllBusinessExperiences(UUID businessId);
     List<Business> getAllBusinesses();
+    List<String> getBusinessCategories(UUID businessId);
     Business getBusinessById(UUID businessId);
     Business createBusiness(BusinessSignupDTO signupDTO) throws IllegalArgumentException;
     TokenPair loginBusiness(BusinessLoginDTO loginDTO);
