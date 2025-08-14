@@ -36,7 +36,6 @@ public class StripeController {
         String userId = requestBody.get("userId");
         String planId = requestBody.get("planId");
 
-
         if(planId == null || userEmail == null || userId == null ){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

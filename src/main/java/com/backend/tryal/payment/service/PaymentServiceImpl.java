@@ -33,17 +33,38 @@ public class PaymentServiceImpl implements PaymentService{
     public void handleInvoicePaid(Invoice invoice) {
         System.out.println("INVOICE PAYMENT SUCCEEDED");
 
-        String subscriptionId;
-        try {
-            subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("Subscription ID not found in invoice");
+        String planIdStr = invoice.getMetadata() != null ? invoice.getMetadata().get("planId") : null;
+        String userIdStr = invoice.getMetadata() != null ? invoice.getMetadata().get("userId") : null;
+
+        // Stripe checkouts will always contain planId and userId
+        if (planIdStr != null && userIdStr != null) {
+            handleCheckoutInvoice(planIdStr, userIdStr);
+            return;
         }
 
-        if (subscriptionId == null) {
-            throw new IllegalArgumentException("Subscription ID is null in invoice");
+        // Invoices paid without a planId and userId will be a subscription
+        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+        if (subscriptionId != null) {
+            handleSubscriptionInvoice(subscriptionId);
+            return;
         }
 
+        System.out.println("Invoice payment event missing planId or subscriptionId");
+    }
+
+    private void handleCheckoutInvoice(String planIdStr, String userIdStr) {
+        UUID planId = UUID.fromString(planIdStr);
+        UUID userId = UUID.fromString(userIdStr);
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new EntityNotFoundException("Plan not found for id: " + planId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found for id: " + userId));
+
+        addCreditsToUser(user, plan.getCredits());
+    }
+
+    private void handleSubscriptionInvoice(String subscriptionId) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
 
@@ -58,12 +79,20 @@ public class PaymentServiceImpl implements PaymentService{
                 throw new EntityNotFoundException("Plan linked to subscription not found");
             }
 
-            int creditsToAdd = plan.getMonthlyCredits();
-            int currentCredits = user.getCreditBalance() != null ? user.getCreditBalance() : 0;
-
-            user.setCreditBalance(currentCredits + creditsToAdd);
+            addCreditsToUser(user, plan.getCredits());
             userRepository.save(user);
+            return;
         }
+
+        System.out.println("Subscription is not active for id: " + subscriptionId);
+    }
+
+    private void addCreditsToUser(User user, int creditsToAdd) {
+        int currentCredits = user.getCreditBalance() != null ? user.getCreditBalance() : 0;
+        user.setCreditBalance(currentCredits + creditsToAdd);
+        userRepository.save(user);
+
+        System.out.println("Credits added to user with id: " + user.getUserId());
     }
 
     @Override
@@ -172,19 +201,21 @@ public class PaymentServiceImpl implements PaymentService{
             Plan plan = planRepository.findById(UUID.fromString(planId))
                     .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
 
-            com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
+            // Plan during checkout is a subscription
+            if(plan.getPlanType() == Plan.PlanType.SUBSCRIPTION){
+                com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
 
-            Subscription newSubscription = new Subscription();
-            newSubscription.setUser(user);
-            newSubscription.setPlan(plan);
-            newSubscription.setSubscriptionId(subscriptionId);
-            Subscription.SubscriptionStatus status =
-                    Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
-            newSubscription.setSubscriptionStatus(status);
-            newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
+                Subscription newSubscription = new Subscription();
+                newSubscription.setUser(user);
+                newSubscription.setPlan(plan);
+                newSubscription.setSubscriptionId(subscriptionId);
+                Subscription.SubscriptionStatus status =
+                        Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
+                newSubscription.setSubscriptionStatus(status);
+                newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
 
-            subscriptionRepository.save(newSubscription);
-
+                subscriptionRepository.save(newSubscription);
+            }
         } catch (StripeException e) {
             throw e;
         }

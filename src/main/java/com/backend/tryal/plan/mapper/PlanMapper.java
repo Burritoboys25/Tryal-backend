@@ -11,8 +11,9 @@ public class PlanMapper {
                 plan.getName(),
                 plan.getDescription(),
                 plan.getPrice(),
-                plan.getMonthlyCredits(),
-                plan.getRolloverCreditsAllowed()
+                plan.getCredits(),
+                plan.getRolloverCreditsAllowed(),
+                plan.getPlanType()
         );
     }
 }

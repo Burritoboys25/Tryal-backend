@@ -1,9 +1,6 @@
 package com.backend.tryal.plan;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -16,6 +13,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "plans")
 public class Plan {
+    public enum PlanType {
+        SUBSCRIPTION,
+        ONE_TIME
+    }
+
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "plan_id")
@@ -30,8 +32,8 @@ public class Plan {
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "monthly_credits")
-    private Integer monthlyCredits;
+    @Column(name = "credits")
+    private Integer credits;
 
     @Column(name = "rollover_credits_allowed")
     private Boolean rolloverCreditsAllowed;
@@ -45,6 +47,10 @@ public class Plan {
     @Column(name = "stripe_price_id", unique = true, nullable = false)
     private String stripePriceId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plan_type", nullable = false)
+    private PlanType planType;
+
     @Column(updatable = false, name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -56,11 +62,11 @@ public class Plan {
     public Plan() {
     }
 
-    public Plan(String name, String description, Double price, Integer monthlyCredits, Boolean rolloverCreditsAllowed, Boolean isActive, String stripeProductId, String stripePriceId) {
+    public Plan(String name, String description, Double price, Integer credits, Boolean rolloverCreditsAllowed, Boolean isActive, String stripeProductId, String stripePriceId) {
         this.name = name;
         this.description = description;
         this.price = price;
-        this.monthlyCredits = monthlyCredits;
+        this.credits = credits;
         this.rolloverCreditsAllowed = rolloverCreditsAllowed;
         this.isActive = isActive;
         this.stripeProductId = stripeProductId;
