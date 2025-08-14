@@ -1,12 +1,16 @@
 package com.backend.tryal.user.service;
 
+import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
+import com.backend.tryal.experience.Experience;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
+import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import jakarta.validation.Valid;
@@ -22,6 +26,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -176,5 +181,51 @@ public class UserServiceImpl implements UserService {
         }
 
         return false;
+    }
+
+    @Override
+    public User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO) {
+        User user = userRepository.findById(bookmarkRequestDTO.getUserId()).orElse(null);
+        Business business = businessRepository.findById(bookmarkRequestDTO.getBusinessId()).orElse(null);
+
+        if (user != null && business != null) {
+            user.getBusinesses().add(business);
+            userRepository.save(user); // Saves the change, updating the bridge table
+            return user;
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean removeUserBookmark(UUID userId, UUID businessId) {
+        User user = userRepository.findById(userId).orElse(null);
+        Business business = businessRepository.findById(businessId).orElse(null);
+
+        if (user != null && business != null) {
+            boolean removed = user.getBusinesses().remove(business); // directly
+            if (removed) {
+                userRepository.save(user); // this persists join table change
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId) {
+        List<UserProfileBookmarkDTO> response = new ArrayList<>();
+        List<UserBookmarkRequestDTO> bookmarks = userRepository.getAllUserBookmarksByUserId(userId);
+
+        for (UserBookmarkRequestDTO bookmark: bookmarks) {
+            Business business = businessRepository.findById(bookmark.getBusinessId()).orElse(null);
+            assert business != null;
+            List<Experience> experiences = business.getExperiences();
+
+            UserProfileBookmarkDTO dto = UserMapper.mapToUserProfileBookmarkDTO(userId, business, experiences);
+            response.add(dto);
+        }
+
+        return response;
     }
 }

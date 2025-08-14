@@ -1,5 +1,6 @@
 package com.backend.tryal.business;
 
+import com.backend.tryal.business.dto.BusinessCreditRangeDTO;
 import com.backend.tryal.experience.Experience;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -34,4 +35,21 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
             @Param("creditsMin") Integer creditsMin,
             @Param("creditsMax") Integer creditsMax
     );
+
+    @Query(
+            value = """
+        SELECT
+            b.business_id as businessId,
+            b.name as businessName,
+            MIN(e.credit_price) AS minCredit,
+            MAX(e.credit_price) AS maxCredit
+        FROM businesses b
+        JOIN experiences e
+            ON b.business_id = e.business_id
+        WHERE b.business_id = :businessId
+        GROUP BY b.business_id, b.name
+        """,
+            nativeQuery = true
+    )
+    BusinessCreditRangeDTO getBusinessCreditRangeById(@Param("businessId") UUID businessId);
 }

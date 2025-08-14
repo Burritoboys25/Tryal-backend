@@ -251,4 +251,11 @@ public class BusinessServiceImpl implements BusinessService {
         return response;
     }
 
+    @Override
+    public BusinessCreditRangeDTO getBusinessCreditRangeById(UUID businessId) {
+        if (getBusinessById(businessId) != null) {
+            return businessRepository.getBusinessCreditRangeById(businessId);
+        }
+        return null;
+    }
 }

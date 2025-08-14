@@ -1,5 +1,6 @@
-package com.backend.tryal.user;
+package com.backend.tryal.user.controller;
 
+import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import com.backend.tryal.user.response.UserResponse;

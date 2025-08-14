@@ -5,6 +5,8 @@ import com.backend.tryal.timeslot.Timeslot;
 import com.backend.tryal.timeslot.dto.TimeslotDTO;
 import com.backend.tryal.timeslot.dto.TimeslotRequestDTO;
 
+import java.sql.Date;
+
 public class TimeslotMapper {
     public static TimeslotDTO mapTimeslotDto(Timeslot timeslot) {
         TimeslotDTO timeslotDTO = new TimeslotDTO();
@@ -27,7 +29,7 @@ public class TimeslotMapper {
 
         timeslot.setExperience(experience);
 
-        timeslot.setTimeslotDate(timeslotRequestDTO.getTimeslotDate());
+        timeslot.setTimeslotDate((Date) timeslotRequestDTO.getTimeslotDate());
         timeslot.setStartTime(timeslotRequestDTO.getStartTime());
         timeslot.setIsCancelled(timeslot.getIsCancelled());
         timeslot.setExpConvertPrice(timeslotRequestDTO.getExpConvertPrice());
