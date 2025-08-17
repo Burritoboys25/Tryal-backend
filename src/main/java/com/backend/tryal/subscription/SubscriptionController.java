@@ -46,7 +46,7 @@ public class SubscriptionController {
 
     //get subscription by id
     @GetMapping("/{subscriptionId}")
-    public ResponseEntity<SubscriptionResponse> getSubscriptionById(@PathVariable UUID subscriptionId){
+    public ResponseEntity<SubscriptionResponse> getSubscriptionById(@PathVariable String subscriptionId){
         try{
             Subscription subscription = subscriptionService.getSubscriptionById(subscriptionId);
 
@@ -111,7 +111,7 @@ public class SubscriptionController {
 
     //patch subscription
     @PatchMapping("/{subscriptionId}")
-    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable UUID subscriptionId, @RequestBody SubscriptionDTO subscriptionRequestDTO) {
+    public ResponseEntity<SubscriptionResponse> updateSubscriptionById(@PathVariable String subscriptionId, @RequestBody SubscriptionDTO subscriptionRequestDTO) {
         try{
             Subscription updatedSubscription = subscriptionService.updateSubscriptionById(subscriptionId, subscriptionRequestDTO);
 

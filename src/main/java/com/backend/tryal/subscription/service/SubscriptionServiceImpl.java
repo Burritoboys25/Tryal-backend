@@ -29,7 +29,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public Subscription getSubscriptionById(UUID subscriptionId) {
+    public Subscription getSubscriptionById(String subscriptionId) {
         return subscriptionRepository.findById(subscriptionId).orElse(null);
     }
 
@@ -59,7 +59,6 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         subscription.setPlan(plan);
         subscription.setSubscriptionStatus(subscriptionRequestDTO.getSubscriptionStatus());
         subscription.setAutoRenew(subscriptionRequestDTO.getAutoRenew());
-        subscription.setStripeSubscriptionId(subscriptionRequestDTO.getStripeSubscriptionId());
         subscription.setStartAt(subscriptionRequestDTO.getStartAt());
         subscription.setEndAt(subscriptionRequestDTO.getEndAt());
 
@@ -67,7 +66,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public Subscription updateSubscriptionById(UUID subscriptionId, SubscriptionDTO subscriptionRequestDTO) {
+    public Subscription updateSubscriptionById(String subscriptionId, SubscriptionDTO subscriptionRequestDTO) {
         if(getSubscriptionById(subscriptionId) == null || subscriptionRequestDTO.getAutoRenew() == null || subscriptionRequestDTO.getEndAt() == null || subscriptionRequestDTO.getSubscriptionStatus() == null){
             return null;
         }

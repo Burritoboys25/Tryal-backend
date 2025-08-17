@@ -10,9 +10,9 @@ public interface SubscriptionService {
 
     List<Subscription> getAllSubscriptions();
 
-    Subscription getSubscriptionById(UUID subscriptionId);
+    Subscription getSubscriptionById(String subscriptionId);
     List<Subscription> getSubscriptionsByUser(UUID userId);
     List<Subscription> getSubscriptionsByUser(UUID userId, Boolean activeSubscription);
     Subscription createSubscription(UUID userId, SubscriptionDTO subscriptionRequestDTO);
-    Subscription updateSubscriptionById(UUID subscriptionId, SubscriptionDTO subscriptionRequestDTO);
+    Subscription updateSubscriptionById(String subscriptionId, SubscriptionDTO subscriptionRequestDTO);
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
+public interface SubscriptionRepository extends JpaRepository<Subscription, String> {
 
     @Query("SELECT s FROM Subscription s WHERE s.user.userId = :userId")
     List<Subscription> findByUserId(@Param("userId") UUID userId);
