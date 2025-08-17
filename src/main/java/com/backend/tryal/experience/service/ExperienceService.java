@@ -12,4 +12,5 @@ public interface ExperienceService {
     Experience createExperience(ExperienceRequestDTO experienceRequestDTO, UUID businessId);
     Experience updateExperienceById(ExperienceRequestDTO experienceRequestDTO, UUID experienceId);
     boolean deleteExperienceById(UUID experienceId);
+    List<Experience> getExperiencesByBusinessId(UUID businessId);
 }

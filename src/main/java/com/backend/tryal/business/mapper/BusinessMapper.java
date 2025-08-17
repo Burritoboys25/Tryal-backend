@@ -21,6 +21,16 @@ public class BusinessMapper {
         businessDTO.setAddress(business.getAddress());
         businessDTO.setPhoneNumber(business.getPhoneNumber());
 
+        // Calculate min and max credits from experiences
+        List<Experience> experiences = business.getExperiences(); // Assuming Business has a getExperiences method
+        if (experiences != null && !experiences.isEmpty()) {
+            List<Integer> creditValues = experiences.stream()
+                    .map(Experience::getCreditPrice)
+                    .toList();
+            businessDTO.setMinCredits(Collections.min(creditValues));
+            businessDTO.setMaxCredits(Collections.max(creditValues));
+        }
+
         return businessDTO;
     }
 
@@ -31,7 +41,7 @@ public class BusinessMapper {
         business.setEmail(signupDTO.getEmail());
 
         return business;
-    }
+    } 
 
     // Private method used with mapFilteredResponse below. Maps categories to experience. Experience DTO is then added to
     // Business filter response

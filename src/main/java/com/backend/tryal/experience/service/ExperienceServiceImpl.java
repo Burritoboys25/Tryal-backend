@@ -21,9 +21,10 @@ public class ExperienceServiceImpl implements ExperienceService{
         this.businessRepository = businessRepository;
     }
 
+
     @Override
-    public List<Experience> getAllExperiences() {
-        return experienceRepository.findAll();
+    public List<Experience> getExperiencesByBusinessId(UUID businessId) {
+        return experienceRepository.findByBusiness_BusinessId(businessId);
     }
 
     @Override
@@ -61,8 +62,12 @@ public class ExperienceServiceImpl implements ExperienceService{
                 updatedExperience.setSkillLevel(experienceRequestDTO.getSkillLevel());
             }
 
-            if(experienceRequestDTO.getCapacity() != null){
-                updatedExperience.setCapacity(experienceRequestDTO.getCapacity());
+            if(experienceRequestDTO.getMaxCapacity() != null){
+                updatedExperience.setMaxCapacity(experienceRequestDTO.getMaxCapacity());
+            }
+
+            if(experienceRequestDTO.getRemainingCapacity() != null){
+                updatedExperience.setMaxCapacity(experienceRequestDTO.getRemainingCapacity());
             }
 
             if(experienceRequestDTO.getDuration() != null){
@@ -92,4 +97,10 @@ public class ExperienceServiceImpl implements ExperienceService{
 
         return false;
     }
+
+    @Override
+    public List<Experience> getAllExperiences() {
+        return experienceRepository.findAll();
+    }
+
 }
