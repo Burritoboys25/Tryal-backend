@@ -1,15 +1,7 @@
 package com.backend.tryal.payment;
 
 import java.util.Map;
-import java.util.HashMap;
-import java.util.UUID;
-
-import com.backend.tryal.plan.Plan;
-import com.backend.tryal.plan.service.PlanService;
-import com.stripe.Stripe;
-import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionCreateParams;
-import org.springframework.beans.factory.annotation.Value;
+import com.backend.tryal.payment.service.PaymentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,82 +9,45 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/payments/session")
 public class StripeController {
-    @Value("${stripe.secret.key}")
-    private String stripeSecretKey;
+    private final PaymentService paymentService;
 
-    private final String domain = "http://localhost:3000";
-
-    private final PlanService planService;
-
-    public StripeController(PlanService planService) {
-        this.planService = planService;
+    public StripeController(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<?> createCheckoutSession(@RequestBody Map<String, String> requestBody) {
-        Stripe.apiKey = stripeSecretKey;
-
         String userEmail = requestBody.get("email");
         String userId = requestBody.get("userId");
         String planId = requestBody.get("planId");
 
-        if(planId == null || userEmail == null || userId == null ){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        if (planId == null || userEmail == null || userId == null) {
+            return new ResponseEntity<>("Missing required fields", HttpStatus.BAD_REQUEST);
         }
 
-        Plan plan = planService.getPlanById(UUID.fromString(planId));
-
-        if (plan == null || plan.getStripePriceId() == null) {
-            return new ResponseEntity<>("Invalid plan", HttpStatus.BAD_REQUEST);
-        }
-
-        try{
-            SessionCreateParams params = SessionCreateParams.builder()
-                    .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
-                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                    .setReturnUrl(domain + "/stripe/return?session_id={CHECKOUT_SESSION_ID}")
-                    .addLineItem(
-                            SessionCreateParams.LineItem.builder()
-                                    .setQuantity(1L)
-                                    .setPrice(plan.getStripePriceId())
-                                    .build()
-                    )
-                    .putMetadata("userId", userId)
-                    .putMetadata("planId", planId)
-                    .build();
-
-            Session session = Session.create(params);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("clientSecret", session.getClientSecret());
-            return ResponseEntity.ok(response);
-
+        try {
+            String clientSecret = paymentService.createCheckoutSession(userId, userEmail, planId);
+            return new ResponseEntity<>(Map.of("clientSecret", clientSecret), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping()
-    public ResponseEntity<Map<String, String>> getSessionStatus(@RequestParam("session_id") String sessionId) {
-        Stripe.apiKey = stripeSecretKey;
+    @GetMapping
+    public ResponseEntity<?> getSessionStatus(@RequestParam("session_id") String sessionId) {
+        if (sessionId == null || sessionId.isBlank()) {
+            return new ResponseEntity<>("Missing session ID", HttpStatus.BAD_REQUEST);
+        }
 
         try {
-            Session session = Session.retrieve(sessionId);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("status", session.getStatus());
-
-            if (session.getCustomerDetails() != null && session.getCustomerDetails().getEmail() != null) {
-                response.put("customer_email", session.getCustomerDetails().getEmail());
-            } else {
-                response.put("customer_email", "unknown");
-            }
-
-            return ResponseEntity.ok(response);
-
+            Map<String, String> response = paymentService.getSessionStatus(sessionId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
