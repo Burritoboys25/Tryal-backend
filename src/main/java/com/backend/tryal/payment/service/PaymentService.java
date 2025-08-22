@@ -17,5 +17,5 @@ public interface PaymentService {
     String createCheckoutSession(String userId, String userEmail, String planId);
     Map<String, String> getSessionStatus(String sessionId);
 
-    void processStripeEvent(String payload, String sigHeader) throws StripeException
+    void processStripeEvent(String payload, String sigHeader) throws StripeException;
 }
