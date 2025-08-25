@@ -14,10 +14,11 @@ public class PlanDTO {
     private Integer credits;
     private Boolean rolloverCreditsAllowed;
     private Plan.PlanType planType;
+    private Boolean isActive;
 
     public PlanDTO() {}
 
-    public PlanDTO(UUID planId, String name, String description, Double price, Integer credits, Boolean rolloverCreditsAllowed, Plan.PlanType planType) {
+    public PlanDTO(UUID planId, String name, String description, Double price, Integer credits, Boolean rolloverCreditsAllowed, Plan.PlanType planType, Boolean isActive) {
         this.planId = planId;
         this.name = name;
         this.description = description;
@@ -25,5 +26,6 @@ public class PlanDTO {
         this.credits = credits;
         this.rolloverCreditsAllowed = rolloverCreditsAllowed;
         this.planType = planType;
+        this.isActive = isActive;
     }
 }
