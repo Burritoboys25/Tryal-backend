@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 import com.stripe.model.*;
 import com.stripe.net.Webhook;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -53,8 +54,7 @@ public class PaymentServiceImpl implements PaymentService{
         Stripe.apiKey = stripeSecretKey;
     }
 
-    @Override
-    public void handleInvoicePaid(Invoice invoice) {
+    private void handleInvoicePaid(Invoice invoice) {
         System.out.println("INVOICE PAYMENT SUCCEEDED");
 
         String planIdStr = invoice.getMetadata() != null ? invoice.getMetadata().get("planId") : null;
@@ -119,8 +119,7 @@ public class PaymentServiceImpl implements PaymentService{
         System.out.println("Credits added to user with id: " + user.getUserId());
     }
 
-    @Override
-    public void handleInvoiceFailed(Invoice invoice) {
+    private void handleInvoiceFailed(Invoice invoice) {
         System.out.println("INVOICE PAYMENT FAILED");
 
         String subscriptionId;
@@ -146,8 +145,7 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
-    @Override
-    public void handleSubscriptionDeleted(com.stripe.model.Subscription stripeSubscription) {
+    private void handleSubscriptionDeleted(com.stripe.model.Subscription stripeSubscription) {
         System.out.println("STRIPE SUBSCRIPTION DELETED");
 
         String subscriptionId = stripeSubscription.getId();
@@ -179,8 +177,7 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
-    @Override
-    public void handleSubscriptionUpdated(com.stripe.model.Subscription stripeSubscription) {
+    private void handleSubscriptionUpdated(com.stripe.model.Subscription stripeSubscription) {
         System.out.println("STRIPE SUBSCRIPTION UPDATED");
 
         String subscriptionId = stripeSubscription.getId();
@@ -206,8 +203,7 @@ public class PaymentServiceImpl implements PaymentService{
         subscriptionRepository.save(subscription);
     }
 
-    @Override
-    public void handleCheckoutCompleted(Session session) throws StripeException {
+    private void handleCheckoutCompleted(Session session) throws StripeException {
         System.out.println("STRIPE CHECKOUT: " + session);
 
         try {
@@ -298,6 +294,7 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     @Override
+    @Transactional
     public void processStripeEvent(String payload, String sigHeader) throws StripeException {
         Event event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
 
