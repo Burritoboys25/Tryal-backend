@@ -1,12 +1,10 @@
-package com.backend.tryal.payment.service;
+package com.backend.tryal.stripe.service;
 
 import com.stripe.exception.StripeException;
-import com.stripe.model.*;
-import com.stripe.model.checkout.Session;
 
 import java.util.Map;
 
-public interface PaymentService {
+public interface StripeService {
 
     String createCheckoutSession(String userId, String userEmail, String planId);
     Map<String, String> getSessionStatus(String sessionId);

@@ -1,7 +1,7 @@
-package com.backend.tryal.payment;
+package com.backend.tryal.stripe.controller;
 
 import java.util.Map;
-import com.backend.tryal.payment.service.PaymentService;
+import com.backend.tryal.stripe.service.StripeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/payments/session")
 public class StripeController {
-    private final PaymentService paymentService;
+    private final StripeService stripeService;
 
-    public StripeController(PaymentService paymentService) {
-        this.paymentService = paymentService;
+    public StripeController(StripeService stripeService) {
+        this.stripeService = stripeService;
     }
 
     @PostMapping
@@ -26,7 +26,7 @@ public class StripeController {
         }
 
         try {
-            String clientSecret = paymentService.createCheckoutSession(userId, userEmail, planId);
+            String clientSecret = stripeService.createCheckoutSession(userId, userEmail, planId);
             return new ResponseEntity<>(Map.of("clientSecret", clientSecret), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -42,7 +42,7 @@ public class StripeController {
         }
 
         try {
-            Map<String, String> response = paymentService.getSessionStatus(sessionId);
+            Map<String, String> response = stripeService.getSessionStatus(sessionId);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

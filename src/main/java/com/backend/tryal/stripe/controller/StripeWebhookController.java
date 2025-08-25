@@ -1,6 +1,6 @@
-package com.backend.tryal.payment;
+package com.backend.tryal.stripe.controller;
 
-import com.backend.tryal.payment.service.PaymentService;
+import com.backend.tryal.stripe.service.StripeService;
 import com.stripe.exception.SignatureVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -13,10 +13,10 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/webhooks/stripe")
 public class StripeWebhookController {
 
-    private final PaymentService paymentService;
+    private final StripeService stripeService;
 
-    public StripeWebhookController(PaymentService paymentService) {
-        this.paymentService = paymentService;
+    public StripeWebhookController(StripeService stripeService) {
+        this.stripeService = stripeService;
     }
 
     // IMPORTANT: Stripe signs the exact raw request body to generate the webhook signature.
@@ -33,7 +33,7 @@ public class StripeWebhookController {
         }
 
         try {
-            paymentService.processStripeEvent(payload, sigHeader);
+            stripeService.processStripeEvent(payload, sigHeader);
             return new ResponseEntity<>("Webhook processed successfully", HttpStatus.OK);
         } catch (SignatureVerificationException e) {
             return new ResponseEntity<>("Invalid Signature", HttpStatus.BAD_REQUEST);

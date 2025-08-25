@@ -1,4 +1,4 @@
-package com.backend.tryal.payment.service;
+package com.backend.tryal.stripe.service;
 
 import com.backend.tryal.plan.Plan;
 import com.backend.tryal.plan.PlanRepository;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-public class PaymentServiceImpl implements PaymentService{
+public class StripeServiceImpl implements StripeService {
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PlanRepository planRepository;
@@ -42,7 +42,7 @@ public class PaymentServiceImpl implements PaymentService{
     @Value("${stripe.webhook.secret}")
     private String webhookSecret;
 
-    public PaymentServiceImpl(UserRepository userRepository, SubscriptionRepository subscriptionRepository, PlanRepository planRepository, PlanService planService) {
+    public StripeServiceImpl(UserRepository userRepository, SubscriptionRepository subscriptionRepository, PlanRepository planRepository, PlanService planService) {
         this.userRepository = userRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
