@@ -62,29 +62,30 @@ public class PlanController {
         }
     }
 
+    // Commenting out deactivate/reactivate plan to be handled within Stripe Admin Controller
     // Deactivate Plan
-    @PatchMapping("/{planId}/deactivate")
-    public ResponseEntity<String> deactivatePlanById(@PathVariable UUID planId) {
-        try {
-            if (planService.deactivatePlanById(planId)) {
-                return new ResponseEntity<>("Plan deactivated successfully.", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PatchMapping("/{planId}/deactivate")
+//    public ResponseEntity<String> deactivatePlanById(@PathVariable UUID planId) {
+//        try {
+//            if (planService.deactivatePlanById(planId)) {
+//                return new ResponseEntity<>("Plan deactivated successfully.", HttpStatus.OK);
+//            }
+//            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     // Reactivate Plan
-    @PatchMapping("/{planId}/reactivate")
-    public ResponseEntity<String> reactivatePlanById(@PathVariable UUID planId) {
-        try {
-            if (planService.reactivatePlanById(planId)) {
-                return new ResponseEntity<>("Plan reactivated successfully.", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PatchMapping("/{planId}/reactivate")
+//    public ResponseEntity<String> reactivatePlanById(@PathVariable UUID planId) {
+//        try {
+//            if (planService.reactivatePlanById(planId)) {
+//                return new ResponseEntity<>("Plan reactivated successfully.", HttpStatus.OK);
+//            }
+//            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }
