@@ -34,7 +34,7 @@ public class StripeAdminServiceImpl implements StripeAdminService{
     @Override
     @Transactional
     public void syncPlansFromStripe() throws StripeException {
-        PriceListParams params = PriceListParams.builder().setActive(true).build();
+        PriceListParams params = PriceListParams.builder().setActive(true).setLimit(50L).build();
         PriceCollection prices = Price.list(params);
 
         Set<String> activePriceIds = new HashSet<>();
