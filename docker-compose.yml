@@ -5,13 +5,13 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: tryal_db
+      POSTGRES_DB: h2ak_db
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
-      - tryal_network
+      - h2ak_network
     restart: unless-stopped
     
   pgadmin:
@@ -26,7 +26,7 @@ services:
     ports:
       - "5050:80"
     networks:
-      - tryal_network
+      - h2ak_network
     restart: unless-stopped
 
 volumes:
@@ -34,5 +34,5 @@ volumes:
   pgadmin:
 
 networks:
-  tryal_network:
+  h2ak_network:
     driver: bridge
