@@ -221,7 +221,7 @@ public class StripeServiceImpl implements StripeService {
                     .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
 
             // Plan during checkout is a subscription
-            if(plan.getPlanType() == Plan.PlanType.SUBSCRIPTION){
+            if(plan.getPlanType() == Plan.PlanType.MONTH || plan.getPlanType() == Plan.PlanType.YEAR){
                 com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
 
                 Subscription newSubscription = new Subscription();
