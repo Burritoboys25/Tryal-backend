@@ -26,7 +26,6 @@ import com.stripe.model.*;
 import com.stripe.net.Webhook;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class StripeServiceImpl implements StripeService {
     private final UserRepository userRepository;

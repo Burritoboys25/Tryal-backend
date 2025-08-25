@@ -1,7 +1,6 @@
 package com.backend.tryal.stripe.service;
 
 import com.stripe.exception.StripeException;
-
 import java.util.Map;
 
 public interface StripeService {
