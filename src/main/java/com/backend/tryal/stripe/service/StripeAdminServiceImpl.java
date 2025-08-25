@@ -2,13 +2,19 @@ package com.backend.tryal.stripe.service;
 
 import com.backend.tryal.plan.Plan;
 import com.backend.tryal.plan.PlanRepository;
+import com.backend.tryal.stripe.dto.StripePriceRequestDTO;
+import com.backend.tryal.stripe.dto.StripeProductRequestDTO;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Price;
 import com.stripe.model.PriceCollection;
 import com.stripe.model.Product;
+import com.stripe.param.PriceCreateParams;
 import com.stripe.param.PriceListParams;
+import com.stripe.param.PriceUpdateParams;
+import com.stripe.param.ProductCreateParams;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,7 +97,11 @@ public class StripeAdminServiceImpl implements StripeAdminService{
                 newPlan.setRolloverCreditsAllowed(false);
 
                 if ("recurring".equals(price.getType())) {
-                    newPlan.setPlanType(Plan.PlanType.SUBSCRIPTION);
+                    if(price.getRecurring().getInterval().equals("month")){
+                        newPlan.setPlanType(Plan.PlanType.MONTH);
+                    }else if(price.getRecurring().getInterval().equals("year")){
+                        newPlan.setPlanType(Plan.PlanType.YEAR);
+                    }
                 } else {
                     newPlan.setPlanType(Plan.PlanType.ONE_TIME);
                 }
@@ -101,5 +111,96 @@ public class StripeAdminServiceImpl implements StripeAdminService{
         }
 
         planRepository.markInactivePlansNotIn(activePriceIds);
+    }
+
+    @Override
+    public Product createProduct(StripeProductRequestDTO stripeProductRequestDTO) throws StripeException {
+        ProductCreateParams params = ProductCreateParams.builder()
+                .setName(stripeProductRequestDTO.getName())
+                .setActive(stripeProductRequestDTO.getIsActive())
+                .setDescription(stripeProductRequestDTO.getDescription())
+                .setTaxCode(stripeProductRequestDTO.getTaxCode())
+                .build();
+
+        Product product = Product.create(params);
+        return product;
+    }
+
+    @Override
+    public Price createPrice(String productId, StripePriceRequestDTO stripePriceRequestDTO) throws StripeException {
+        PriceCreateParams params = null;
+
+        PriceCreateParams.TaxBehavior taxBehavior = switch (stripePriceRequestDTO.getTaxBehavior()) {
+            case EXCLUSIVE -> PriceCreateParams.TaxBehavior.EXCLUSIVE;
+            case INCLUSIVE -> PriceCreateParams.TaxBehavior.INCLUSIVE;
+            case UNSPECIFIED -> PriceCreateParams.TaxBehavior.UNSPECIFIED;
+        };
+
+        if(stripePriceRequestDTO.getPlanType() == Plan.PlanType.ONE_TIME){
+            params = PriceCreateParams.builder()
+                    .setCurrency(stripePriceRequestDTO.getCurrency().toString())
+                    .setUnitAmount(stripePriceRequestDTO.getPrice())
+                    .setActive(stripePriceRequestDTO.getIsActive())
+                    .setProduct(productId)
+                    .setTaxBehavior(taxBehavior)
+                    .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
+                    .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString())
+                    .build();
+        }else if(stripePriceRequestDTO.getPlanType() == Plan.PlanType.MONTH){
+            params = PriceCreateParams.builder()
+                    .setCurrency(stripePriceRequestDTO.getCurrency().toString())
+                    .setUnitAmount(stripePriceRequestDTO.getPrice())
+                    .setRecurring(
+                            PriceCreateParams.Recurring.builder()
+                                    .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
+                                    .setIntervalCount(1L)
+                                    .build()
+                    )
+                    .setActive(stripePriceRequestDTO.getIsActive())
+                    .setProduct(productId)
+                    .setTaxBehavior(taxBehavior)
+                    .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
+                    .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString())
+                    .build();
+        }else if(stripePriceRequestDTO.getPlanType() == Plan.PlanType.YEAR){
+            params = PriceCreateParams.builder()
+                    .setCurrency(stripePriceRequestDTO.getCurrency().toString())
+                    .setUnitAmount(stripePriceRequestDTO.getPrice())
+                    .setRecurring(
+                            PriceCreateParams.Recurring.builder()
+                                    .setInterval(PriceCreateParams.Recurring.Interval.YEAR)
+                                    .setIntervalCount(1L)
+                                    .build()
+                    )
+                    .setActive(stripePriceRequestDTO.getIsActive())
+                    .setProduct(productId)
+                    .setTaxBehavior(taxBehavior)
+                    .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
+                    .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString())
+                    .build();
+        }
+
+        Price price = Price.create(params);
+        return price;
+    }
+
+    @Override
+    public Price deactivatePrice(String priceId) throws StripeException {
+        Plan plan = planRepository.findByStripePriceId(priceId).orElse(null);
+
+        if(plan == null){
+            throw new EntityNotFoundException("Stripe price id not found.");
+        }
+
+        plan.setIsActive(false);
+        planRepository.save(plan);
+
+        Price resource = Price.retrieve(priceId);
+
+        PriceUpdateParams params =
+                PriceUpdateParams.builder().setActive(false).build();
+
+        Price price = resource.update(params);
+        return price;
     }
 }
