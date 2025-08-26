@@ -7,5 +7,4 @@ public class StripeProductRequestDTO {
     private String name;
     private Boolean isActive;
     private String description;
-    private String taxCode;
 }

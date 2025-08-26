@@ -117,7 +117,7 @@ public class StripeAdminServiceImpl implements StripeAdminService{
                 .setName(stripeProductRequestDTO.getName())
                 .setActive(stripeProductRequestDTO.getIsActive())
                 .setDescription(stripeProductRequestDTO.getDescription())
-                .setTaxCode(stripeProductRequestDTO.getTaxCode())
+                .setTaxCode("txcd_10000000")
                 .build();
 
         Product product = Product.create(params);
