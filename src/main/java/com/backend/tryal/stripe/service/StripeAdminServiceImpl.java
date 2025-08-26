@@ -90,11 +90,9 @@ public class StripeAdminServiceImpl implements StripeAdminService{
                 newPlan.setName(stripeProduct.getName());
                 newPlan.setDescription(stripeProduct.getDescription());
                 newPlan.setPrice(price.getUnitAmount() / 100.0);
-                newPlan.setIsActive(true);
-
-                // TODO: Set metadata in products or prices for credits + rollover
-                newPlan.setCredits(10);
-                newPlan.setRolloverCreditsAllowed(false);
+                newPlan.setIsActive(price.getActive());
+                newPlan.setCredits(Integer.parseInt(price.getMetadata().get("credits")));
+                newPlan.setRolloverCreditsAllowed(Boolean.parseBoolean(price.getMetadata().get("rolloverCreditsAllowed")));
 
                 if ("recurring".equals(price.getType())) {
                     if(price.getRecurring().getInterval().equals("month")){
