@@ -1,6 +1,7 @@
 package com.backend.tryal.shared.utils;
 
 import com.backend.tryal.shared.response.ApiResponse;
+import com.backend.tryal.shared.response.ErrorResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -13,12 +14,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 public class GlobalResponseWrapper implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return !returnType.getParameterType().equals(ApiResponse.class);
+        return !returnType.getParameterType().equals(ApiResponse.class) || !returnType.getParameterType().equals(ErrorResponse.class);
     }
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        if (body instanceof ApiResponse || body == null) {
+        if (body instanceof ApiResponse || body instanceof ErrorResponse) {
             return body;
         }
 
