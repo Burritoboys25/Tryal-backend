@@ -6,6 +6,7 @@ import com.backend.tryal.experience.Experience;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
+import com.backend.tryal.shared.utils.ExceptionUtil;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
@@ -13,6 +14,7 @@ import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -214,6 +216,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId) {
+        ExceptionUtil.validateUUIDOrThrow(userId);
+
+        if (userRepository.findById(userId).orElse(null) == null) {
+            throw new EntityNotFoundException("Could not find user with id: " + userId);
+        }
+
         List<UserProfileBookmarkDTO> response = new ArrayList<>();
         List<UserBookmarkRequestDTO> bookmarks = userRepository.getAllUserBookmarksByUserId(userId);
 

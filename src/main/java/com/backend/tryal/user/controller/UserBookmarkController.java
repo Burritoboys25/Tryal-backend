@@ -25,12 +25,7 @@ public class UserBookmarkController {
     // get all Users bookmarks
     @GetMapping("/{userId}")
     public List<UserProfileBookmarkDTO> getAllUserBookmarks(@PathVariable UUID userId) {
-            List<UserProfileBookmarkDTO> userBookmarks = userService.getAllUserBookmarksByUserId(userId);
-            if (userService.getUserById(userId) == null) {
-                throw new EntityNotFoundException("User does not exist.");
-            }
-
-            return userBookmarks;
+        return userService.getAllUserBookmarksByUserId(userId);
     }
 
     // add user bookmark
