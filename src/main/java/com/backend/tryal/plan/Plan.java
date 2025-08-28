@@ -14,7 +14,8 @@ import java.util.UUID;
 @Table(name = "plans")
 public class Plan {
     public enum PlanType {
-        SUBSCRIPTION,
+        MONTH,
+        YEAR,
         ONE_TIME
     }
 
