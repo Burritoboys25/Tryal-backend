@@ -1,11 +1,14 @@
 package com.backend.tryal.shared.utils;
 
 import com.backend.tryal.shared.response.ErrorResponse;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.stripe.exception.StripeException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -35,6 +38,27 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(),
                 e
         );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse<String>> handleHttpMessageNotReadable(HttpMessageNotReadableException e, HttpServletRequest request) {
+        String message = "Malformed JSON request body";
+
+        Throwable cause = e.getCause();
+
+        if (cause instanceof InvalidFormatException ife) {
+            String fieldName = ife.getPath().isEmpty() ? "unknown" : ife.getPath().get(0).getFieldName();
+            message = ExceptionUtil.getTypeMismatchMessage(fieldName, String.valueOf(ife.getValue()), ife.getTargetType()
+            );
+        }
+        else if (cause instanceof JsonMappingException jme) {
+            String fieldName = jme.getPath().isEmpty() ? "unknown" : jme.getPath().get(0).getFieldName();
+            message = String.format("Invalid format for field '%s': %s", fieldName, jme.getOriginalMessage());
+        }
+
+        ErrorResponse<String> error = buildErrorResponse(HttpStatus.BAD_REQUEST, message, request.getRequestURI(), e);
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
