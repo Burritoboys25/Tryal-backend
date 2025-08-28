@@ -1,11 +1,9 @@
 package com.backend.tryal.user.controller;
 
 import com.backend.tryal.shared.response.ApiResponse;
-import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +26,6 @@ public class UserBookmarkController {
     @PostMapping()
     public ApiResponse<String> addUserBookmark(@RequestBody UserBookmarkRequestDTO bookmarkRequestDTO) {
             userService.addUserBookmark(bookmarkRequestDTO);
-
-//            if (user == null) {
-//                throw new EntityNotFoundException("User ID or business ID does not exist.");
-//            }
 
             return new ApiResponse<>("success", "User bookmark saved successfully.");
     }
