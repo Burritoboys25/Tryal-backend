@@ -126,60 +126,35 @@ public class StripeAdminServiceImpl implements StripeAdminService{
 
     @Override
     public Price createPrice(String productId, StripePriceRequestDTO stripePriceRequestDTO) throws StripeException {
-        PriceCreateParams params = null;
-
         PriceCreateParams.TaxBehavior taxBehavior = switch (stripePriceRequestDTO.getTaxBehavior()) {
             case EXCLUSIVE -> PriceCreateParams.TaxBehavior.EXCLUSIVE;
             case INCLUSIVE -> PriceCreateParams.TaxBehavior.INCLUSIVE;
             case UNSPECIFIED -> PriceCreateParams.TaxBehavior.UNSPECIFIED;
         };
 
-        if(stripePriceRequestDTO.getPlanType() == Plan.PlanType.ONE_TIME){
-            params = PriceCreateParams.builder()
-                    .setCurrency(stripePriceRequestDTO.getCurrency().toString())
-                    .setUnitAmount(stripePriceRequestDTO.getPrice())
-                    .setActive(stripePriceRequestDTO.getIsActive())
-                    .setProduct(productId)
-                    .setTaxBehavior(taxBehavior)
-                    .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
-                    .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString())
-                    .build();
-        }else if(stripePriceRequestDTO.getPlanType() == Plan.PlanType.MONTH){
-            params = PriceCreateParams.builder()
-                    .setCurrency(stripePriceRequestDTO.getCurrency().toString())
-                    .setUnitAmount(stripePriceRequestDTO.getPrice())
-                    .setRecurring(
-                            PriceCreateParams.Recurring.builder()
-                                    .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
-                                    .setIntervalCount(1L)
-                                    .build()
-                    )
-                    .setActive(stripePriceRequestDTO.getIsActive())
-                    .setProduct(productId)
-                    .setTaxBehavior(taxBehavior)
-                    .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
-                    .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString())
-                    .build();
-        }else if(stripePriceRequestDTO.getPlanType() == Plan.PlanType.YEAR){
-            params = PriceCreateParams.builder()
-                    .setCurrency(stripePriceRequestDTO.getCurrency().toString())
-                    .setUnitAmount(stripePriceRequestDTO.getPrice())
-                    .setRecurring(
-                            PriceCreateParams.Recurring.builder()
-                                    .setInterval(PriceCreateParams.Recurring.Interval.YEAR)
-                                    .setIntervalCount(1L)
-                                    .build()
-                    )
-                    .setActive(stripePriceRequestDTO.getIsActive())
-                    .setProduct(productId)
-                    .setTaxBehavior(taxBehavior)
-                    .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
-                    .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString())
-                    .build();
+        PriceCreateParams.Builder builder = PriceCreateParams.builder()
+                .setCurrency(stripePriceRequestDTO.getCurrency().toString())
+                .setUnitAmount(stripePriceRequestDTO.getPrice())
+                .setActive(stripePriceRequestDTO.getIsActive())
+                .setProduct(productId)
+                .setTaxBehavior(taxBehavior)
+                .putMetadata("credits", stripePriceRequestDTO.getCredits().toString())
+                .putMetadata("rollover_credits_allowed", stripePriceRequestDTO.getRolloverCreditsAllowed().toString());
+
+        PriceCreateParams.Recurring.Interval interval = switch (stripePriceRequestDTO.getPlanType()) {
+            case MONTH -> PriceCreateParams.Recurring.Interval.MONTH;
+            case YEAR -> PriceCreateParams.Recurring.Interval.YEAR;
+            default -> null;
+        };
+
+        if (interval != null) {
+            builder.setRecurring(PriceCreateParams.Recurring.builder()
+                    .setInterval(interval)
+                    .setIntervalCount(1L)
+                    .build());
         }
 
-        Price price = Price.create(params);
-        return price;
+        return Price.create(builder.build());
     }
 
     @Override
