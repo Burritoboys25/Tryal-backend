@@ -24,39 +24,17 @@ public class UserController {
 
     // get all Users
     @GetMapping()
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        try {
-            List<UserDTO> users = userService.getAllUsers()
-                    .stream()
-                    .map(UserMapper::mapUserDTO)
-                    .collect(Collectors.toList());
-
-            if (users.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public List<UserDTO> getAllUsers() {
+      return userService.getAllUsers()
+          .stream()
+          .map(UserMapper::mapUserDTO)
+          .collect(Collectors.toList());
     }
 
     // get User by ID
     @GetMapping("/{userId}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID userId) {
-        try {
-            User user = userService.getUserById(userId);
-
-            if (user == null) {
-                return new ResponseEntity<>(new UserResponse(null, "User not found."),HttpStatus.NOT_FOUND);
-            }
-
-            UserDTO userDTO = UserMapper.mapUserDTO(user);
-
-            return new ResponseEntity<>(new UserResponse(userDTO, "User found."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public User getUserById(@PathVariable UUID userId) {
+        return userService.getUserById(userId);
     }
 
     // Patch User

@@ -63,6 +63,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(UUID userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new EntityNotFoundException("Could not find user with id: " + userId);
+        }
         return userRepository.findById(userId).orElse(null);
     }
 
@@ -203,8 +207,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUserBookmark(UUID userId, UUID businessId) {
-        ExceptionUtil.validateUUIDOrThrow(userId);
-        ExceptionUtil.validateUUIDOrThrow(businessId);
 
         User user = userRepository.findById(userId).orElse(null);
         Business business = businessRepository.findById(businessId).orElse(null);
