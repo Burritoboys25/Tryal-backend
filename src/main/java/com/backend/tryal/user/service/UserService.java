@@ -18,7 +18,7 @@ public interface UserService {
     TokenPair loginUser(UserLoginDTO loginDTO);
     TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
     User updateUserById(UUID userId, User user);
-    boolean deleteUserById(UUID userId);
+    void deleteUserById(UUID userId);
 
     void addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
 

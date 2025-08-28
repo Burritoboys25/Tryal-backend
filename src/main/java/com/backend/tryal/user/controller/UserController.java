@@ -1,5 +1,6 @@
 package com.backend.tryal.user.controller;
 
+import com.backend.tryal.shared.response.ApiResponse;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.mapper.UserMapper;
@@ -48,14 +49,9 @@ public class UserController {
 
     // Delete User
     @DeleteMapping("/{userId}")
-    public ResponseEntity<String> deleteUserById(@PathVariable UUID userId) {
-        try {
-            if (userService.deleteUserById(userId)) {
-                return new ResponseEntity<>("User deleted successfully.", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ApiResponse<String> deleteUserById(@PathVariable UUID userId) {
+      userService.deleteUserById(userId);
+
+      return new ApiResponse<>("success", "User deleted successfully.");
     }
 }

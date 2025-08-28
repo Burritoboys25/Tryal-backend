@@ -6,7 +6,6 @@ import com.backend.tryal.experience.Experience;
 import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
-import com.backend.tryal.shared.utils.ExceptionUtil;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
@@ -180,13 +179,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deleteUserById(UUID userId) {
-        if (getUserById(userId) != null) {
-            userRepository.deleteById(userId);
-            return true;
+    public void deleteUserById(UUID userId) {
+        if (getUserById(userId) == null) {
+          throw new EntityNotFoundException("Could not find user with id: " + userId);
         }
-
-        return false;
+        userRepository.deleteById(userId);
     }
 
     @Override
