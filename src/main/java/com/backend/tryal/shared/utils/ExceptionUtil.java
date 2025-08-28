@@ -1,5 +1,7 @@
 package com.backend.tryal.shared.utils;
 import com.backend.tryal.shared.response.ErrorResponse;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.http.HttpStatus;
 
 import java.io.PrintWriter;
@@ -7,6 +9,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 public class ExceptionUtil {
     private ExceptionUtil() {};
@@ -37,6 +40,26 @@ public class ExceptionUtil {
         PrintWriter pw = new PrintWriter(sw);
         throwable.printStackTrace(pw);
         return sw.toString();
+    }
+
+    public static String getHttpRequestNotReadableMessage(HttpMessageNotReadableException e) {
+      String message = "Malformed JSON request body";
+
+      Throwable cause = e.getCause();
+
+      if (cause instanceof InvalidFormatException ife) {
+        String fieldName = ife.getPath().isEmpty() ? "unknown" : ife.getPath().get(0).getFieldName();
+        message = ExceptionUtil.getTypeMismatchMessage(
+            fieldName,
+            String.valueOf(ife.getValue()),
+            ife.getTargetType()
+        );
+      } else if (cause instanceof JsonMappingException jme) {
+        String fieldName = jme.getPath().isEmpty() ? "unknown" : jme.getPath().get(0).getFieldName();
+        message = String.format("Invalid format for field '%s': %s", fieldName,
+            jme.getOriginalMessage());
+      }
+      return message;
     }
 
     public static String getTypeMismatchMessage(String paramName, String rejectedValue, Class<?> requiredType) {
