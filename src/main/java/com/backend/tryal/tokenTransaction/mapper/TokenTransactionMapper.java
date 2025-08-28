@@ -13,10 +13,9 @@ public class TokenTransactionMapper {
         tokenTransactionDTO.setCreditAmount(tokenTransaction.getCreditAmount());
         tokenTransactionDTO.setTransactionReason(tokenTransaction.getTransactionReason());
 
-        //TODO:
-//        if(tokenTransaction.getBooking != null){
-//            tokenTransactionDTO.setBookingId(tokenTransaction.getBooking.getBookingId());
-//        }
+        if(tokenTransaction.getBooking() != null){
+            tokenTransactionDTO.setBookingId(tokenTransaction.getBooking().getBookingId());
+        }
 
         if(tokenTransaction.getSubscription() != null){
             tokenTransactionDTO.setSubscriptionId(tokenTransaction.getSubscription().getSubscriptionId());

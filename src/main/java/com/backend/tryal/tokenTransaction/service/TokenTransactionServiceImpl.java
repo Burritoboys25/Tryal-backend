@@ -1,5 +1,7 @@
 package com.backend.tryal.tokenTransaction.service;
 
+import com.backend.tryal.booking.Booking;
+import com.backend.tryal.booking.BookingRepository;
 import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.subscription.SubscriptionRepository;
 import com.backend.tryal.tokenTransaction.TokenTransaction;
@@ -17,14 +19,18 @@ public class TokenTransactionServiceImpl implements TokenTransactionService{
     private final TokenTransactionRepository tokenTransactionRepository;
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final BookingRepository bookingRepository;
 
-    public TokenTransactionServiceImpl(TokenTransactionRepository tokenTransactionRepository, UserRepository userRepository, SubscriptionRepository subscriptionRepository){
-        this.tokenTransactionRepository = tokenTransactionRepository;
-        this.userRepository = userRepository;
-        this.subscriptionRepository = subscriptionRepository;
-    }
+  public TokenTransactionServiceImpl(TokenTransactionRepository tokenTransactionRepository,
+      UserRepository userRepository, SubscriptionRepository subscriptionRepository,
+      BookingRepository bookingRepository) {
+    this.tokenTransactionRepository = tokenTransactionRepository;
+    this.userRepository = userRepository;
+    this.subscriptionRepository = subscriptionRepository;
+    this.bookingRepository = bookingRepository;
+  }
 
-    @Override
+  @Override
     public List<TokenTransaction> getAllTokenTransactions() {
         return tokenTransactionRepository.findAll();
     }
@@ -42,8 +48,8 @@ public class TokenTransactionServiceImpl implements TokenTransactionService{
     @Override
     public TokenTransaction createTokenTransaction(UUID userId, TokenTransactionDTO tokenTransactionDTO) {
         User user = userRepository.findById(userId).orElse(null);
-        //TODO:
-        //Booking booking = bookingRepository.findById(tokenTransactionDTO.getBookingId()).orElse(null);
+
+        Booking booking = bookingRepository.findById(tokenTransactionDTO.getBookingId()).orElse(null);
         Subscription subscription = subscriptionRepository.findById(tokenTransactionDTO.getSubscriptionId()).orElse(null);
 
         if(user == null){
