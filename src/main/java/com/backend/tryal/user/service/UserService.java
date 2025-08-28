@@ -20,9 +20,9 @@ public interface UserService {
     User updateUserById(UUID userId, User user);
     boolean deleteUserById(UUID userId);
 
-    User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
+    void addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
 
-    boolean removeUserBookmark(UUID userId, UUID businessId);
+    void removeUserBookmark(UUID userId, UUID businessId);
 
     List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId);
 }

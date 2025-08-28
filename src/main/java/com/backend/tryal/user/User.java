@@ -2,6 +2,7 @@ package com.backend.tryal.user;
 
 import com.backend.tryal.business.Business;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.*;
@@ -87,6 +88,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "business_id") // FK from businesses
     )
     @JsonManagedReference
+    @JsonIgnore
     private Set<Business> businesses = new HashSet<>();
 
     @Column(updatable = false, name = "created_at")

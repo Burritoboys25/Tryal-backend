@@ -186,32 +186,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO) {
-        User user = userRepository.findById(bookmarkRequestDTO.getUserId()).orElse(null);
-        Business business = businessRepository.findById(bookmarkRequestDTO.getBusinessId()).orElse(null);
+    public void addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO) {
+        UUID userId = bookmarkRequestDTO.getUserId();
+        UUID businessId = bookmarkRequestDTO.getBusinessId();
 
-        if (user != null && business != null) {
-            user.getBusinesses().add(business);
-            userRepository.save(user); // Saves the change, updating the bridge table
-            return user;
-        }
-
-        return null;
-    }
-
-    @Override
-    public boolean removeUserBookmark(UUID userId, UUID businessId) {
         User user = userRepository.findById(userId).orElse(null);
         Business business = businessRepository.findById(businessId).orElse(null);
 
-        if (user != null && business != null) {
-            boolean removed = user.getBusinesses().remove(business); // directly
-            if (removed) {
-                userRepository.save(user); // this persists join table change
-                return true;
-            }
+        if (user == null || business == null) {
+            throw new EntityNotFoundException("User ID or business ID does not exist.");
         }
-        return false;
+
+        user.getBusinesses().add(business);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void removeUserBookmark(UUID userId, UUID businessId) {
+        ExceptionUtil.validateUUIDOrThrow(userId);
+        ExceptionUtil.validateUUIDOrThrow(businessId);
+
+        User user = userRepository.findById(userId).orElse(null);
+        Business business = businessRepository.findById(businessId).orElse(null);
+
+        if (user == null || business == null) {
+            throw new EntityNotFoundException("User ID or business ID does not exist.");
+        }
+
+        boolean removed = user.getBusinesses().remove(business); // directly
+        if (removed) {
+            userRepository.save(user); // this persists join table change
+        }
     }
 
     @Override

@@ -7,13 +7,9 @@ import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,11 +27,11 @@ public class UserBookmarkController {
     // add user bookmark
     @PostMapping()
     public ApiResponse<String> addUserBookmark(@RequestBody UserBookmarkRequestDTO bookmarkRequestDTO) {
-            User user = userService.addUserBookmark(bookmarkRequestDTO);
+            userService.addUserBookmark(bookmarkRequestDTO);
 
-            if (user == null) {
-                throw new EntityNotFoundException("User ID or business ID does not exist.");
-            }
+//            if (user == null) {
+//                throw new EntityNotFoundException("User ID or business ID does not exist.");
+//            }
 
             return new ApiResponse<>("success", "User bookmark saved successfully.");
     }
@@ -43,11 +39,8 @@ public class UserBookmarkController {
     // Remove user bookmark
     @DeleteMapping("/{userId}/{businessId}")
     public ApiResponse<String> removeUserBookmark(@PathVariable UUID userId, @PathVariable UUID businessId) {
+        userService.removeUserBookmark(userId, businessId);
 
-            if (!userService.removeUserBookmark(userId, businessId)) {
-                throw new EntityNotFoundException("User ID or business ID does not exist.");
-            }
-
-            return new ApiResponse<>("success", "Remove user bookmark successfully.");
+        return new ApiResponse<>("success", "Remove user bookmark successfully.");
     }
 }
