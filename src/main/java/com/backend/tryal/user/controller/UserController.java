@@ -5,6 +5,7 @@ import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import com.backend.tryal.user.response.UserResponse;
 import com.backend.tryal.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,20 +40,10 @@ public class UserController {
 
     // Patch User
     @PatchMapping("/{userId}")
-    public ResponseEntity<UserResponse> updateUserById(@RequestBody User user, @PathVariable UUID userId) {
-        try {
-            User updatedUser = userService.updateUserById(userId, user);
+    public UserDTO updateUserById(@Valid @RequestBody User user, @PathVariable UUID userId) {
+      User updatedUser = userService.updateUserById(userId, user);
 
-            if (updatedUser == null) {
-                return new ResponseEntity<>(new UserResponse(null, "User not found."), HttpStatus.NOT_FOUND);
-            }
-
-            UserDTO userDTO = UserMapper.mapUserDTO(updatedUser);
-
-            return new ResponseEntity<>(new UserResponse(userDTO, "User updated successfully."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+      return UserMapper.mapUserDTO(updatedUser);
     }
 
     // Delete User

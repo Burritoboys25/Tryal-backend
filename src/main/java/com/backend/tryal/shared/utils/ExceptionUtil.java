@@ -25,14 +25,14 @@ public class ExceptionUtil {
         );
     }
 
-    public static void validateUUIDOrThrow(UUID uuid) {
-        try {
-            UUID.fromString(String.valueOf(uuid));
-        } catch (IllegalArgumentException e) {
-            // Will get caught by your @ExceptionHandler
-            throw new IllegalArgumentException("Invalid UUID: " + uuid);
-        }
-    }
+//    public static void validateUUIDOrThrow(UUID uuid) {
+//        try {
+//            UUID.fromString(String.valueOf(uuid));
+//        } catch (IllegalArgumentException e) {
+//            // Will get caught by your @ExceptionHandler
+//            throw new IllegalArgumentException("Invalid UUID: " + uuid);
+//        }
+//    }
 
     public static String getStackTraceAsString(Throwable throwable) {
         if (throwable == null) return "";

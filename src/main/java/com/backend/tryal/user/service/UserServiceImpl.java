@@ -174,9 +174,9 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(updatedUser);
             return updatedUser;
+        } else {
+          throw new EntityNotFoundException("Could not find user with id: " + userId);
         }
-
-        return null;
     }
 
     @Override
@@ -223,8 +223,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId) {
-        ExceptionUtil.validateUUIDOrThrow(userId);
-
         if (userRepository.findById(userId).orElse(null) == null) {
             throw new EntityNotFoundException("Could not find user with id: " + userId);
         }
