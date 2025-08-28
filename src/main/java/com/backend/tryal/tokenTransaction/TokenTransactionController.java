@@ -24,28 +24,18 @@ public class TokenTransactionController {
 
     //get all transactions (optional parameter by userId)
     @GetMapping()
-    public ResponseEntity<List<TokenTransactionDTO>> getAllTokenTransactions(@RequestParam(required = false) UUID userId){
-        try{
-            List<TokenTransactionDTO> transactions = new ArrayList<>();
-            if(userId == null){
-                transactions = tokenTransactionService.getAllTokenTransactions().stream().map(transaction ->
-                    TokenTransactionMapper.mapTokenTransactionDTO(transaction.getUser().getUserId(), transaction)
-                ).collect(Collectors.toList());
-            }else{
-                transactions = tokenTransactionService.getAllTokenTransactions(userId).stream().map(transaction ->
-                        TokenTransactionMapper.mapTokenTransactionDTO(userId, transaction)
-                ).collect(Collectors.toList());
-            }
-
-            if(transactions.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(transactions, HttpStatus.OK);
-
-        } catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public List<TokenTransactionDTO> getAllTokenTransactions(@RequestParam(required = false) UUID userId){
+      List<TokenTransactionDTO> transactions = new ArrayList<>();
+      if(userId == null){
+        transactions = tokenTransactionService.getAllTokenTransactions().stream().map(transaction ->
+            TokenTransactionMapper.mapTokenTransactionDTO(transaction.getUser().getUserId(), transaction)
+        ).collect(Collectors.toList());
+      }else{
+        transactions = tokenTransactionService.getAllTokenTransactions(userId).stream().map(transaction ->
+            TokenTransactionMapper.mapTokenTransactionDTO(userId, transaction)
+        ).collect(Collectors.toList());
+      }
+      return transactions;
     }
 
     //get transaction by id

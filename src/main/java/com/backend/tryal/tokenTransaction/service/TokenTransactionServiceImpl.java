@@ -9,6 +9,7 @@ import com.backend.tryal.tokenTransaction.TokenTransactionRepository;
 import com.backend.tryal.tokenTransaction.dto.TokenTransactionDTO;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,6 +38,10 @@ public class TokenTransactionServiceImpl implements TokenTransactionService{
 
     @Override
     public List<TokenTransaction> getAllTokenTransactions(UUID userId) {
+      if (userRepository.findById(userId).orElse(null) == null) {
+        throw new EntityNotFoundException("Could not find user with id: " + userId);
+      }
+
         return tokenTransactionRepository.findByUserId(userId);
     }
 
