@@ -9,6 +9,7 @@ public class TokenTransactionMapper {
     public static TokenTransactionDTO mapTokenTransactionDTO(UUID userId, TokenTransaction tokenTransaction){
         TokenTransactionDTO tokenTransactionDTO = new TokenTransactionDTO();
 
+        tokenTransactionDTO.setTokenTransId(tokenTransaction.getTokenTransId());
         tokenTransactionDTO.setUserId(userId);
         tokenTransactionDTO.setCreditAmount(tokenTransaction.getCreditAmount());
         tokenTransactionDTO.setTransactionReason(tokenTransaction.getTransactionReason());
