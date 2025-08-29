@@ -11,7 +11,7 @@ public interface BookingService {
     List<Booking> getAllBookings();
     Booking getBookingById(UUID bookingId);
     List<UserBookingDTO> getUserBookings(UUID userId);
-    Booking createBooking(UUID userId, UUID timeslotId, BookingRequestDTO bookingRequestDTODTO);
+    Booking createBooking(BookingRequestDTO bookingRequestDTO);
     Booking updateBookingById(UUID bookingId, UUID timeslotId, BookingRequestDTO bookingRequestDTODTO);
     boolean deleteBookingById(UUID bookingId);
 }

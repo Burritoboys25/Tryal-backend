@@ -20,8 +20,8 @@ public class BookingMapper {
         }
 
         bookingDTO.setStripeTransferId(booking.getStripeTransferId());
-        bookingDTO.setBookingStatus(bookingDTO.getBookingStatus());
-        bookingDTO.setParty(bookingDTO.getParty());
+        bookingDTO.setBookingStatus(String.valueOf(booking.getBookingStatus()));
+        bookingDTO.setParty(booking.getParty());
 
         return bookingDTO;
     }
@@ -34,7 +34,7 @@ public class BookingMapper {
 
         booking.setStripeTransferId(bookingRequestDTO.getStripeTransferId());
         booking.setBookingStatus(Booking.BookingStatus.valueOf(bookingRequestDTO.getBookingStatus()));
-        booking.setParty(Integer.valueOf(bookingRequestDTO.getParty()));
+        booking.setParty(bookingRequestDTO.getParty());
 
         return booking;
     }

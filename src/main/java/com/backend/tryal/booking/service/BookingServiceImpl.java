@@ -43,16 +43,22 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<UserBookingDTO> getUserBookings(UUID userId) {
+      if (userRepository.findById(userId).orElse(null) == null) {
+        throw new EntityNotFoundException("Could not find user with id: " + userId);
+      }
         return bookingRepository.findBookingByUserId(userId);
     }
 
     @Override
-    public Booking createBooking(UUID userId, UUID timeslotId, BookingRequestDTO bookingRequestDTO) {
-        User user = userRepository.findById(userId).orElse(null);
-        Timeslot timeslot = timeslotRepository.findById(timeslotId).orElse(null);
+    public Booking createBooking(BookingRequestDTO bookingRequestDTO) {
+        User user = userRepository.findById(bookingRequestDTO.getUserId()).orElse(null);
+        Timeslot timeslot = timeslotRepository.findById(bookingRequestDTO.getTimeslotId()).orElse(null);
 
-        if (user == null || timeslot == null) {
-            return null;
+        if (user == null) {
+          throw new EntityNotFoundException("Could not find user with id: " + bookingRequestDTO.getUserId());
+        }
+        if (timeslot == null) {
+          throw new EntityNotFoundException("Could not find timeslot with id: " + bookingRequestDTO.getTimeslotId());
         }
 
         Booking booking = BookingMapper.mapRequestDTOToBooking(bookingRequestDTO, user, timeslot);

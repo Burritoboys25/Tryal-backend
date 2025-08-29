@@ -40,34 +40,15 @@ public class BookingController {
 
     // get booking by user ID
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserBookingDTO>> getUserBookings(@PathVariable UUID userId) {
-        try {
-            List<UserBookingDTO> userBookings = bookingService.getUserBookings(userId);
+    public List<UserBookingDTO> getUserBookings(@PathVariable UUID userId) {
+            return bookingService.getUserBookings(userId);
 
-            if (userBookings.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(userBookings, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     // create booking
     @PostMapping()
-    public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO, @RequestParam UUID userId, @RequestParam UUID bookingId) {
-        try {
-            BookingDTO bookingDTO = BookingMapper.mapBookingDto(bookingService.createBooking(userId, bookingId, bookingRequestDTO));
-
-            if(bookingDTO == null){
-                return new ResponseEntity<>(new BookingResponse(null, "User or booking not found."), HttpStatus.NOT_FOUND);
-            }
-
-            return new ResponseEntity<>(new BookingResponse(bookingDTO, "Booking created successfully."), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public BookingDTO createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
+            return BookingMapper.mapBookingDto(bookingService.createBooking(bookingRequestDTO));
     }
 
     // patch booking
