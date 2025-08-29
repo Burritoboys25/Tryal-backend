@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new EntityNotFoundException("Could not find user with id: " + userId);
         }
-        return userRepository.findById(userId).orElse(null);
+        return user;
     }
 
     @Override

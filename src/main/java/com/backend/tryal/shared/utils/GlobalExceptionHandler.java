@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse<String>> handleNotFoundException(EntityNotFoundException e,
       HttpServletRequest request) {
-    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage(),
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.NOT_FOUND,
+        e.getMessage(),
         request.getRequestURI(), e);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
   }
@@ -25,7 +26,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponse<String>> handleIllegalArgumentException(
       IllegalArgumentException e, HttpServletRequest request) {
-    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage(),
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.BAD_REQUEST,
+        e.getMessage(),
         request.getRequestURI(), e);
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
   }
@@ -54,7 +56,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(StripeException.class)
   public ResponseEntity<ErrorResponse<String>> handleStripeException(StripeException e,
       HttpServletRequest request) {
-    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.BAD_GATEWAY, e.getMessage(),
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.BAD_GATEWAY,
+        e.getMessage(),
         request.getRequestURI(), e);
     return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
   }

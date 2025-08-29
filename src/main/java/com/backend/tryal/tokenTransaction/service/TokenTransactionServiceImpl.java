@@ -47,6 +47,10 @@ public class TokenTransactionServiceImpl implements TokenTransactionService{
 
     @Override
     public TokenTransaction getTokenTransactionById(UUID transactionId) {
+      if (tokenTransactionRepository.findById(transactionId).orElse(null) == null) {
+        throw new EntityNotFoundException("Could not find token with id: " + transactionId);
+      }
+
         return tokenTransactionRepository.findById(transactionId).orElse(null);
     }
 
