@@ -9,6 +9,7 @@ import com.backend.tryal.timeslot.Timeslot;
 import com.backend.tryal.timeslot.TimeslotRepository;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking getBookingById(UUID bookingId) {
-        return bookingRepository.findById(bookingId).orElse(null);
+      Booking booking = bookingRepository.findById(bookingId).orElse(null);
+      if (booking == null) {
+        throw new EntityNotFoundException("Could not find booking with id: " + bookingId);
+      }
+        return booking;
     }
 
     @Override

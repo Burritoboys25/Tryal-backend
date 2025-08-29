@@ -23,42 +23,22 @@ public class BookingController {
 
     // get all bookings
     @GetMapping()
-    public ResponseEntity<List<BookingDTO>> getAllBookings() {
-        try {
-            List<BookingDTO> bookings = bookingService.getAllBookings()
+    public List<BookingDTO> getAllBookings() {
+            return bookingService.getAllBookings()
                     .stream()
                     .map(BookingMapper::mapBookingDto)
                     .collect(Collectors.toList());
-
-            if (bookings.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(bookings, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     // get booking by ID
     @GetMapping("/{bookingId}")
-    public ResponseEntity<BookingResponse> getBookingById(@PathVariable UUID bookingId) {
-        try {
+    public BookingDTO getBookingById(@PathVariable UUID bookingId) {
             Booking booking = bookingService.getBookingById(bookingId);
 
-            if (booking == null) {
-                return new ResponseEntity<>(new BookingResponse(null, "Booking not found."),HttpStatus.NOT_FOUND);
-            }
-
-            BookingDTO bookingDTO = BookingMapper.mapBookingDto(booking);
-
-            return new ResponseEntity<>(new BookingResponse(bookingDTO, "booking found."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return BookingMapper.mapBookingDto(booking);
     }
 
-    // get booking by ID
+    // get booking by user ID
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserBookingDTO>> getUserBookings(@PathVariable UUID userId) {
         try {
