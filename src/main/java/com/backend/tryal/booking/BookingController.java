@@ -1,6 +1,7 @@
 package com.backend.tryal.booking;
 
 import com.backend.tryal.booking.dto.BookingDTO;
+import com.backend.tryal.booking.dto.BookingPatchDTO;
 import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.booking.mapper.BookingMapper;
 import com.backend.tryal.booking.service.BookingService;
@@ -53,20 +54,10 @@ public class BookingController {
 
     // patch booking
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<BookingResponse> updateBookingById(@RequestBody BookingRequestDTO bookingRequestDTO, @PathVariable UUID bookingId, @RequestParam UUID timeslotId) {
-        try {
-            Booking updatedBooking = bookingService.updateBookingById(bookingId, timeslotId, bookingRequestDTO);
+    public BookingDTO updateBookingById(@RequestBody BookingPatchDTO bookingRequestDTO, @PathVariable UUID bookingId) {
+      Booking updatedBooking = bookingService.updateBookingById(bookingId, bookingRequestDTO);
 
-            if(updatedBooking == null){
-                return new ResponseEntity<>(new BookingResponse(null, "Booking not found."), HttpStatus.NOT_FOUND);
-            }
-
-            BookingDTO bookingDTO = BookingMapper.mapBookingDto(updatedBooking);
-
-            return new ResponseEntity<>(new BookingResponse(bookingDTO, "Booking updated successfully."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+      return BookingMapper.mapBookingDto(updatedBooking);
     }
 
     // delete booking

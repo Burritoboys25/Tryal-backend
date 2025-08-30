@@ -2,6 +2,7 @@ package com.backend.tryal.booking.service;
 
 import com.backend.tryal.booking.Booking;
 import com.backend.tryal.booking.BookingRepository;
+import com.backend.tryal.booking.dto.BookingPatchDTO;
 import com.backend.tryal.booking.dto.BookingRequestDTO;
 import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.booking.mapper.BookingMapper;
@@ -67,29 +68,26 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking updateBookingById(UUID bookingId, UUID timeslotId, BookingRequestDTO bookingRequestDTO) {
-        if (getBookingById(bookingId) != null) {
+    public Booking updateBookingById(UUID bookingId, BookingPatchDTO bookingRequestDTO) {
+      if (getBookingById(bookingId) == null) {
+        throw new EntityNotFoundException("Could not find booking with id: " + bookingId);
+      }
+      Booking updatedBooking = getBookingById(bookingId);
 
-            Booking updatedBooking = getBookingById(bookingId);
+      if (bookingRequestDTO.getStripeTransferId() != null) {
+        updatedBooking.setStripeTransferId(bookingRequestDTO.getStripeTransferId());
+      }
 
-            timeslotRepository.findById(timeslotId).ifPresent(updatedBooking::setTimeslot);
+      if (bookingRequestDTO.getBookingStatus() != null) {
+        updatedBooking.setBookingStatus(Booking.BookingStatus.valueOf(bookingRequestDTO.getBookingStatus()));
+      }
 
-            if (bookingRequestDTO.getStripeTransferId() != null) {
-                updatedBooking.setStripeTransferId(bookingRequestDTO.getStripeTransferId());
-            }
+      if (bookingRequestDTO.getParty() != null) {
+        updatedBooking.setParty(bookingRequestDTO.getParty());
+      }
 
-            if (bookingRequestDTO.getBookingStatus() != null) {
-                updatedBooking.setBookingStatus(Booking.BookingStatus.valueOf(bookingRequestDTO.getBookingStatus()));
-            }
-
-            if (bookingRequestDTO.getParty() != null) {
-                updatedBooking.setParty(Integer.valueOf(bookingRequestDTO.getParty()));
-            }
-
-            bookingRepository.save(updatedBooking);
-            return updatedBooking;
-        }
-        return null;
+      bookingRepository.save(updatedBooking);
+      return updatedBooking;
     }
 
     @Override
