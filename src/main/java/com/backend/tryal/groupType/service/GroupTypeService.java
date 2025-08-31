@@ -10,5 +10,5 @@ public interface GroupTypeService {
     GroupType getGroupTypeById(UUID groupTypeId);
     GroupType createGroupType(GroupType groupType);
     GroupType updateGroupTypeById(UUID groupTypeId, GroupType groupType);
-    boolean deleteGroupTypeById(UUID groupTypeId);
+    void deleteGroupTypeById(UUID groupTypeId);
 }
