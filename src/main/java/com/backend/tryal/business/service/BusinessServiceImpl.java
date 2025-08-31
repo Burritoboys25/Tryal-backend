@@ -10,6 +10,7 @@ import com.backend.tryal.security.dto.RefreshTokenRequest;
 import com.backend.tryal.security.dto.TokenPair;
 import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,7 +58,7 @@ public class BusinessServiceImpl implements BusinessService {
         Business business = getBusinessById(businessId);
 
         if (business == null) {
-            return null;
+          throw new EntityNotFoundException("Could not find business with id: " + businessId);
         }
 
         return business.getExperiences();

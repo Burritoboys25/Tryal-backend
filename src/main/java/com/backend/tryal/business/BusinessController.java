@@ -27,21 +27,9 @@ public class BusinessController {
 
     // get all experiences of a business
     @GetMapping("/{businessId}/experiences")
-    public ResponseEntity<List<Experience>> getAllBusinessExperiences(@PathVariable UUID businessId) {
-        try {
+    public List<Experience> getAllBusinessExperiences(@PathVariable UUID businessId) {
 
-            List<Experience> experiences = businessService.getAllBusinessExperiences(businessId);
-
-            if(experiences == null){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }else if(experiences.isEmpty()){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(experiences, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+      return businessService.getAllBusinessExperiences(businessId);
     }
 
     // get all Businesses
