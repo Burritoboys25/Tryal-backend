@@ -50,20 +50,9 @@ public class BusinessController {
 
     // Patch Business
     @PatchMapping("/{businessId}")
-    public ResponseEntity<BusinessResponse> updateBusinessById(@RequestBody Business business, @PathVariable UUID businessId) {
-        try {
+    public BusinessDTO updateBusinessById(@RequestBody Business business, @PathVariable UUID businessId) {
             Business updatedBusiness = businessService.updateBusinessById(businessId, business);
-
-            if (updatedBusiness == null) {
-                return new ResponseEntity<>(new BusinessResponse(null, "Business not found."), HttpStatus.NOT_FOUND);
-            }
-
-            BusinessDTO businessDTO = BusinessMapper.mapBusinessDTO(business);
-
-            return new ResponseEntity<>(new BusinessResponse(businessDTO, "Business updated successfully."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+            return BusinessMapper.mapBusinessDTO(updatedBusiness);
     }
 
     // Delete Business

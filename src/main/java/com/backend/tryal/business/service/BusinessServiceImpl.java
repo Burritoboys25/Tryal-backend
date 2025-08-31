@@ -138,48 +138,49 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Business updateBusinessById(UUID businessId, Business business) {
-        if (getBusinessById(businessId) != null) {
-            Business updatedBusiness = getBusinessById(businessId);
+      if (getBusinessById(businessId) == null) {
+        throw new EntityNotFoundException("Could not find business with id: " + businessId);
+      }
 
-            if (business.getStripeAccountId() != null) {
-                updatedBusiness.setStripeAccountId(business.getStripeAccountId());
-            }
+      Business updatedBusiness = getBusinessById(businessId);
 
-            if (business.getName() != null) {
-                updatedBusiness.setName(business.getName());
-            }
+      if (business.getStripeAccountId() != null) {
+        updatedBusiness.setStripeAccountId(business.getStripeAccountId());
+      }
 
-            if (business.getEmail() != null) {
-                updatedBusiness.setEmail(business.getEmail());
-            }
+      if (business.getName() != null) {
+        updatedBusiness.setName(business.getName());
+      }
 
-            if (business.getPasswordHash() != null) {
-                updatedBusiness.setPasswordHash(business.getPasswordHash());
-            }
+      if (business.getEmail() != null) {
+        updatedBusiness.setEmail(business.getEmail());
+      }
 
-            if (business.getWebsite() != null) {
-                updatedBusiness.setWebsite(business.getWebsite());
-            }
+      if (business.getPasswordHash() != null) {
+        updatedBusiness.setPasswordHash(business.getPasswordHash());
+      }
 
-            if (business.getAddress() != null) {
-                updatedBusiness.setAddress(business.getAddress());
-            }
+      if (business.getWebsite() != null) {
+        updatedBusiness.setWebsite(business.getWebsite());
+      }
 
-            if (business.getPhoneNumber() != null) {
-                updatedBusiness.setPhoneNumber(business.getPhoneNumber());
-            }
+      if (business.getAddress() != null) {
+        updatedBusiness.setAddress(business.getAddress());
+      }
 
-            if (business.getLongitude() != null) {
-                updatedBusiness.setLongitude(business.getLongitude());
-            }
+      if (business.getPhoneNumber() != null) {
+        updatedBusiness.setPhoneNumber(business.getPhoneNumber());
+      }
 
-            if (business.getLatitude() != null) {
-                updatedBusiness.setLatitude(business.getLongitude());
-            }
-            businessRepository.save(updatedBusiness);
-            return updatedBusiness;
-        }
-        return null;
+      if (business.getLongitude() != null) {
+        updatedBusiness.setLongitude(business.getLongitude());
+      }
+
+      if (business.getLatitude() != null) {
+        updatedBusiness.setLatitude(business.getLongitude());
+      }
+      businessRepository.save(updatedBusiness);
+      return updatedBusiness;
     }
 
     @Override
