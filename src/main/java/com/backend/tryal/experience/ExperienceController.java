@@ -3,112 +3,79 @@ package com.backend.tryal.experience;
 import com.backend.tryal.experience.dto.ExperienceDTO;
 import com.backend.tryal.experience.dto.ExperienceRequestDTO;
 import com.backend.tryal.experience.mapper.ExperienceMapper;
-import com.backend.tryal.experience.response.ExperienceResponse;
 import com.backend.tryal.experience.service.ExperienceService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.backend.tryal.shared.response.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/experiences")
 public class ExperienceController {
-    private final ExperienceService experienceService;
 
-    public ExperienceController(ExperienceService experienceService) {
-        this.experienceService = experienceService;
+  private final ExperienceService experienceService;
+
+  public ExperienceController(ExperienceService experienceService) {
+    this.experienceService = experienceService;
+  }
+
+  // get all experiences or by businessId
+  @GetMapping()
+  public List<ExperienceDTO> getExperiences(@RequestParam(required = false) UUID businessId) {
+    List<ExperienceDTO> experiences;
+    if (businessId != null) {
+      experiences = experienceService.getExperiencesByBusinessId(businessId)
+          .stream()
+          .map(ExperienceMapper::mapExperienceDto)
+          .collect(Collectors.toList());
+    } else {
+      experiences = experienceService.getAllExperiences()
+          .stream()
+          .map(ExperienceMapper::mapExperienceDto)
+          .collect(Collectors.toList());
     }
+    return experiences;
+  }
 
-    // get all experiences or by businessId
-    @GetMapping()
-    public ResponseEntity<List<ExperienceDTO>> getExperiences(@RequestParam(required = false) UUID businessId) {
-        try {
-            List<ExperienceDTO> experiences;
-            if (businessId != null) {
-                experiences = experienceService.getExperiencesByBusinessId(businessId)
-                        .stream()
-                        .map(ExperienceMapper::mapExperienceDto)
-                        .collect(Collectors.toList());
-            } else {
-                experiences = experienceService.getAllExperiences()
-                        .stream()
-                        .map(ExperienceMapper::mapExperienceDto)
-                        .collect(Collectors.toList());
-            }
-            if (experiences.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-            return new ResponseEntity<>(experiences, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // get experience by ID
+  @GetMapping("/{experienceId}")
+  public ExperienceDTO getExperienceById(@PathVariable UUID experienceId) {
+    Experience experience = experienceService.getExperienceById(experienceId);
 
-    // get experience by ID
-    @GetMapping("/{experienceId}")
-    public ResponseEntity<ExperienceResponse> getExperienceById(@PathVariable UUID experienceId) {
-        try {
-            Experience experience = experienceService.getExperienceById(experienceId);
-            if (experience == null) {
-                return new ResponseEntity<>(new ExperienceResponse(null, "Experience not found."),HttpStatus.NOT_FOUND);
-            }
-            ExperienceDTO experienceDTO = ExperienceMapper.mapExperienceDto(experience);
-            return new ResponseEntity<>(new ExperienceResponse(experienceDTO, "Experience found."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    return ExperienceMapper.mapExperienceDto(experience);
+  }
 
-    // create experience
-    @PostMapping()
-    public ResponseEntity<ExperienceResponse> createExperience(@RequestBody ExperienceRequestDTO experienceRequestDTO, @RequestParam UUID businessId) {
-        try {
-            ExperienceDTO experienceDTO = ExperienceMapper.mapExperienceDto(experienceService.createExperience(experienceRequestDTO, businessId));
+  // create experience
+  @PostMapping()
+  public ExperienceDTO createExperience(@RequestBody ExperienceRequestDTO experienceRequestDTO) {
+    return ExperienceMapper.mapExperienceDto(
+        experienceService.createExperience(experienceRequestDTO));
+  }
 
-            if(experienceDTO == null){
-                return new ResponseEntity<>(new ExperienceResponse(null, "Business with id: " + businessId +  " not found."), HttpStatus.NOT_FOUND);
-            }
+  // patch experience
+  @PatchMapping("/{experienceId}")
+  public ExperienceDTO updateExperienceById(@RequestBody ExperienceRequestDTO experienceRequestDTO,
+      @PathVariable UUID experienceId) {
+    Experience updatedExperience = experienceService.updateExperienceById(experienceRequestDTO,
+        experienceId);
+    return ExperienceMapper.mapExperienceDto(updatedExperience);
+  }
 
-            return new ResponseEntity<>(new ExperienceResponse(experienceDTO, "Experience created successfully."), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // delete experience
+  @DeleteMapping("/{experienceId}")
+  public ApiResponse<String> deleteExperienceById(@PathVariable UUID experienceId) {
+    experienceService.deleteExperienceById(experienceId);
+    return new ApiResponse<>("Experience deleted successfully.");
 
-    // patch experience
-    @PatchMapping("/{experienceId}")
-    public ResponseEntity<ExperienceResponse> updateExperienceById(@RequestBody ExperienceRequestDTO experienceRequestDTO, @PathVariable UUID experienceId) {
-        try {
-            Experience updatedExperience = experienceService.updateExperienceById(experienceRequestDTO, experienceId);
-
-            if(updatedExperience == null){
-                return new ResponseEntity<>(new ExperienceResponse(null, "Experience not found."), HttpStatus.NOT_FOUND);
-            }
-
-            ExperienceDTO experienceDTO = ExperienceMapper.mapExperienceDto(updatedExperience);
-
-            return new ResponseEntity<>(new ExperienceResponse(experienceDTO, "Experience updated successfully."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // delete experience
-    @DeleteMapping("/{experienceId}")
-    public ResponseEntity<String> deleteExperienceById(@PathVariable UUID experienceId) {
-        try {
-
-            if (experienceService.deleteExperienceById(experienceId)) {
-                return new ResponseEntity<>("Experience deleted successfully.", HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>("Experience not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  }
 
 }
