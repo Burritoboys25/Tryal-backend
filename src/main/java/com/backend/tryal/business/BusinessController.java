@@ -34,39 +34,18 @@ public class BusinessController {
 
     // get all Businesses
     @GetMapping()
-    public ResponseEntity<List<BusinessDTO>> getAllBusinesses() {
-        try {
-            List<BusinessDTO> businesses = businessService.getAllBusinesses()
-                    .stream()
-                    .map(BusinessMapper::mapBusinessDTO)
-                    .collect(Collectors.toList());
-
-            if (businesses.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(businesses, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public List<BusinessDTO> getAllBusinesses() {
+      return businessService.getAllBusinesses()
+          .stream()
+          .map(BusinessMapper::mapBusinessDTO)
+          .collect(Collectors.toList());
     }
 
     // get Business by ID
     @GetMapping("/{businessId}")
-    public ResponseEntity<BusinessResponse> getBusinessById(@PathVariable UUID businessId) {
-        try {
-            Business business = businessService.getBusinessById(businessId);
-
-            if (business == null) {
-                return new ResponseEntity<>(new BusinessResponse(null, "Business not found."),HttpStatus.NOT_FOUND);
-            }
-
-            BusinessDTO businessDTO = BusinessMapper.mapBusinessDTO(business);
-
-            return new ResponseEntity<>(new BusinessResponse(businessDTO, "Business found."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public BusinessDTO getBusinessById(@PathVariable UUID businessId) {
+      Business business = businessService.getBusinessById(businessId);
+      return BusinessMapper.mapBusinessDTO(business);
     }
 
     // Patch Business

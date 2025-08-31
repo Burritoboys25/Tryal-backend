@@ -71,7 +71,11 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Business getBusinessById(UUID businessId) {
-        return businessRepository.findById(businessId).orElse(null);
+      Business business = businessRepository.findById(businessId).orElse(null);
+      if (business == null) {
+        throw new EntityNotFoundException("Could not find business with id: " + businessId);
+      }
+      return business;
     }
 
     @Override
