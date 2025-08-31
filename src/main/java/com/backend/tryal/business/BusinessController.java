@@ -64,7 +64,7 @@ public class BusinessController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<BusinessListResponse> getFilteredBusinesses(
+    public List<BusinessFilteredResponseDTO> getFilteredBusinesses(
             @RequestParam(required = false) List<UUID> categoryIds,
             @RequestParam(required = false) UUID groupTypeIds,
             @RequestParam(required = false) Integer duration,
@@ -82,29 +82,7 @@ public class BusinessController {
         filters.setCreditsMax(creditsMax);
         filters.setLimit(limit);
 
-        try {
-            List<BusinessFilteredResponseDTO> result = businessService.getFilteredBusinesses(filters);
-            if (result.isEmpty()) {
-                return new ResponseEntity<>(
-                        new BusinessListResponse(result, "No business matched the search criteria. Don't worry it works."),
-                        HttpStatus.OK
-                );
-            }
-            return new ResponseEntity<>(
-                    new BusinessListResponse(result, "Filtered businesses retrieved successfully."),
-                    HttpStatus.OK
-            );
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(
-                    new BusinessListResponse(null, "Invalid input: " + e.getMessage()),
-                    HttpStatus.BAD_REQUEST
-            );
-        } catch (Exception e) {
-            return new ResponseEntity<>(
-                    new BusinessListResponse(null, "Oppsies an unexpected error occured"),
-                    HttpStatus.INTERNAL_SERVER_ERROR
-            );
-        }
+        return businessService.getFilteredBusinesses(filters);
     }
 
     @GetMapping("/{businessId}/categories")
