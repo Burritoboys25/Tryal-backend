@@ -14,5 +14,5 @@ public interface BookingService {
     List<UserBookingDTO> getUserBookings(UUID userId);
     Booking createBooking(BookingRequestDTO bookingRequestDTO);
     Booking updateBookingById(UUID bookingId, BookingPatchDTO bookingRequestDTODTO);
-    boolean deleteBookingById(UUID bookingId);
+    void deleteBookingById(UUID bookingId);
 }
