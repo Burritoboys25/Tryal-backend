@@ -184,13 +184,11 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public boolean deleteBusinessById(UUID businessId) {
-        if (getBusinessById(businessId) != null) {
-            businessRepository.deleteById(businessId);
-            return true;
+    public void deleteBusinessById(UUID businessId) {
+        if (getBusinessById(businessId) == null) {
+          throw new EntityNotFoundException("Could not find business with id: " + businessId);
         }
-
-        return false;
+      businessRepository.deleteById(businessId);
     }
 
     @Override

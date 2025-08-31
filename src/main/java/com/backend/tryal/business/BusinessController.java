@@ -8,6 +8,7 @@ import com.backend.tryal.business.response.BusinessListResponse;
 import com.backend.tryal.business.response.BusinessResponse;
 import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.experience.Experience;
+import com.backend.tryal.shared.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,15 +58,9 @@ public class BusinessController {
 
     // Delete Business
     @DeleteMapping("/{businessId}")
-    public ResponseEntity<String> deleteBusinessById(@PathVariable UUID businessId) {
-        try {
-            if (businessService.deleteBusinessById(businessId)) {
-                return new ResponseEntity<>("Business deleted successfully.", HttpStatus.OK);
-            }
-            return new ResponseEntity<>("Business not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ApiResponse<String> deleteBusinessById(@PathVariable UUID businessId) {
+      businessService.deleteBusinessById(businessId);
+      return new ApiResponse<>("success", "Business deleted successfully.");
     }
 
     @GetMapping("/filter")
