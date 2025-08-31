@@ -258,6 +258,10 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public List<String> getBusinessCategories(UUID businessId) {
+      if (getBusinessById(businessId) == null) {
+        throw new EntityNotFoundException("Could not find business with id: " + businessId);
+      }
+
         List<Experience> experiences = getAllBusinessExperiences(businessId);
         if (experiences == null || experiences.isEmpty()) {
             return List.of(); // Return an empty list if no experiences are found

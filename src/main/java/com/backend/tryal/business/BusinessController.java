@@ -86,17 +86,7 @@ public class BusinessController {
     }
 
     @GetMapping("/{businessId}/categories")
-    public ResponseEntity<List<String>> getBusinessCategories(@PathVariable UUID businessId) {
-        try {
-            List<String> categories = businessService.getBusinessCategories(businessId);
-
-            if (categories.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(categories, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public List<String> getBusinessCategories(@PathVariable UUID businessId) {
+      return businessService.getBusinessCategories(businessId);
     }
 }
