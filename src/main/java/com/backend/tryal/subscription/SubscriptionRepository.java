@@ -14,6 +14,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Stri
     @Query("SELECT s FROM Subscription s WHERE s.user.userId = :userId")
     List<Subscription> findByUserId(@Param("userId") UUID userId);
 
-    @Query("SELECT s FROM Subscription s WHERE s.user.userId = :userId AND s.subscriptionStatus = :active")
-    List<Subscription> findByUserIdAndActive(@Param("userId") UUID userId, @Param("active") boolean active);
+    @Query("SELECT s FROM Subscription s WHERE s.user.userId = :userId AND s.subscriptionStatus = 'ACTIVE'")
+    List<Subscription> findByUserIdAndActive(@Param("userId") UUID userId);
 }
