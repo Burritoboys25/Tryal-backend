@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface TimeslotService {
     List<Timeslot> getAllTimeslots();
     Timeslot getTimeslotById(UUID timeslotId);
-    Timeslot createTimeslot(UUID experienceId, TimeslotRequestDTO timeslotRequestDTO);
+    Timeslot createTimeslot(TimeslotRequestDTO timeslotRequestDTO);
     Timeslot updateTimeslotById(UUID timeslotId, TimeslotRequestDTO timeslotRequestDTO);
-    boolean deleteTimeslotById(UUID timeslotId);
+    void deleteTimeslotById(UUID timeslotId);
 }

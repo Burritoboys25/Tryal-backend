@@ -29,7 +29,7 @@ public class TimeslotMapper {
 
         timeslot.setExperience(experience);
 
-        timeslot.setTimeslotDate((Date) timeslotRequestDTO.getTimeslotDate());
+        timeslot.setTimeslotDate(timeslotRequestDTO.getTimeslotDate());
         timeslot.setStartTime(timeslotRequestDTO.getStartTime());
         timeslot.setIsCancelled(timeslot.getIsCancelled());
         timeslot.setExpConvertPrice(timeslotRequestDTO.getExpConvertPrice());
