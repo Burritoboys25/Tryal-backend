@@ -1,7 +1,8 @@
-package com.backend.tryal.payment.service;
+package com.backend.tryal.stripe.service;
 
 import com.backend.tryal.plan.Plan;
 import com.backend.tryal.plan.PlanRepository;
+import com.backend.tryal.plan.service.PlanService;
 import com.backend.tryal.shared.utils.TimeWizard;
 import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.subscription.SubscriptionRepository;
@@ -11,26 +12,48 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Invoice;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import jakarta.annotation.PostConstruct;
+import com.stripe.Stripe;
+import com.stripe.param.checkout.SessionCreateParams;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import com.stripe.model.*;
+import com.stripe.net.Webhook;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class PaymentServiceImpl implements PaymentService{
+public class StripeServiceImpl implements StripeService {
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PlanRepository planRepository;
+    private final PlanService planService;
 
-    public PaymentServiceImpl(UserRepository userRepository, SubscriptionRepository subscriptionRepository, PlanRepository planRepository) {
+    private final String domain = "http://localhost:3000";
+
+    @Value("${stripe.secret.key}")
+    private String stripeSecretKey;
+
+    @Value("${stripe.webhook.secret}")
+    private String webhookSecret;
+
+    public StripeServiceImpl(UserRepository userRepository, SubscriptionRepository subscriptionRepository, PlanRepository planRepository, PlanService planService) {
         this.userRepository = userRepository;
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
+        this.planService = planService;
     }
 
-    @Override
-    public void handleInvoicePaid(Invoice invoice) {
+    @PostConstruct
+    public void init() {
+        Stripe.apiKey = stripeSecretKey;
+    }
+
+    private void handleInvoicePaid(Invoice invoice) {
         System.out.println("INVOICE PAYMENT SUCCEEDED");
 
         String planIdStr = invoice.getMetadata() != null ? invoice.getMetadata().get("planId") : null;
@@ -95,8 +118,7 @@ public class PaymentServiceImpl implements PaymentService{
         System.out.println("Credits added to user with id: " + user.getUserId());
     }
 
-    @Override
-    public void handleInvoiceFailed(Invoice invoice) {
+    private void handleInvoiceFailed(Invoice invoice) {
         System.out.println("INVOICE PAYMENT FAILED");
 
         String subscriptionId;
@@ -122,8 +144,7 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
-    @Override
-    public void handleSubscriptionDeleted(com.stripe.model.Subscription stripeSubscription) {
+    private void handleSubscriptionDeleted(com.stripe.model.Subscription stripeSubscription) {
         System.out.println("STRIPE SUBSCRIPTION DELETED");
 
         String subscriptionId = stripeSubscription.getId();
@@ -155,8 +176,7 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
-    @Override
-    public void handleSubscriptionUpdated(com.stripe.model.Subscription stripeSubscription) {
+    private void handleSubscriptionUpdated(com.stripe.model.Subscription stripeSubscription) {
         System.out.println("STRIPE SUBSCRIPTION UPDATED");
 
         String subscriptionId = stripeSubscription.getId();
@@ -182,8 +202,7 @@ public class PaymentServiceImpl implements PaymentService{
         subscriptionRepository.save(subscription);
     }
 
-    @Override
-    public void handleCheckoutCompleted(Session session) throws StripeException {
+    private void handleCheckoutCompleted(Session session) throws StripeException {
         System.out.println("STRIPE CHECKOUT: " + session);
 
         try {
@@ -202,7 +221,7 @@ public class PaymentServiceImpl implements PaymentService{
                     .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
 
             // Plan during checkout is a subscription
-            if(plan.getPlanType() == Plan.PlanType.SUBSCRIPTION){
+            if(plan.getPlanType() == Plan.PlanType.MONTH || plan.getPlanType() == Plan.PlanType.YEAR){
                 com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
 
                 Subscription newSubscription = new Subscription();
@@ -219,5 +238,114 @@ public class PaymentServiceImpl implements PaymentService{
         } catch (StripeException e) {
             throw e;
         }
+    }
+
+    @Override
+    public String createCheckoutSession(String userId, String userEmail, String planId) {
+        try {
+            Plan plan = planService.getPlanById(UUID.fromString(planId));
+            if (plan == null || plan.getStripePriceId() == null) {
+                throw new IllegalArgumentException("Invalid plan");
+            }
+
+            SessionCreateParams params = SessionCreateParams.builder()
+                    .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
+                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                    .setReturnUrl(domain + "/stripe/return?session_id={CHECKOUT_SESSION_ID}")
+                    .addLineItem(
+                            SessionCreateParams.LineItem.builder()
+                                    .setQuantity(1L)
+                                    .setPrice(plan.getStripePriceId())
+                                    .build()
+                    )
+                    .putMetadata("userId", userId)
+                    .putMetadata("planId", planId)
+                    .build();
+
+            Session session = Session.create(params);
+            return session.getClientSecret();
+
+        } catch (Exception e) {
+            System.out.println("Failed to create checkout session");
+            throw new RuntimeException("Failed to create checkout session", e);
+        }
+    }
+
+    @Override
+    public Map<String, String> getSessionStatus(String sessionId) {
+        try {
+            Session session = Session.retrieve(sessionId);
+
+            Map<String, String> response = new HashMap<>();
+            response.put("status", session.getStatus());
+
+            if (session.getCustomerDetails() != null && session.getCustomerDetails().getEmail() != null) {
+                response.put("customer_email", session.getCustomerDetails().getEmail());
+            } else {
+                response.put("customer_email", "unknown");
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to retrieve session status");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void processStripeEvent(String payload, String sigHeader) throws StripeException {
+        Event event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
+
+        EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+        StripeObject stripeObject = deserializer.getObject().orElseThrow(
+                () -> new IllegalArgumentException("Failed to deserialize Stripe object")
+        );
+
+        logReceivedEvent(event);
+
+        switch (event.getType()) {
+            case "checkout.session.completed":
+                Session session = (Session) stripeObject;
+                handleCheckoutCompleted(session);
+                break;
+            case "invoice.payment_succeeded":
+                Invoice invoice = (Invoice) stripeObject;
+                handleInvoicePaid(invoice);
+                break;
+            case "invoice.payment_failed":
+                Invoice failedInvoice = (Invoice) stripeObject;
+                handleInvoiceFailed(failedInvoice);
+                break;
+            case "customer.subscription.updated":
+                com.stripe.model.Subscription updatedSubscription = (com.stripe.model.Subscription) stripeObject;
+                handleSubscriptionUpdated(updatedSubscription);
+                break;
+            case "customer.subscription.deleted":
+                com.stripe.model.Subscription deletedSubscription = (com.stripe.model.Subscription) stripeObject;
+                handleSubscriptionDeleted(deletedSubscription);
+                break;
+            case "customer.subscription.created":
+                System.out.println("Subscription created");
+                // TODO: Optionally log or store subscription metadata
+                break;
+            case "customer.created":
+                System.out.println("Customer created");
+                // TODO: Save customer ID if user record exists but ID is not saved yet
+                break;
+            case "customer.updated":
+                System.out.println("Customer updated");
+                // TODO: Sync billing info (optional)
+                break;
+            default:
+                System.out.println("Unhandled event: " + event.getType());
+        }
+    }
+
+    private void logReceivedEvent(Event event) {
+        System.out.printf("Received Stripe event: id=%s, type=%s, created=%d%n",
+                event.getId(),
+                event.getType(),
+                event.getCreated());
     }
 }

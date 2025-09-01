@@ -13,7 +13,8 @@ public class PlanMapper {
                 plan.getPrice(),
                 plan.getCredits(),
                 plan.getRolloverCreditsAllowed(),
-                plan.getPlanType()
+                plan.getPlanType(),
+                plan.getIsActive()
         );
     }
 }
