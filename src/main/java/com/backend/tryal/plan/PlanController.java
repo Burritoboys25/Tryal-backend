@@ -42,16 +42,16 @@ public class PlanController {
   }
 
   // Deactivate Plan
-  @PatchMapping("/{planId}/deactivate")
-  public ApiResponse<String> deactivatePlanById(@PathVariable UUID planId) {
-    planService.deactivatePlanById(planId);
-    return new ApiResponse<>("Plan deactivated successfully.");
-  }
+//  @PatchMapping("/{planId}/deactivate")
+//  public ApiResponse<String> deactivatePlanById(@PathVariable UUID planId) {
+//    planService.deactivatePlanById(planId);
+//    return new ApiResponse<>("Plan deactivated successfully.");
+//  }
 
   // Reactivate Plan
-  @PatchMapping("/{planId}/reactivate")
-  public ApiResponse<String> reactivatePlanById(@PathVariable UUID planId) {
-    planService.reactivatePlanById(planId);
-    return new ApiResponse<>("Plan reactivated successfully.");
-  }
+//  @PatchMapping("/{planId}/reactivate")
+//  public ApiResponse<String> reactivatePlanById(@PathVariable UUID planId) {
+//    planService.reactivatePlanById(planId);
+//    return new ApiResponse<>("Plan reactivated successfully.");
+//  }
 }
