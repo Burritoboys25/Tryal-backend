@@ -2,90 +2,56 @@ package com.backend.tryal.plan;
 
 import com.backend.tryal.plan.dto.PlanDTO;
 import com.backend.tryal.plan.service.PlanService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
+import com.backend.tryal.shared.response.ApiResponse;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/plans")
 public class PlanController {
-    private final PlanService planService;
 
-    public PlanController(PlanService planService) {
-        this.planService = planService;
-    }
+  private final PlanService planService;
 
-    // get all Plans
-    @GetMapping()
-    public ResponseEntity<List<PlanDTO>> getAllActivePlans() {
-        try {
-            List<PlanDTO> plans = new ArrayList<PlanDTO>(planService.getAllActivePlans());
+  public PlanController(PlanService planService) {
+    this.planService = planService;
+  }
 
-            if (plans.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+  // get all Plans
+  @GetMapping()
+  public List<PlanDTO> getAllActivePlans() {
+    return planService.getAllActivePlans();
+  }
 
-            return new ResponseEntity<>(plans, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // get Plan by ID
+  @GetMapping("/{planId}")
+  public Plan getPlanById(@PathVariable UUID planId) {
+    return planService.getPlanById(planId);
+  }
 
-    // get Plan by ID
-    @GetMapping("/{planId}")
-    public ResponseEntity<Plan> getPlanById(@PathVariable UUID planId) {
-        try {
-            Plan plan = planService.getPlanById(planId);
+  // Create Plan
+  @PostMapping()
+  public Plan createPlan(@RequestBody Plan plan) {
+    return planService.createPlan(plan);
+  }
 
-            if (plan == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+  // Deactivate Plan
+//  @PatchMapping("/{planId}/deactivate")
+//  public ApiResponse<String> deactivatePlanById(@PathVariable UUID planId) {
+//    planService.deactivatePlanById(planId);
+//    return new ApiResponse<>("Plan deactivated successfully.");
+//  }
 
-            return new ResponseEntity<>(plan, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Create Plan
-    @PostMapping()
-    public ResponseEntity<Plan> createPlan(@RequestBody Plan plan) {
-        try{
-            Plan newPlan = planService.createPlan(plan);
-            return new ResponseEntity<>(newPlan, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // Commenting out deactivate/reactivate plan to be handled within Stripe Admin Controller
-    // Deactivate Plan
-//    @PatchMapping("/{planId}/deactivate")
-//    public ResponseEntity<String> deactivatePlanById(@PathVariable UUID planId) {
-//        try {
-//            if (planService.deactivatePlanById(planId)) {
-//                return new ResponseEntity<>("Plan deactivated successfully.", HttpStatus.OK);
-//            }
-//            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
-    // Reactivate Plan
-//    @PatchMapping("/{planId}/reactivate")
-//    public ResponseEntity<String> reactivatePlanById(@PathVariable UUID planId) {
-//        try {
-//            if (planService.reactivatePlanById(planId)) {
-//                return new ResponseEntity<>("Plan reactivated successfully.", HttpStatus.OK);
-//            }
-//            return new ResponseEntity<>("Plan not found.", HttpStatus.NOT_FOUND);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+  // Reactivate Plan
+//  @PatchMapping("/{planId}/reactivate")
+//  public ApiResponse<String> reactivatePlanById(@PathVariable UUID planId) {
+//    planService.reactivatePlanById(planId);
+//    return new ApiResponse<>("Plan reactivated successfully.");
+//  }
 }

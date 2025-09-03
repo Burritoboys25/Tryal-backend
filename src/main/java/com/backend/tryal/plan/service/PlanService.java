@@ -10,6 +10,6 @@ public interface PlanService {
     List<PlanDTO> getAllActivePlans();
     Plan getPlanById(UUID planId);
     Plan createPlan(Plan plan);
-    boolean deactivatePlanById(UUID planId);
-    boolean reactivatePlanById(UUID planId);
+    void deactivatePlanById(UUID planId);
+    void reactivatePlanById(UUID planId);
 }

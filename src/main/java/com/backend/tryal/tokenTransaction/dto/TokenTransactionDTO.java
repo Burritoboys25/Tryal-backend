@@ -3,7 +3,9 @@ package com.backend.tryal.tokenTransaction.dto;
 import com.backend.tryal.tokenTransaction.TokenTransaction;
 
 import java.util.UUID;
+import lombok.Data;
 
+@Data
 public class TokenTransactionDTO {
     private UUID tokenTransId;
     private UUID userId;
@@ -21,54 +23,6 @@ public class TokenTransactionDTO {
         this.creditAmount = creditAmount;
         this.transactionReason = transactionReason;
         this.bookingId = bookingId;
-        this.subscriptionId = subscriptionId;
-    }
-
-    public UUID getTokenTransId() {
-        return tokenTransId;
-    }
-
-    public void setTokenTransId(UUID tokenTransId) {
-        this.tokenTransId = tokenTransId;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public Long getCreditAmount() {
-        return creditAmount;
-    }
-
-    public void setCreditAmount(Long creditAmount) {
-        this.creditAmount = creditAmount;
-    }
-
-    public TokenTransaction.TransactionReason getTransactionReason() {
-        return transactionReason;
-    }
-
-    public void setTransactionReason(TokenTransaction.TransactionReason transactionReason) {
-        this.transactionReason = transactionReason;
-    }
-
-    public UUID getBookingId() {
-        return bookingId;
-    }
-
-    public void setBookingId(UUID bookingId) {
-        this.bookingId = bookingId;
-    }
-
-    public String getSubscriptionId() {
-        return subscriptionId;
-    }
-
-    public void setSubscriptionId(String subscriptionId) {
         this.subscriptionId = subscriptionId;
     }
 }

@@ -12,7 +12,7 @@ public interface SubscriptionService {
 
     Subscription getSubscriptionById(String subscriptionId);
     List<Subscription> getSubscriptionsByUser(UUID userId);
-    List<Subscription> getSubscriptionsByUser(UUID userId, Boolean activeSubscription);
+    List<Subscription> getActiveSubscriptionsByUser(UUID userId);
     Subscription createSubscription(UUID userId, SubscriptionDTO subscriptionRequestDTO);
     Subscription updateSubscriptionById(String subscriptionId, SubscriptionDTO subscriptionRequestDTO);
 }

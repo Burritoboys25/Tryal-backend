@@ -9,8 +9,8 @@ import java.util.UUID;
 public interface ExperienceService {
     List<Experience> getAllExperiences();
     Experience getExperienceById(UUID experienceId);
-    Experience createExperience(ExperienceRequestDTO experienceRequestDTO, UUID businessId);
+    Experience createExperience(ExperienceRequestDTO experienceRequestDTO);
     Experience updateExperienceById(ExperienceRequestDTO experienceRequestDTO, UUID experienceId);
-    boolean deleteExperienceById(UUID experienceId);
+    void deleteExperienceById(UUID experienceId);
     List<Experience> getExperiencesByBusinessId(UUID businessId);
 }

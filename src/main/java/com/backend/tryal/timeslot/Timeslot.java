@@ -3,6 +3,7 @@ package com.backend.tryal.timeslot;
 import com.backend.tryal.experience.Experience;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,7 +11,6 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.sql.Time;
 import java.time.LocalDateTime;
-import java.sql.Date;
 import java.util.UUID;
 
 @Data
@@ -28,7 +28,7 @@ public class Timeslot {
     private Experience experience;
 
     @Column(name = "timeslot_date", nullable = true)
-    private Date timeslotDate;
+    private LocalDate timeslotDate;
 
     @Column(name = "start_time", nullable = true)
     private Time startTime;
@@ -50,7 +50,7 @@ public class Timeslot {
     public Timeslot() {
     }
 
-    public Timeslot(UUID timeslotId, Experience experience, Date timeslotDate, Time startTime, Boolean isCancelled, Double expConvertPrice) {
+    public Timeslot(UUID timeslotId, Experience experience, LocalDate timeslotDate, Time startTime, Boolean isCancelled, Double expConvertPrice) {
         this.timeslotId = timeslotId;
         this.experience = experience;
         this.timeslotDate = timeslotDate;

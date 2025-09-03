@@ -1,6 +1,7 @@
 package com.backend.tryal.booking.service;
 
 import com.backend.tryal.booking.Booking;
+import com.backend.tryal.booking.dto.BookingPatchDTO;
 import com.backend.tryal.booking.dto.BookingRequestDTO;
 import com.backend.tryal.booking.dto.UserBookingDTO;
 
@@ -11,7 +12,7 @@ public interface BookingService {
     List<Booking> getAllBookings();
     Booking getBookingById(UUID bookingId);
     List<UserBookingDTO> getUserBookings(UUID userId);
-    Booking createBooking(UUID userId, UUID timeslotId, BookingRequestDTO bookingRequestDTODTO);
-    Booking updateBookingById(UUID bookingId, UUID timeslotId, BookingRequestDTO bookingRequestDTODTO);
-    boolean deleteBookingById(UUID bookingId);
+    Booking createBooking(BookingRequestDTO bookingRequestDTO);
+    Booking updateBookingById(UUID bookingId, BookingPatchDTO bookingRequestDTODTO);
+    void deleteBookingById(UUID bookingId);
 }

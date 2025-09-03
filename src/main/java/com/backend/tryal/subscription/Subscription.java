@@ -4,12 +4,13 @@ import com.backend.tryal.plan.Plan;
 import com.backend.tryal.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
+@Data
 @Entity
 @Table(name = "subscriptions")
 public class Subscription {
@@ -72,61 +73,4 @@ public class Subscription {
         this.startAt = startAt;
         this.endAt = endAt;
     }
-
-    public String getSubscriptionId() {
-        return subscriptionId;
-    }
-
-    public void setSubscriptionId(String subscriptionId) {
-        this.subscriptionId = subscriptionId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Plan getPlan() {
-        return plan;
-    }
-
-    public void setPlan(Plan plan) {
-        this.plan = plan;
-    }
-
-    public SubscriptionStatus getSubscriptionStatus() {
-        return subscriptionStatus;
-    }
-
-    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
-        this.subscriptionStatus = subscriptionStatus;
-    }
-
-    public Boolean getAutoRenew() {
-        return autoRenew;
-    }
-
-    public void setAutoRenew(Boolean autoRenew) {
-        this.autoRenew = autoRenew;
-    }
-
-    public LocalDateTime getStartAt() {
-        return startAt;
-    }
-
-    public void setStartAt(LocalDateTime startAt) {
-        this.startAt = startAt;
-    }
-
-    public LocalDateTime getEndAt() {
-        return endAt;
-    }
-
-    public void setEndAt(LocalDateTime endAt) {
-        this.endAt = endAt;
-    }
-
 }

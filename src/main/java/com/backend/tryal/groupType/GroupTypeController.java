@@ -1,91 +1,58 @@
 package com.backend.tryal.groupType;
 
 import com.backend.tryal.groupType.service.GroupTypeService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
+import com.backend.tryal.shared.response.ApiResponse;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/groupTypes")
 public class GroupTypeController {
-    private final GroupTypeService groupTypeService;
 
-    public GroupTypeController(GroupTypeService groupTypeService) {
-        this.groupTypeService = groupTypeService;
-    }
+  private final GroupTypeService groupTypeService;
 
-    // Get all categories
-    @GetMapping()
-    public ResponseEntity<List<GroupType>> getAllGroupTypes() {
-        try {
-            List<GroupType> groupTypes = new ArrayList<>(groupTypeService.getAllGroupTypes());
-            if (groupTypes.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+  public GroupTypeController(GroupTypeService groupTypeService) {
+    this.groupTypeService = groupTypeService;
+  }
 
-            return new ResponseEntity<>(groupTypes, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // Get all categories
+  @GetMapping()
+  public List<GroupType> getAllGroupTypes() {
+    return groupTypeService.getAllGroupTypes();
+  }
 
-    // Get Category by id
-    @GetMapping("/{groupTypeId}")
-    public ResponseEntity<GroupType> getGroupTypeById(@PathVariable UUID groupTypeId) {
-        try {
-            GroupType groupType = groupTypeService.getGroupTypeById(groupTypeId);
+  // Get Category by id
+  @GetMapping("/{groupTypeId}")
+  public GroupType getGroupTypeById(@PathVariable UUID groupTypeId) {
+    return groupTypeService.getGroupTypeById(groupTypeId);
+  }
 
-            if (groupType == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+  @PostMapping
+  public GroupType createGroupType(@RequestBody GroupType newGroupType) {
+    return groupTypeService.createGroupType(newGroupType);
+  }
 
-            return new ResponseEntity<>(groupType, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  @PatchMapping("/{groupTypeId}")
+  public GroupType updateGroupType(
+      @PathVariable UUID groupTypeId,
+      @RequestBody GroupType updatedGroupType
+  ) {
+    return groupTypeService.updateGroupTypeById(groupTypeId, updatedGroupType);
+  }
 
-    @PostMapping
-    public ResponseEntity<GroupType> createGroupType(@RequestBody GroupType newGroupType) {
-        try {
-            GroupType createdGroupType = groupTypeService.createGroupType(newGroupType);
-            return new ResponseEntity<>(createdGroupType, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @PatchMapping("/{groupTypeId}")
-    public ResponseEntity<GroupType> updateGroupType(
-            @PathVariable UUID groupTypeId,
-            @RequestBody GroupType updatedGroupType
-    ) {
-        try {
-            GroupType groupType = groupTypeService.updateGroupTypeById(groupTypeId, updatedGroupType);
-            if (groupType == null) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(groupType, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @DeleteMapping("/{groupTypeId}")
-    public ResponseEntity<String> deleteGroupTypeById(@PathVariable UUID groupTypeId) {
-        try {
-            boolean deleted = groupTypeService.deleteGroupTypeById(groupTypeId);
-            if (!deleted) {
-                return new ResponseEntity<>("Group type not found.",HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>("Group type deleted successfully",HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  @DeleteMapping("/{groupTypeId}")
+  public ApiResponse<String> deleteGroupTypeById(@PathVariable UUID groupTypeId) {
+    groupTypeService.deleteGroupTypeById(groupTypeId);
+    return new ApiResponse<>("Group type deleted successfully");
+  }
 
 
 }

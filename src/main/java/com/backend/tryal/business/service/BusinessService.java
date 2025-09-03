@@ -18,7 +18,7 @@ public interface BusinessService {
     TokenPair loginBusiness(BusinessLoginDTO loginDTO);
     TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
     Business updateBusinessById(UUID businessId, Business business);
-    boolean deleteBusinessById(UUID businessId);
+    void deleteBusinessById(UUID businessId);
 
     List<BusinessFilteredResponseDTO> getFilteredBusinesses(BusinessFilteredRequestDTO filters);
 
