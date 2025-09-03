@@ -1,11 +1,12 @@
 package com.backend.tryal.stripe.controller;
 
+import com.backend.tryal.shared.response.ApiResponse;
 import com.backend.tryal.stripe.dto.StripePriceRequestDTO;
 import com.backend.tryal.stripe.dto.StripeProductRequestDTO;
 import com.backend.tryal.stripe.service.StripeAdminService;
 import com.stripe.exception.StripeException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.stripe.model.Price;
+import com.stripe.model.Product;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,26 +20,23 @@ public class StripeAdminController {
     }
 
     @PostMapping("/sync")
-    public ResponseEntity<String> syncPlans() throws StripeException {
+    public ApiResponse<String> syncPlans() throws StripeException {
         stripeAdminService.syncPlansFromStripe();
-        return new ResponseEntity<>("Stripe plans synced successfully.", HttpStatus.OK);
+        return new ApiResponse<>("success", "Stripe plans synced successfully.");
     }
 
     @PostMapping("/products")
-    public ResponseEntity<String> createProduct(@RequestBody StripeProductRequestDTO stripeProductRequestDTO) throws StripeException {
-        stripeAdminService.createProduct(stripeProductRequestDTO);
-        return new ResponseEntity<>("Stripe product created successfully.", HttpStatus.OK);
+    public Product createProduct(@RequestBody StripeProductRequestDTO stripeProductRequestDTO) throws StripeException {
+        return stripeAdminService.createProduct(stripeProductRequestDTO);
     }
 
     @PostMapping("/products/{productId}/prices")
-    public ResponseEntity<String> createPrice(@PathVariable String productId, @RequestBody StripePriceRequestDTO stripePriceRequestDTO) throws StripeException {
-        stripeAdminService.createPrice(productId, stripePriceRequestDTO);
-        return new ResponseEntity<>("Stripe price created successfully.", HttpStatus.OK);
+    public Price createPrice(@PathVariable String productId, @RequestBody StripePriceRequestDTO stripePriceRequestDTO) throws StripeException {
+        return stripeAdminService.createPrice(productId, stripePriceRequestDTO);
     }
 
     @PostMapping("/prices/{priceId}/deactivate")
-    public ResponseEntity<String> deactivatePrice(@PathVariable String priceId) throws StripeException {
-        stripeAdminService.deactivatePrice(priceId);
-        return new ResponseEntity<>("Stripe price deactivated successfully.", HttpStatus.OK);
+    public Price deactivatePrice(@PathVariable String priceId) throws StripeException {
+        return stripeAdminService.deactivatePrice(priceId);
     }
 }
