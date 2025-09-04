@@ -72,7 +72,7 @@ public class StripeServiceImpl implements StripeService {
             return;
         }
 
-        System.out.println("Invoice payment event missing planId or subscriptionId");
+        throw new IllegalStateException("Invoice payment event missing planId or subscriptionId");
     }
 
     private void handleCheckoutInvoice(String planIdStr, String userIdStr) {
@@ -91,45 +91,57 @@ public class StripeServiceImpl implements StripeService {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
 
-        if (subscription.getSubscriptionStatus() == Subscription.SubscriptionStatus.ACTIVE) {
-            User user = subscription.getUser();
-            Plan plan = subscription.getPlan();
-
-            if (user == null) {
-                throw new EntityNotFoundException("User linked to subscription not found");
-            }
-            if (plan == null) {
-                throw new EntityNotFoundException("Plan linked to subscription not found");
-            }
-
-            addCreditsToUser(user, plan.getCredits());
-            userRepository.save(user);
-            return;
+        if (subscription.getSubscriptionStatus() != Subscription.SubscriptionStatus.ACTIVE) {
+            throw new IllegalStateException("Subscription is not active for id: " + subscriptionId);
         }
 
-        System.out.println("Subscription is not active for id: " + subscriptionId);
+        User user = subscription.getUser();
+        if (user == null) {
+            throw new IllegalStateException("Subscription " + subscriptionId + " has no linked user");
+        }
+
+        Plan plan = subscription.getPlan();
+        if (plan == null) {
+            throw new IllegalStateException("Subscription " + subscriptionId + " has no linked plan");
+        }
+
+        Integer credits = plan.getCredits();
+        if (credits == null || credits <= 0) {
+            throw new IllegalStateException("Plan for subscription " + subscriptionId + " has invalid credits: " + credits);
+        }
+
+        addCreditsToUser(user, credits);
     }
 
     private void addCreditsToUser(User user, int creditsToAdd) {
-        int currentCredits = user.getCreditBalance() != null ? user.getCreditBalance() : 0;
-        user.setCreditBalance(currentCredits + creditsToAdd);
+        if (user == null) {
+            throw new IllegalArgumentException("User must not be null when adding credits");
+        }
+
+        if (creditsToAdd <= 0) {
+            throw new IllegalArgumentException("Credits to add must be greater than 0, received: " + creditsToAdd);
+        }
+
+        Integer currentCredits = user.getCreditBalance();
+        int newBalance = (currentCredits != null ? currentCredits : 0) + creditsToAdd;
+
+        user.setCreditBalance(newBalance);
         userRepository.save(user);
 
-        System.out.println("Credits added to user with id: " + user.getUserId());
+        System.out.println("Credits added to user with id: " + user.getUserId() + ". New balance: " + newBalance);
     }
 
     private void handleInvoiceFailed(Invoice invoice) {
-        System.out.println("INVOICE PAYMENT FAILED");
-
-        String subscriptionId;
-        try {
-            subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
-        } catch (NullPointerException e) {
-            throw new IllegalArgumentException("Subscription ID not found in invoice");
+        if (invoice == null) {
+            throw new IllegalArgumentException("Invoice must not be null");
+        }
+        if (invoice.getParent() == null || invoice.getParent().getSubscriptionDetails() == null) {
+            throw new IllegalArgumentException("Invoice is missing subscription details");
         }
 
-        if (subscriptionId == null) {
-            throw new IllegalArgumentException("Subscription ID is null in invoice");
+        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+        if (subscriptionId == null || subscriptionId.isBlank()) {
+            throw new IllegalArgumentException("Subscription ID is missing in invoice");
         }
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
@@ -139,17 +151,19 @@ public class StripeServiceImpl implements StripeService {
         subscriptionRepository.save(subscription);
 
         User user = subscription.getUser();
-        if (user != null) {
-            System.out.printf("Notifying user of failed payment: ", user.getEmail());
+        if (user != null && user.getEmail() != null) {
+            System.out.println("Notifying user of failed payment: " + user.getEmail());
         }
     }
 
     private void handleSubscriptionDeleted(com.stripe.model.Subscription stripeSubscription) {
-        System.out.println("STRIPE SUBSCRIPTION DELETED");
+        if (stripeSubscription == null) {
+            throw new IllegalArgumentException("Stripe subscription must not be null");
+        }
 
         String subscriptionId = stripeSubscription.getId();
-        if (subscriptionId == null) {
-            throw new IllegalArgumentException("Subscription ID not found in subscription object.");
+        if (subscriptionId == null || subscriptionId.isBlank()) {
+            throw new IllegalArgumentException("Subscription ID not found in Stripe subscription object");
         }
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
@@ -159,137 +173,162 @@ public class StripeServiceImpl implements StripeService {
         subscription.setAutoRenew(false);
 
         Long cancelAtTimestamp = stripeSubscription.getCancelAt();
-        LocalDateTime endAt;
-
-        if (cancelAtTimestamp != null) {
-            endAt = LocalDateTime.ofEpochSecond(cancelAtTimestamp, 0, ZoneOffset.UTC);
-        } else {
-            endAt = LocalDateTime.now();
-        }
+        LocalDateTime endAt = (cancelAtTimestamp != null)
+                ? LocalDateTime.ofEpochSecond(cancelAtTimestamp, 0, ZoneOffset.UTC)
+                : LocalDateTime.now();
 
         subscription.setEndAt(endAt);
         subscriptionRepository.save(subscription);
 
         User user = subscription.getUser();
-        if (user != null) {
-            System.out.printf("Notifying user of subscription cancellation: ", user.getEmail());
+        if (user != null && user.getEmail() != null) {
+            System.out.println("Notifying user of subscription cancellation: " + user.getEmail());
         }
     }
 
+
     private void handleSubscriptionUpdated(com.stripe.model.Subscription stripeSubscription) {
-        System.out.println("STRIPE SUBSCRIPTION UPDATED");
+        if (stripeSubscription == null) {
+            throw new IllegalArgumentException("Stripe subscription must not be null");
+        }
 
         String subscriptionId = stripeSubscription.getId();
+        if (subscriptionId == null || subscriptionId.isBlank()) {
+            throw new IllegalStateException("Stripe subscription ID is missing");
+        }
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
 
-        if (stripeSubscription.getItems() != null
-                && stripeSubscription.getItems().getData() != null
-                && !stripeSubscription.getItems().getData().isEmpty()) {
-
-            com.stripe.model.SubscriptionItem item = stripeSubscription.getItems().getData().get(0);
-            String newPlanPriceId = item.getPrice().getId();
-
-            Plan newPlan = planRepository.findByStripePriceId(newPlanPriceId)
-                    .orElseThrow(() -> new EntityNotFoundException("Plan not found for Stripe price ID: " + newPlanPriceId));
-
-            subscription.setPlan(newPlan);
+        if (stripeSubscription.getItems() == null
+                || stripeSubscription.getItems().getData() == null
+                || stripeSubscription.getItems().getData().isEmpty()) {
+            throw new IllegalStateException("Stripe subscription items are missing for subscription: " + subscriptionId);
         }
 
-        subscription.setSubscriptionStatus(Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase()));
+        com.stripe.model.SubscriptionItem item = stripeSubscription.getItems().getData().get(0);
+        if (item.getPrice() == null || item.getPrice().getId() == null) {
+            throw new IllegalStateException("Stripe subscription item has no price ID for subscription: " + subscriptionId);
+        }
+
+        String newPlanPriceId = item.getPrice().getId();
+        Plan newPlan = planRepository.findByStripePriceId(newPlanPriceId)
+                .orElseThrow(() -> new EntityNotFoundException("Plan not found for Stripe price ID: " + newPlanPriceId));
+
+        subscription.setPlan(newPlan);
+
+        Subscription.SubscriptionStatus status =
+                Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
+        subscription.setSubscriptionStatus(status);
 
         subscriptionRepository.save(subscription);
     }
 
     private void handleCheckoutCompleted(Session session) throws StripeException {
-        System.out.println("STRIPE CHECKOUT: " + session);
+        if (session == null) {
+            throw new IllegalArgumentException("Session must not be null");
+        }
 
-        try {
-            String userId = session.getMetadata().get("userId");
-            String planId = session.getMetadata().get("planId");
-            String customerId = session.getCustomer();
-            String subscriptionId = session.getSubscription();
+        String userId = session.getMetadata().get("userId");
+        String planId = session.getMetadata().get("planId");
+        String customerId = session.getCustomer();
+        String subscriptionId = session.getSubscription();
 
-            User user = userRepository.findById(UUID.fromString(userId))
-                    .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+        if (userId == null || userId.isBlank()) {
+            throw new IllegalArgumentException("Session is missing userId metadata");
+        }
+        if (planId == null || planId.isBlank()) {
+            throw new IllegalArgumentException("Session is missing planId metadata");
+        }
+        if (customerId == null || customerId.isBlank()) {
+            throw new IllegalStateException("Session is missing customerId");
+        }
 
-            user.setStripeCustomerId(customerId);
-            userRepository.save(user);
+        User user = userRepository.findById(UUID.fromString(userId))
+                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+        user.setStripeCustomerId(customerId);
+        userRepository.save(user);
 
-            Plan plan = planRepository.findById(UUID.fromString(planId))
-                    .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
+        Plan plan = planRepository.findById(UUID.fromString(planId))
+                .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
 
-            // Plan during checkout is a subscription
-            if(plan.getPlanType() == Plan.PlanType.MONTH || plan.getPlanType() == Plan.PlanType.YEAR){
-                com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
-
-                Subscription newSubscription = new Subscription();
-                newSubscription.setUser(user);
-                newSubscription.setPlan(plan);
-                newSubscription.setSubscriptionId(subscriptionId);
-                Subscription.SubscriptionStatus status =
-                        Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
-                newSubscription.setSubscriptionStatus(status);
-                newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
-
-                subscriptionRepository.save(newSubscription);
+        // Plan during checkout is a subscription
+        if (plan.getPlanType() == Plan.PlanType.MONTH || plan.getPlanType() == Plan.PlanType.YEAR) {
+            com.stripe.model.Subscription stripeSubscription = com.stripe.model.Subscription.retrieve(subscriptionId);
+            if (stripeSubscription == null) {
+                throw new IllegalStateException("Stripe subscription could not be retrieved for id: " + subscriptionId);
             }
-        } catch (StripeException e) {
-            throw e;
+
+            Subscription newSubscription = new Subscription();
+            newSubscription.setUser(user);
+            newSubscription.setPlan(plan);
+            newSubscription.setSubscriptionId(subscriptionId);
+
+            Subscription.SubscriptionStatus status =
+                    Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
+            newSubscription.setSubscriptionStatus(status);
+            newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
+
+            subscriptionRepository.save(newSubscription);
         }
     }
 
     @Override
     public String createCheckoutSession(String userId, String userEmail, String planId) {
+        if (userId == null || userId.isBlank()) {
+            throw new IllegalArgumentException("User ID must not be null or blank");
+        }
+        if (planId == null || planId.isBlank()) {
+            throw new IllegalArgumentException("Plan ID must not be null or blank");
+        }
+
+        Plan plan = planService.getPlanById(UUID.fromString(planId));
+        if (plan == null || plan.getStripePriceId() == null) {
+            throw new IllegalArgumentException("Invalid plan: " + planId);
+        }
+
+        SessionCreateParams params = SessionCreateParams.builder()
+                .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
+                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                .setReturnUrl(domain + "/stripe/return?session_id={CHECKOUT_SESSION_ID}")
+                .addLineItem(
+                        SessionCreateParams.LineItem.builder()
+                                .setQuantity(1L)
+                                .setPrice(plan.getStripePriceId())
+                                .build()
+                )
+                .putMetadata("userId", userId)
+                .putMetadata("planId", planId)
+                .build();
+
         try {
-            Plan plan = planService.getPlanById(UUID.fromString(planId));
-            if (plan == null || plan.getStripePriceId() == null) {
-                throw new IllegalArgumentException("Invalid plan");
-            }
-
-            SessionCreateParams params = SessionCreateParams.builder()
-                    .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
-                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                    .setReturnUrl(domain + "/stripe/return?session_id={CHECKOUT_SESSION_ID}")
-                    .addLineItem(
-                            SessionCreateParams.LineItem.builder()
-                                    .setQuantity(1L)
-                                    .setPrice(plan.getStripePriceId())
-                                    .build()
-                    )
-                    .putMetadata("userId", userId)
-                    .putMetadata("planId", planId)
-                    .build();
-
             Session session = Session.create(params);
             return session.getClientSecret();
-
         } catch (Exception e) {
-            System.out.println("Failed to create checkout session");
-            throw new RuntimeException("Failed to create checkout session", e);
+            throw new IllegalStateException("Failed to create checkout session for user: " + userId, e);
         }
     }
 
     @Override
     public Map<String, String> getSessionStatus(String sessionId) {
-        try {
-            Session session = Session.retrieve(sessionId);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("status", session.getStatus());
-
-            if (session.getCustomerDetails() != null && session.getCustomerDetails().getEmail() != null) {
-                response.put("customer_email", session.getCustomerDetails().getEmail());
-            } else {
-                response.put("customer_email", "unknown");
-            }
-
-            return response;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to retrieve session status");
+        if (sessionId == null || sessionId.isBlank()) {
+            throw new IllegalArgumentException("Session ID must not be null or blank");
         }
+
+        Session session;
+        try {
+            session = Session.retrieve(sessionId);
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to retrieve session for id: " + sessionId, e);
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", session.getStatus());
+
+        String email = (session.getCustomerDetails() != null) ? session.getCustomerDetails().getEmail() : null;
+
+        response.put("customer_email", (email != null ? email : "unknown"));
+        return response;
     }
 
     @Override

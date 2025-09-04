@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.io.IOException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -60,6 +62,44 @@ public class GlobalExceptionHandler {
         e.getMessage(),
         request.getRequestURI(), e);
     return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
+  }
+
+  @ExceptionHandler(com.stripe.exception.SignatureVerificationException.class)
+  public ResponseEntity<ErrorResponse<String>> handleSignatureVerificationException(
+          com.stripe.exception.SignatureVerificationException e,
+          HttpServletRequest request) {
+
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
+            HttpStatus.UNAUTHORIZED,
+            "Invalid Stripe webhook signature: " + e.getMessage(),
+            request.getRequestURI(),
+            e
+    );
+
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+  }
+
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<ErrorResponse<String>> handleIOException(IOException e, HttpServletRequest request) {
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            e.getMessage(),
+            request.getRequestURI(),
+            e
+    );
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+  }
+
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ErrorResponse<String>> handleIllegalStateException(
+          IllegalStateException e, HttpServletRequest request) {
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            e.getMessage(),
+            request.getRequestURI(),
+            e
+    );
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
   }
 
   @ExceptionHandler(Exception.class)
