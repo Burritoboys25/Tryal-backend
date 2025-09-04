@@ -22,7 +22,7 @@ public class StripeAdminController {
     @PostMapping("/sync")
     public ApiResponse<String> syncPlans() throws StripeException {
         stripeAdminService.syncPlansFromStripe();
-        return new ApiResponse<>("success", "Stripe plans synced successfully.");
+        return new ApiResponse<>("Stripe plans synced successfully.");
     }
 
     @PostMapping("/products")

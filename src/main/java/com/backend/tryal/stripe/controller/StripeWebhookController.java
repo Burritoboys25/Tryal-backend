@@ -26,6 +26,6 @@ public class StripeWebhookController {
         String payload = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         stripeService.processStripeEvent(payload, sigHeader);
 
-        return new ApiResponse<>("success", "Webhook processed successfully");
+        return new ApiResponse<>("Webhook processed successfully");
     }
 }
