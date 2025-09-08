@@ -19,6 +19,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             b.booking_status AS bookingStatus,
             bus.name AS businessName,
             bus.address AS address,
+            bus.phone_number as phoneNumber,
+            bus.website,
             e.credit_price AS creditPrice,
             b.party,
             t.timeslot_date AS timeslotDate,
