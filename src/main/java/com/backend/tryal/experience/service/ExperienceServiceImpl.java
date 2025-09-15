@@ -1,14 +1,27 @@
 package com.backend.tryal.experience.service;
 
+import static java.util.stream.Collectors.toList;
+
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.experience.Experience;
 import com.backend.tryal.experience.ExperienceRepository;
+import com.backend.tryal.experience.dto.BusinessExperienceDTO;
+import com.backend.tryal.experience.dto.ExperienceDTO;
 import com.backend.tryal.experience.dto.ExperienceRequestDTO;
 import com.backend.tryal.experience.mapper.ExperienceMapper;
+import com.backend.tryal.timeslot.Timeslot;
+import com.backend.tryal.timeslot.TimeslotRepository;
+import com.backend.tryal.timeslot.dto.TimeslotDTO;
+import com.backend.tryal.timeslot.mapper.TimeslotMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +29,9 @@ public class ExperienceServiceImpl implements ExperienceService {
 
   private final ExperienceRepository experienceRepository;
   private final BusinessRepository businessRepository;
+
+  @Autowired
+  private TimeslotRepository timeslotRepository;
 
   public ExperienceServiceImpl(ExperienceRepository experienceRepository,
       BusinessRepository businessRepository) {
@@ -29,11 +45,42 @@ public class ExperienceServiceImpl implements ExperienceService {
   }
 
   @Override
-  public List<Experience> getExperiencesByBusinessId(UUID businessId) {
+  public List<Experience> getExperiencesByBusinessId_TEST(UUID businessId) {
     if (businessRepository.findById(businessId).orElse(null) == null) {
       throw new EntityNotFoundException("Could not find business with id: " + businessId);
     }
     return experienceRepository.findByBusiness_BusinessId(businessId);
+  }
+
+  @Override
+  public List<BusinessExperienceDTO> getExperiencesByBusinessId(UUID businessId) {
+    if (businessRepository.findById(businessId).orElse(null) == null) {
+      throw new EntityNotFoundException("Could not find business with id: " + businessId);
+    }
+
+    List<BusinessExperienceDTO> experiences =
+        experienceRepository.findByBusiness_BusinessId(businessId)
+            .stream()
+            .map(ExperienceMapper::mapBusinessExperiencesDto)
+            .toList();
+    System.out.println("1:");
+    List<TimeslotDTO> timeslots = timeslotRepository.findByBusinessId(businessId)
+            .stream()
+                .map(TimeslotMapper::mapTimeslotDto)
+                    .toList();
+
+    for (BusinessExperienceDTO businessExperienceDTO: experiences) {
+      List<TimeslotDTO> filteredTimeslots = new ArrayList<>();
+
+      for (TimeslotDTO timeslotDTO : timeslots) {
+        if (timeslotDTO.getExperienceId() == businessExperienceDTO.getExperienceId()) {
+          filteredTimeslots.add(timeslotDTO);
+        }
+      }
+      businessExperienceDTO.setTimeslots(filteredTimeslots);
+    }
+
+    return experiences;
   }
 
   @Override
