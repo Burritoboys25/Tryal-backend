@@ -51,7 +51,7 @@ public class SubscriptionController {
       @RequestParam(required = false) Boolean active) {
     List<SubscriptionDTO> subscriptions = new ArrayList<>();
 
-    if (active != null) {
+    if (active != null && active) {
       subscriptions = subscriptionService
           .getActiveSubscriptionsByUser(userId)
           .stream()

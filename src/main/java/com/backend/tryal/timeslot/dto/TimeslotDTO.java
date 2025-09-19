@@ -18,17 +18,4 @@ public class TimeslotDTO {
     private Time startTime;
     private Boolean isCancelled;
     private Double expConvertPrice;
-
-//  public TimeslotDTO() {
-//  }
-//
-//  public TimeslotDTO(UUID timeslotId, UUID experienceId, LocalDate timeslotDate, Time startTime,
-//      Boolean isCancelled, Double expConvertPrice) {
-//    this.timeslotId = timeslotId;
-//    this.experienceId = experienceId;
-//    this.timeslotDate = timeslotDate;
-//    this.startTime = startTime;
-//    this.isCancelled = isCancelled;
-//    this.expConvertPrice = expConvertPrice;
-//  }
 }
