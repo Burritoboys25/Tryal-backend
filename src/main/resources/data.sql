@@ -259,11 +259,36 @@ INSERT INTO user_bookmarks (user_id, business_id) VALUES
 
 INSERT INTO timeslots (timeslot_id, experience_id, timeslot_date, start_time, is_cancelled, created_at) VALUES
     ('b080741a-9d41-47d4-a4c7-7d29eb4b3240', '1676081d-f345-4d0e-af47-57abfec8a658', '2025-03-08', '12:00', false, now()),
-    ('b080341a-9d41-47d4-a4c7-7d29eb4b3240', '0e967892-44f0-4e0c-8e97-03da8f2ad99e', '2025-03-08', '12:00', false, now()),
-    ('b080741a-9341-47d4-a4c7-7d29eb4b3240', '27685b7b-5238-4468-8312-f8de94c5ffc1', '2025-03-08', '12:00', false, now()),
-    ('a62ab9f0-3f55-4186-84db-9796143eee67', '0e2d4ffe-0f13-4111-8715-a374cb5a571d', '2024-02-08', '13:00', false, now()),
-    ('a6cab9f0-3f55-4186-84db-9796143eee67', 'c40ed9a1-8c15-4661-8249-f57eb29b6a47', '2024-02-08', '13:00', false, now()),
-    ('a6cab9f0-3f55-4186-84cb-9796143eee67', 'fe9797f7-506e-4a90-ad35-827b012e2733', '2024-02-08', '13:00', false, now());
+    ('b080341a-9d41-47d4-a4c7-7d29eb4b3240', '0e967892-44f0-4e0c-8e97-03da8f2ad99e', '2025-03-08', '13:00', false, now()),
+    ('b080741a-9341-47d4-a4c7-7d29eb4b3240', '27685b7b-5238-4468-8312-f8de94c5ffc1', '2025-03-08', '14:00', false, now()),
+    ('a62ab9f0-3f55-4186-84db-9796143eee67', '0e2d4ffe-0f13-4111-8715-a374cb5a571d', '2024-02-08', '15:00', false, now()),
+    ('a6cab9f0-3f55-4186-84db-9796143eee67', 'c40ed9a1-8c15-4661-8249-f57eb29b6a47', '2024-02-08', '18:00', false, now()),
+    -- Experience 1
+    ('a6cab9f0-3f55-4186-84cb-9796143eee67', 'fe9797f7-506e-4a90-ad35-827b012e2733', '2024-02-08', '13:00', false, now()),
+    ('8a8f6f2c-6c9d-4b9d-bd47-99c1f2adfc01', 'ea015913-4464-46bf-8239-81dc0f8c535f', '2025-10-15', '09:00', false, now()),
+    ('a1d0cde5-57b7-4b63-921c-58fbc69f0af2', 'ea015913-4464-46bf-8239-81dc0f8c535f', '2025-10-15', '12:00', false, now()),
+    ('f45f2d2e-11f2-4d2e-8d47-0e63a89ff3b3', 'ea015913-4464-46bf-8239-81dc0f8c535f', '2025-10-15', '15:00', false, now()),
+    ('c2b7e65f-8ec5-45e0-9b15-4fbe4ad9c5f6', 'ea015913-4464-46bf-8239-81dc0f8c535f', '2025-10-15', '18:00', false, now()),
+    -- Experience 2
+    ('67b2f2de-76c3-48c4-8f53-4036a02d9c77', 'a12b374e-e615-4325-8f39-90c3b76f90e7', '2025-10-15', '09:00', false, now()),
+    ('5df48247-0c43-490e-9187-08496c6ac813', 'a12b374e-e615-4325-8f39-90c3b76f90e7', '2025-10-15', '12:00', false, now()),
+    ('f6d98f79-1d7a-4e02-a193-c2fba403ba6e', 'a12b374e-e615-4325-8f39-90c3b76f90e7', '2025-10-15', '15:00', false, now()),
+    ('2345ad0b-9b7f-45b0-9a6b-1d53f5a51e39', 'a12b374e-e615-4325-8f39-90c3b76f90e7', '2025-10-15', '18:00', false, now()),
+    -- Experience 3
+    ('9c01c7a1-2a89-4d1e-9f9f-6cb5c0b2b6a2', 'e83db39a-3101-4742-8118-ff6b6938410a', '2025-10-15', '09:00', false, now()),
+    ('83b2d659-4c24-4d78-826a-5fdb339c2de1', 'e83db39a-3101-4742-8118-ff6b6938410a', '2025-10-15', '12:00', false, now()),
+    ('a710f53d-d1ff-4c55-9f5f-243e47346a65', 'e83db39a-3101-4742-8118-ff6b6938410a', '2025-10-15', '15:00', false, now()),
+    ('b26d4e2c-523f-4e41-a287-26e7b66a6f42', 'e83db39a-3101-4742-8118-ff6b6938410a', '2025-10-15', '18:00', false, now()),
+    -- Experience 4
+    ('33f1a9ac-62d5-44e0-b8fc-1c1a3fdd59b4', '1982832e-ce5d-4de0-a350-b2040f7c0fd6', '2025-10-15', '09:00', false, now()),
+    ('8b7a45bb-51c1-496f-89d9-43d927bda0c1', '1982832e-ce5d-4de0-a350-b2040f7c0fd6', '2025-10-15', '12:00', false, now()),
+    ('c49d87f0-cc57-48a2-92b6-7c3f6b7df4c3', '1982832e-ce5d-4de0-a350-b2040f7c0fd6', '2025-10-15', '15:00', false, now()),
+    ('d8892a3c-513b-4b7c-a10c-f92ef1ab3027', '1982832e-ce5d-4de0-a350-b2040f7c0fd6', '2025-10-15', '18:00', false, now()),
+    -- Experience 5
+    ('6a31fd2f-236a-4903-aec6-29f1ad1ecfe1', 'a327941e-9886-43b8-b0f5-8d290598f8f5', '2025-10-15', '09:00', false, now()),
+    ('fd81e09c-8aa3-4bc0-b85c-1b179a1f7ac5', 'a327941e-9886-43b8-b0f5-8d290598f8f5', '2025-10-15', '12:00', false, now()),
+    ('bb1a74c2-1cf3-4552-b67d-4fca7aa4d7fb', 'a327941e-9886-43b8-b0f5-8d290598f8f5', '2025-10-15', '15:00', false, now()),
+    ('a79d6e59-1de3-4f2e-9af8-4e5cfa14bcd4', 'a327941e-9886-43b8-b0f5-8d290598f8f5', '2025-10-15', '18:00', false, now());
 
 INSERT INTO bookings (booking_id, user_id, timeslot_id, booking_status, party, created_at) VALUES
     ('4e934f72-cc98-4eaa-9f55-715a7bcb1020', '272d2788-ee1e-4056-ae09-4829aff17909', 'b080741a-9d41-47d4-a4c7-7d29eb4b3240', 'BOOKED', 2, now()),

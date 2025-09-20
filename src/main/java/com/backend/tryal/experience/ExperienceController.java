@@ -1,5 +1,6 @@
 package com.backend.tryal.experience;
 
+import com.backend.tryal.experience.dto.BusinessExperienceDTO;
 import com.backend.tryal.experience.dto.ExperienceDTO;
 import com.backend.tryal.experience.dto.ExperienceRequestDTO;
 import com.backend.tryal.experience.mapper.ExperienceMapper;
@@ -33,7 +34,7 @@ public class ExperienceController {
   public List<ExperienceDTO> getExperiences(@RequestParam(required = false) UUID businessId) {
     List<ExperienceDTO> experiences;
     if (businessId != null) {
-      experiences = experienceService.getExperiencesByBusinessId(businessId)
+      experiences = experienceService.getExperiencesByBusinessId_TEST(businessId)
           .stream()
           .map(ExperienceMapper::mapExperienceDto)
           .collect(Collectors.toList());
@@ -52,6 +53,13 @@ public class ExperienceController {
     Experience experience = experienceService.getExperienceById(experienceId);
 
     return ExperienceMapper.mapExperienceDto(experience);
+  }
+
+  // get experiences with timeslots by business ID
+  @GetMapping("/business/{businessId}")
+  public List<BusinessExperienceDTO> getExperiencesByBusinessId(@PathVariable UUID businessId) {
+
+    return experienceService.getExperiencesByBusinessId(businessId);
   }
 
   // create experience

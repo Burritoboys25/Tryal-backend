@@ -1,6 +1,7 @@
 package com.backend.tryal.experience.service;
 
 import com.backend.tryal.experience.Experience;
+import com.backend.tryal.experience.dto.BusinessExperienceDTO;
 import com.backend.tryal.experience.dto.ExperienceRequestDTO;
 
 import java.util.List;
@@ -12,5 +13,7 @@ public interface ExperienceService {
     Experience createExperience(ExperienceRequestDTO experienceRequestDTO);
     Experience updateExperienceById(ExperienceRequestDTO experienceRequestDTO, UUID experienceId);
     void deleteExperienceById(UUID experienceId);
-    List<Experience> getExperiencesByBusinessId(UUID businessId);
+    List<Experience> getExperiencesByBusinessId_TEST(UUID businessId);
+
+  List<BusinessExperienceDTO> getExperiencesByBusinessId(UUID businessId);
 }
