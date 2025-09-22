@@ -66,9 +66,11 @@ public class StripeServiceImpl implements StripeService {
         }
 
         // Invoices paid without a planId and userId will be a subscription
-        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
-        if (subscriptionId != null) {
-            handleSubscriptionInvoice(subscriptionId);
+        String stripeSubscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+
+        if (stripeSubscriptionId != null) {
+            String endDate = invoice.getParent().getSubscriptionDetails().getSubscriptionObject().get
+            handleSubscriptionInvoice(stripeSubscriptionId);
             return;
         }
 
@@ -87,13 +89,17 @@ public class StripeServiceImpl implements StripeService {
         addCreditsToUser(user, plan.getCredits());
     }
 
-    private void handleSubscriptionInvoice(String subscriptionId) {
-        Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
+    private void handleSubscriptionInvoice(String stripeSubscriptionId, ) {
+        //TODO: find in repository by stripeSubscriptionId, find current active subscription id
+        Subscription subscription = subscriptionRepository.findById(stripeSubscriptionId)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + stripeSubscriptionId));
 
         if (subscription.getSubscriptionStatus() != Subscription.SubscriptionStatus.ACTIVE) {
-            throw new IllegalStateException("Subscription is not active for id: " + subscriptionId);
+            throw new IllegalStateException("Subscription is not active for id: " + stripeSubscriptionId);
         }
+
+        subscription.setEndAt(TimeWizard.timeSpellconvert(stripeSub.getCurrentPeriodEnd()));
+        subscriptionRepository.save(subscription);
 
         User user = subscription.getUser();
         if (user == null) {
@@ -139,11 +145,12 @@ public class StripeServiceImpl implements StripeService {
             throw new IllegalArgumentException("Invoice is missing subscription details");
         }
 
-        String subscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
-        if (subscriptionId == null || subscriptionId.isBlank()) {
+        String stripeSubscriptionId = invoice.getParent().getSubscriptionDetails().getSubscription();
+        if (stripeSubscriptionId == null || stripeSubscriptionId.isBlank()) {
             throw new IllegalArgumentException("Subscription ID is missing in invoice");
         }
 
+        //TODO: find in repository by stripeSubscriptionId, find current active subscription id, set to PAST_DUE
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
 
@@ -161,11 +168,12 @@ public class StripeServiceImpl implements StripeService {
             throw new IllegalArgumentException("Stripe subscription must not be null");
         }
 
-        String subscriptionId = stripeSubscription.getId();
-        if (subscriptionId == null || subscriptionId.isBlank()) {
+        String stripeSubscriptionId = stripeSubscription.getId();
+        if (stripeSubscriptionId == null || stripeSubscriptionId.isBlank()) {
             throw new IllegalArgumentException("Subscription ID not found in Stripe subscription object");
         }
 
+        //TODO: find in repository by stripeSubscriptionId, find current active subscription id
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found for id: " + subscriptionId));
 
@@ -187,13 +195,14 @@ public class StripeServiceImpl implements StripeService {
     }
 
 
+    // WORK HERE
     private void handleSubscriptionUpdated(com.stripe.model.Subscription stripeSubscription) {
         if (stripeSubscription == null) {
             throw new IllegalArgumentException("Stripe subscription must not be null");
         }
 
-        String subscriptionId = stripeSubscription.getId();
-        if (subscriptionId == null || subscriptionId.isBlank()) {
+        String stripeSubscriptionId = stripeSubscription.getId();
+        if (stripeSubscriptionId == null || stripeSubscriptionId.isBlank()) {
             throw new IllegalStateException("Stripe subscription ID is missing");
         }
 
@@ -233,7 +242,7 @@ public class StripeServiceImpl implements StripeService {
         String userId = session.getMetadata().get("userId");
         String planId = session.getMetadata().get("planId");
         String customerId = session.getCustomer();
-        String subscriptionId = session.getSubscription();
+        String stripeSubscriptionId = session.getSubscription();
 
         if (userId == null || userId.isBlank()) {
             throw new IllegalArgumentException("Session is missing userId metadata");
@@ -244,6 +253,9 @@ public class StripeServiceImpl implements StripeService {
         if (customerId == null || customerId.isBlank()) {
             throw new IllegalStateException("Session is missing customerId");
         }
+        if (stripeSubscriptionId == null || stripeSubscriptionId.isBlank()) {
+            throw new IllegalStateException("Session is missing stripeSubscriptionId");
+        }
 
         User user = userRepository.findById(UUID.fromString(userId))
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
@@ -252,6 +264,30 @@ public class StripeServiceImpl implements StripeService {
 
         Plan plan = planRepository.findById(UUID.fromString(planId))
                 .orElseThrow(() -> new EntityNotFoundException("Plan with id " + planId + " not found"));
+
+        Subscription activeSub = subscriptionRepository.findByUserIdAndStatus(user.getUserId(), SubscriptionStatus.ACTIVE);
+
+        // Change current subscription
+        if(activeSub != null){
+            com.stripe.model.Subscription oldStripeSub =
+                    com.stripe.model.Subscription.retrieve(activeSub.getStripeSubscriptionId());
+            oldStripeSub.update(
+                    com.stripe.param.SubscriptionUpdateParams.builder()
+                            .setCancelAt(oldStripeSub.getCurrentPeriodEnd())
+                            .build()
+            );
+
+            activeSub.setEndAt(TimeWizard.timeSpellconvert(oldStripeSub.getCurrentPeriodEnd()));
+            subscriptionRepository.save(activeSub);
+
+            Subscription newSub = new Subscription();
+            newSub.setUser(user);
+            newSub.setPlan(plan);
+            newSub.setStripeSubscriptionId(stripeSubscriptionId); // same Stripe subscription
+            newSub.setStartAt(TimeWizard.timeSpellconvert(oldStripeSub.getCurrentPeriodEnd()));
+            newSub.setSubscriptionStatus(SubscriptionStatus.PENDING);
+            subscriptionRepository.save(newSub);
+        }
 
         // Plan during checkout is a subscription
         if (plan.getPlanType() == Plan.PlanType.MONTH || plan.getPlanType() == Plan.PlanType.YEAR) {
@@ -269,12 +305,14 @@ public class StripeServiceImpl implements StripeService {
                     Subscription.SubscriptionStatus.valueOf(stripeSubscription.getStatus().toUpperCase());
             newSubscription.setSubscriptionStatus(status);
             newSubscription.setStartAt(TimeWizard.timeSpellconvert(stripeSubscription.getStartDate()));
+            newSubscription.setEndAt(TimeWizard.timeSpellconvert(stripeSubscription.getCurrentPeriodEnd()));
 
             subscriptionRepository.save(newSubscription);
         }
+
+        //TODO: work on top-off flow
     }
 
-    //WORK HERE
     @Override
     public String createCheckoutSession(String userId, String userEmail, String planId) {
         if (userId == null || userId.isBlank()) {
