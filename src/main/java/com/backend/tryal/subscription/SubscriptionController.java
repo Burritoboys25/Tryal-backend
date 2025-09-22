@@ -40,7 +40,7 @@ public class SubscriptionController {
 
   //get subscription by id
   @GetMapping("/{subscriptionId}")
-  public SubscriptionDTO getSubscriptionById(@PathVariable String subscriptionId) {
+  public SubscriptionDTO getSubscriptionById(@PathVariable UUID subscriptionId) {
     Subscription subscription = subscriptionService.getSubscriptionById(subscriptionId);
     return SubscriptionMapper.mapSubscriptionDTO(subscription.getUser().getUserId(), subscription);
   }
@@ -83,7 +83,7 @@ public class SubscriptionController {
   //patch subscription
   @PatchMapping("/{subscriptionId}")
   public SubscriptionDTO updateSubscriptionById(
-      @PathVariable String subscriptionId, @RequestBody SubscriptionDTO subscriptionRequestDTO) {
+      @PathVariable UUID subscriptionId, @RequestBody SubscriptionDTO subscriptionRequestDTO) {
     Subscription updatedSubscription = subscriptionService.updateSubscriptionById(subscriptionId,
         subscriptionRequestDTO);
     return SubscriptionMapper.mapSubscriptionDTO(

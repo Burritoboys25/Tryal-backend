@@ -32,7 +32,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   }
 
   @Override
-  public Subscription getSubscriptionById(String subscriptionId) {
+  public Subscription getSubscriptionById(UUID subscriptionId) {
     Subscription subscription = subscriptionRepository.findById(subscriptionId).orElse(null);
     if (subscription == null) {
       throw new EntityNotFoundException("Subscription not found with id: " + subscriptionId);
@@ -80,7 +80,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   }
 
   @Override
-  public Subscription updateSubscriptionById(String subscriptionId,
+  public Subscription updateSubscriptionById(UUID subscriptionId,
       SubscriptionDTO subscriptionRequestDTO) {
     Subscription updatedSubscription = getSubscriptionById(subscriptionId);
 

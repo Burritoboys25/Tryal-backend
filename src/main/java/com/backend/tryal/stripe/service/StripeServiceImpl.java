@@ -224,6 +224,7 @@ public class StripeServiceImpl implements StripeService {
         subscriptionRepository.save(subscription);
     }
 
+    //WORK HERE
     private void handleCheckoutCompleted(Session session) throws StripeException {
         if (session == null) {
             throw new IllegalArgumentException("Session must not be null");
@@ -273,6 +274,7 @@ public class StripeServiceImpl implements StripeService {
         }
     }
 
+    //WORK HERE
     @Override
     public String createCheckoutSession(String userId, String userEmail, String planId) {
         if (userId == null || userId.isBlank()) {
