@@ -12,12 +12,12 @@ public class TokenTransactionDTO {
     private Long creditAmount;
     private TokenTransaction.TransactionReason transactionReason;
     private UUID bookingId;
-    private String subscriptionId;
+    private UUID subscriptionId;
 
     public TokenTransactionDTO() {
     }
 
-    public TokenTransactionDTO(UUID tokenTransId, UUID userId, Long creditAmount, TokenTransaction.TransactionReason transactionReason, UUID bookingId, String subscriptionId) {
+    public TokenTransactionDTO(UUID tokenTransId, UUID userId, Long creditAmount, TokenTransaction.TransactionReason transactionReason, UUID bookingId, UUID subscriptionId) {
         this.tokenTransId = tokenTransId;
         this.userId = userId;
         this.creditAmount = creditAmount;
