@@ -4,6 +4,7 @@ import com.backend.tryal.subscription.Subscription;
 import com.backend.tryal.subscription.dto.SubscriptionDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface SubscriptionService {
@@ -12,7 +13,7 @@ public interface SubscriptionService {
 
     Subscription getSubscriptionById(UUID subscriptionId);
     List<Subscription> getSubscriptionsByUser(UUID userId);
-    List<Subscription> getActiveSubscriptionsByUser(UUID userId);
+    Optional<Subscription> getActiveSubscriptionsByUser(UUID userId);
     Subscription createSubscription(UUID userId, SubscriptionDTO subscriptionRequestDTO);
     Subscription updateSubscriptionById(UUID subscriptionId, SubscriptionDTO subscriptionRequestDTO);
 }

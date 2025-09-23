@@ -75,6 +75,7 @@ public class SubscriptionController {
   @PostMapping("/user/{userId}")
   public SubscriptionDTO createSubscription(@PathVariable UUID userId,
       @RequestBody SubscriptionDTO subscriptionRequestDTO) {
+
     return SubscriptionMapper
         .mapSubscriptionDTO(userId,
             subscriptionService.createSubscription(userId, subscriptionRequestDTO));
