@@ -8,7 +8,8 @@ import lombok.Data;
 
 @Data
 public class SubscriptionDTO {
-    private String subscriptionId;
+    private UUID subscriptionId;
+    private String stripeSubscriptionId;
     private UUID userId;
     private UUID planId;
     private Subscription.SubscriptionStatus subscriptionStatus;
@@ -18,8 +19,9 @@ public class SubscriptionDTO {
 
     public SubscriptionDTO(){}
 
-    public SubscriptionDTO(String subscriptionId, UUID userId, UUID planId, Subscription.SubscriptionStatus subscriptionStatus, Boolean autoRenew, LocalDateTime startAt, LocalDateTime endAt) {
+    public SubscriptionDTO(UUID subscriptionId, String stripeSubscriptionId, UUID userId, UUID planId, Subscription.SubscriptionStatus subscriptionStatus, Boolean autoRenew, LocalDateTime startAt, LocalDateTime endAt) {
         this.subscriptionId = subscriptionId;
+        this.stripeSubscriptionId = stripeSubscriptionId;
         this.userId = userId;
         this.planId = planId;
         this.subscriptionStatus = subscriptionStatus;

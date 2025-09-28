@@ -9,6 +9,7 @@ import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   }
 
   @Override
-  public Subscription getSubscriptionById(String subscriptionId) {
+  public Subscription getSubscriptionById(UUID subscriptionId) {
     Subscription subscription = subscriptionRepository.findById(subscriptionId).orElse(null);
     if (subscription == null) {
       throw new EntityNotFoundException("Subscription not found with id: " + subscriptionId);
@@ -49,15 +50,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   }
 
   @Override
-  public List<Subscription> getActiveSubscriptionsByUser(UUID userId) {
+  public Optional<Subscription> getActiveSubscriptionsByUser(UUID userId) {
     if (userRepository.findById(userId).orElse(null) == null) {
       throw new EntityNotFoundException("User not found with id: " + userId);
     }
-    return subscriptionRepository.findByUserIdAndActive(userId);
+    return subscriptionRepository.findByUserIdAndStatus(userId, Subscription.SubscriptionStatus.ACTIVE);
   }
 
   @Override
   public Subscription createSubscription(UUID userId, SubscriptionDTO subscriptionRequestDTO) {
+    Optional<Subscription> activeSubscription = getActiveSubscriptionsByUser(userId);
+
+    if (activeSubscription.isPresent()) {
+      throw new IllegalStateException("Cannot create a new subscription: user already has an active subscription.");
+    }
+
     User user = userRepository.findById(userId).orElse(null);
     Plan plan = planRepository.findById(subscriptionRequestDTO.getPlanId()).orElse(null);
     if (user == null) {
@@ -80,7 +87,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   }
 
   @Override
-  public Subscription updateSubscriptionById(String subscriptionId,
+  public Subscription updateSubscriptionById(UUID subscriptionId,
       SubscriptionDTO subscriptionRequestDTO) {
     Subscription updatedSubscription = getSubscriptionById(subscriptionId);
 

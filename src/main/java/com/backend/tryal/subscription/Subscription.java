@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Entity
@@ -26,8 +27,12 @@ public class Subscription {
     }
 
     @Id
-    @Column(name = "subscription_id", nullable = false, updatable = false)
-    private String subscriptionId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "subscription_id", updatable = false, nullable = false)
+    private UUID subscriptionId;
+
+    @Column(name = "stripe_subscription_id", nullable = false)
+    private String stripeSubscriptionId;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,8 +69,9 @@ public class Subscription {
     public Subscription(){
     }
 
-    public Subscription(String subscriptionId, User user, Plan plan, SubscriptionStatus subscriptionStatus, Boolean autoRenew, LocalDateTime startAt, LocalDateTime endAt) {
+    public Subscription(UUID subscriptionId, String stripeSubscriptionId, User user, Plan plan, SubscriptionStatus subscriptionStatus, Boolean autoRenew, LocalDateTime startAt, LocalDateTime endAt) {
         this.subscriptionId = subscriptionId;
+        this.stripeSubscriptionId = stripeSubscriptionId;
         this.user = user;
         this.plan = plan;
         this.subscriptionStatus = subscriptionStatus;

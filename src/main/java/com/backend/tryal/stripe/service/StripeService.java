@@ -1,6 +1,7 @@
 package com.backend.tryal.stripe.service;
 
 import com.stripe.exception.StripeException;
+
 import java.util.Map;
 
 public interface StripeService {
@@ -9,4 +10,6 @@ public interface StripeService {
     Map<String, String> getSessionStatus(String sessionId);
 
     void processStripeEvent(String payload, String sigHeader) throws StripeException;
+
+    void updateStripeSubscription(String userIdStr, String priceId, String planIdStr) throws StripeException;
 }

@@ -14,6 +14,7 @@ public class SubscriptionMapper {
         }
 
         subscriptionDTO.setUserId(userId);
+        subscriptionDTO.setStripeSubscriptionId(subscription.getStripeSubscriptionId());
         subscriptionDTO.setSubscriptionId(subscription.getSubscriptionId());
         subscriptionDTO.setSubscriptionStatus(subscription.getSubscriptionStatus());
         subscriptionDTO.setAutoRenew(subscription.getAutoRenew());
