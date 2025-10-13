@@ -1,125 +1,75 @@
 package com.backend.tryal.booking;
 
 import com.backend.tryal.booking.dto.BookingDTO;
+import com.backend.tryal.booking.dto.BookingPatchDTO;
+import com.backend.tryal.booking.dto.BookingRequestDTO;
 import com.backend.tryal.booking.dto.UserBookingDTO;
 import com.backend.tryal.booking.mapper.BookingMapper;
 import com.backend.tryal.booking.service.BookingService;
-import com.backend.tryal.booking.response.BookingResponse;
-import com.backend.tryal.booking.dto.BookingRequestDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import com.backend.tryal.shared.response.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/bookings")
 public class BookingController {
-    @Autowired
-    BookingService bookingService;
 
-    // get all bookings
-    @GetMapping()
-    public ResponseEntity<List<BookingDTO>> getAllBookings() {
-        try {
-            List<BookingDTO> bookings = bookingService.getAllBookings()
-                    .stream()
-                    .map(BookingMapper::mapBookingDto)
-                    .collect(Collectors.toList());
+  @Autowired
+  BookingService bookingService;
 
-            if (bookings.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+  // get all bookings
+  @GetMapping()
+  public List<BookingDTO> getAllBookings() {
+    return bookingService.getAllBookings()
+        .stream()
+        .map(BookingMapper::mapBookingDto)
+        .collect(Collectors.toList());
+  }
 
-            return new ResponseEntity<>(bookings, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // get booking by ID
+  @GetMapping("/{bookingId}")
+  public BookingDTO getBookingById(@PathVariable UUID bookingId) {
+    Booking booking = bookingService.getBookingById(bookingId);
 
-    // get booking by ID
-    @GetMapping("/{bookingId}")
-    public ResponseEntity<BookingResponse> getBookingById(@PathVariable UUID bookingId) {
-        try {
-            Booking booking = bookingService.getBookingById(bookingId);
+    return BookingMapper.mapBookingDto(booking);
+  }
 
-            if (booking == null) {
-                return new ResponseEntity<>(new BookingResponse(null, "Booking not found."),HttpStatus.NOT_FOUND);
-            }
+  // get booking by user ID
+  @GetMapping("/user/{userId}")
+  public List<UserBookingDTO> getUserBookings(@PathVariable UUID userId) {
+    return bookingService.getUserBookings(userId);
 
-            BookingDTO bookingDTO = BookingMapper.mapBookingDto(booking);
+  }
 
-            return new ResponseEntity<>(new BookingResponse(bookingDTO, "booking found."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // create booking
+  @PostMapping()
+  public BookingDTO createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
+    return BookingMapper.mapBookingDto(bookingService.createBooking(bookingRequestDTO));
+  }
 
-    // get booking by ID
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserBookingDTO>> getUserBookings(@PathVariable UUID userId) {
-        try {
-            List<UserBookingDTO> userBookings = bookingService.getUserBookings(userId);
+  // patch booking
+  @PatchMapping("/{bookingId}")
+  public BookingDTO updateBookingById(@RequestBody BookingPatchDTO bookingRequestDTO,
+      @PathVariable UUID bookingId) {
+    Booking updatedBooking = bookingService.updateBookingById(bookingId, bookingRequestDTO);
 
-            if (userBookings.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
+    return BookingMapper.mapBookingDto(updatedBooking);
+  }
 
-            return new ResponseEntity<>(userBookings, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // create booking
-    @PostMapping()
-    public ResponseEntity<BookingResponse> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO, @RequestParam UUID userId, @RequestParam UUID bookingId) {
-        try {
-            BookingDTO bookingDTO = BookingMapper.mapBookingDto(bookingService.createBooking(userId, bookingId, bookingRequestDTO));
-
-            if(bookingDTO == null){
-                return new ResponseEntity<>(new BookingResponse(null, "User or booking not found."), HttpStatus.NOT_FOUND);
-            }
-
-            return new ResponseEntity<>(new BookingResponse(bookingDTO, "Booking created successfully."), HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // patch booking
-    @PatchMapping("/{bookingId}")
-    public ResponseEntity<BookingResponse> updateBookingById(@RequestBody BookingRequestDTO bookingRequestDTO, @PathVariable UUID bookingId, @RequestParam UUID timeslotId) {
-        try {
-            Booking updatedBooking = bookingService.updateBookingById(bookingId, timeslotId, bookingRequestDTO);
-
-            if(updatedBooking == null){
-                return new ResponseEntity<>(new BookingResponse(null, "Booking not found."), HttpStatus.NOT_FOUND);
-            }
-
-            BookingDTO bookingDTO = BookingMapper.mapBookingDto(updatedBooking);
-
-            return new ResponseEntity<>(new BookingResponse(bookingDTO, "Booking updated successfully."), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // delete booking
-    @DeleteMapping("/{bookingId}")
-    public ResponseEntity<String> deleteBookingById(@PathVariable UUID bookingId) {
-        try {
-
-            if (bookingService.deleteBookingById(bookingId)) {
-                return new ResponseEntity<>("Booking deleted successfully.", HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>("Booking not found.", HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+  // delete booking
+  @DeleteMapping("/{bookingId}")
+  public ApiResponse<String> deleteBookingById(@PathVariable UUID bookingId) {
+    bookingService.deleteBookingById(bookingId);
+    return new ApiResponse<>("success", "Booking deleted successfully.");
+  }
 }

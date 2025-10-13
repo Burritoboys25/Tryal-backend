@@ -13,6 +13,7 @@ import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserProfileBookmarkDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -61,7 +62,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(UUID userId) {
-        return userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            throw new EntityNotFoundException("Could not find user with id: " + userId);
+        }
+        return user;
     }
 
     @Override
@@ -168,52 +173,57 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(updatedUser);
             return updatedUser;
+        } else {
+          throw new EntityNotFoundException("Could not find user with id: " + userId);
         }
-
-        return null;
     }
 
     @Override
-    public boolean deleteUserById(UUID userId) {
-        if (getUserById(userId) != null) {
-            userRepository.deleteById(userId);
-            return true;
+    public void deleteUserById(UUID userId) {
+        if (getUserById(userId) == null) {
+          throw new EntityNotFoundException("Could not find user with id: " + userId);
         }
-
-        return false;
+        userRepository.deleteById(userId);
     }
 
     @Override
-    public User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO) {
-        User user = userRepository.findById(bookmarkRequestDTO.getUserId()).orElse(null);
-        Business business = businessRepository.findById(bookmarkRequestDTO.getBusinessId()).orElse(null);
+    public void addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO) {
+        UUID userId = bookmarkRequestDTO.getUserId();
+        UUID businessId = bookmarkRequestDTO.getBusinessId();
 
-        if (user != null && business != null) {
-            user.getBusinesses().add(business);
-            userRepository.save(user); // Saves the change, updating the bridge table
-            return user;
-        }
-
-        return null;
-    }
-
-    @Override
-    public boolean removeUserBookmark(UUID userId, UUID businessId) {
         User user = userRepository.findById(userId).orElse(null);
         Business business = businessRepository.findById(businessId).orElse(null);
 
-        if (user != null && business != null) {
-            boolean removed = user.getBusinesses().remove(business); // directly
-            if (removed) {
-                userRepository.save(user); // this persists join table change
-                return true;
-            }
+        if (user == null || business == null) {
+            throw new EntityNotFoundException("User ID or business ID does not exist.");
         }
-        return false;
+
+        user.getBusinesses().add(business);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void removeUserBookmark(UUID userId, UUID businessId) {
+
+        User user = userRepository.findById(userId).orElse(null);
+        Business business = businessRepository.findById(businessId).orElse(null);
+
+        if (user == null || business == null) {
+            throw new EntityNotFoundException("User ID or business ID does not exist.");
+        }
+
+        boolean removed = user.getBusinesses().remove(business); // directly
+        if (removed) {
+            userRepository.save(user); // this persists join table change
+        }
     }
 
     @Override
     public List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId) {
+        if (userRepository.findById(userId).orElse(null) == null) {
+            throw new EntityNotFoundException("Could not find user with id: " + userId);
+        }
+
         List<UserProfileBookmarkDTO> response = new ArrayList<>();
         List<UserBookmarkRequestDTO> bookmarks = userRepository.getAllUserBookmarksByUserId(userId);
 

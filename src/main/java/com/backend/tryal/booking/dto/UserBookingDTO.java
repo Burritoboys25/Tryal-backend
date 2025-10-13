@@ -15,22 +15,28 @@ public class UserBookingDTO {
     private String bookingStatus;
     private String businessName;
     private String address;
+    private String phoneNumber;
+    private String website;
     private Integer creditPrice;
     private Integer party;
     private Date timeslotDate;
     private Time startTime;
 
-    public UserBookingDTO(UUID userId, UUID bookingId, UUID timeslotId, UUID experienceId, String bookingStatus, String businessName, String address, Integer creditPrice, Integer party, Date timeslotDate, Time startTime) {
-        this.userId = userId;
-        this.bookingId = bookingId;
-        this.timeslotId = timeslotId;
-        this.experienceId = experienceId;
-        this.bookingStatus = bookingStatus;
-        this.businessName = businessName;
-        this.address = address;
-        this.creditPrice = creditPrice;
-        this.party = party;
-        this.timeslotDate = timeslotDate;
-        this.startTime = startTime;
-    }
+  public UserBookingDTO(UUID userId, UUID bookingId, UUID timeslotId, UUID experienceId,
+      String bookingStatus, String businessName, String address, String phoneNumber, String website,
+      Integer creditPrice, Integer party, Date timeslotDate, Time startTime) {
+    this.userId = userId;
+    this.bookingId = bookingId;
+    this.timeslotId = timeslotId;
+    this.experienceId = experienceId;
+    this.bookingStatus = bookingStatus;
+    this.businessName = businessName;
+    this.address = address;
+    this.phoneNumber = phoneNumber;
+    this.website = website;
+    this.creditPrice = creditPrice;
+    this.party = party;
+    this.timeslotDate = timeslotDate;
+    this.startTime = startTime;
+  }
 }

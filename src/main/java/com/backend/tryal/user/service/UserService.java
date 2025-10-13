@@ -18,11 +18,11 @@ public interface UserService {
     TokenPair loginUser(UserLoginDTO loginDTO);
     TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
     User updateUserById(UUID userId, User user);
-    boolean deleteUserById(UUID userId);
+    void deleteUserById(UUID userId);
 
-    User addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
+    void addUserBookmark(UserBookmarkRequestDTO bookmarkRequestDTO);
 
-    boolean removeUserBookmark(UUID userId, UUID businessId);
+    void removeUserBookmark(UUID userId, UUID businessId);
 
     List<UserProfileBookmarkDTO> getAllUserBookmarksByUserId(UUID userId);
 }
