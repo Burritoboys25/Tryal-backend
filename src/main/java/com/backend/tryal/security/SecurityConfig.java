@@ -13,6 +13,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,62 +23,64 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Value("${spring.application.environment}")
-    private String envVariable;
 
-    @Autowired
-    @Qualifier("customUserDetailsService") // Inject CustomUserDetailsService
-    private UserDetailsService userDetailsService;
+  @Value("${spring.application.environment}")
+  private String envVariable;
 
-    @Autowired
-    @Qualifier("customBusinessDetailsService") // Inject CustomBusinessDetailsService
-    private UserDetailsService businessDetailsService;
+  @Autowired
+  @Qualifier("customUserDetailsService") // Inject CustomUserDetailsService
+  private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+  @Autowired
+  @Qualifier("customBusinessDetailsService") // Inject CustomBusinessDetailsService
+  private UserDetailsService businessDetailsService;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Autowired
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-        if (envVariable.equals("dev")) {
-            return http.csrf(customizer -> customizer.disable())
-                    .authorizeHttpRequests(request -> request
-                            .anyRequest().permitAll()
-                    )
-                    .build();
-        }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        return http.csrf(customizer -> customizer.disable())
-            .authorizeHttpRequests(request -> request
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .anyRequest().authenticated()
-            )
-            .httpBasic(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+    if (envVariable.equals("dev")) {
+      return http.csrf(AbstractHttpConfigurer::disable)
+          .authorizeHttpRequests(request -> request
+              .anyRequest().permitAll()
+          )
+          .build();
     }
 
-    @Bean
-    public AuthenticationProvider userAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(userDetailsService);
-        return provider;
-    }
+    return http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(request -> request
+            .requestMatchers("/api/auth/**").permitAll()
+            .anyRequest().authenticated()
+        )
+        .httpBasic(Customizer.withDefaults())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
+  }
 
-    @Bean
-    public AuthenticationProvider businessAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(businessDetailsService);
-        return provider;
-    }
+  @Bean
+  public AuthenticationProvider userAuthenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+    provider.setUserDetailsService(userDetailsService);
+    return provider;
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationProvider userAuthenticationProvider,
-            AuthenticationProvider businessAuthenticationProvider) throws Exception {
-        return new ProviderManager(userAuthenticationProvider, businessAuthenticationProvider);
-    }
+  @Bean
+  public AuthenticationProvider businessAuthenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+    provider.setUserDetailsService(businessDetailsService);
+    return provider;
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationProvider userAuthenticationProvider,
+      AuthenticationProvider businessAuthenticationProvider) throws Exception {
+    return new ProviderManager(userAuthenticationProvider, businessAuthenticationProvider);
+  }
 }
