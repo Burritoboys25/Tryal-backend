@@ -10,8 +10,8 @@ import com.backend.tryal.business.dto.BusinessSignupDTO;
 import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.category.Category;
 import com.backend.tryal.experience.Experience;
-import com.backend.tryal.security.dto.RefreshTokenRequest;
-import com.backend.tryal.security.dto.TokenPair;
+import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
+import com.backend.tryal.security.dto.TokenPairDTO;
 import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -97,7 +97,7 @@ public class BusinessServiceImpl implements BusinessService {
   }
 
   @Override
-  public TokenPair loginBusiness(BusinessLoginDTO loginDTO) {
+  public TokenPairDTO loginBusiness(BusinessLoginDTO loginDTO) {
     // Authenticate business
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
@@ -110,8 +110,8 @@ public class BusinessServiceImpl implements BusinessService {
   }
 
   @Override
-  public TokenPair refreshToken(@Valid RefreshTokenRequest refreshTokenRequest) {
-    String refreshToken = refreshTokenRequest.getRefreshToken();
+  public TokenPairDTO refreshToken(@Valid RefreshTokenRequestDTO refreshTokenRequestDTO) {
+    String refreshToken = refreshTokenRequestDTO.getRefreshToken();
 
     // check if still valid refresh token
     if (!jwtService.isRefreshToken(refreshToken)) {
@@ -139,7 +139,7 @@ public class BusinessServiceImpl implements BusinessService {
         );
 
     String accessToken = jwtService.generateAccessToken(authenticationToken);
-    return new TokenPair(accessToken, refreshToken);
+    return new TokenPairDTO(accessToken, refreshToken);
   }
 
   @Override

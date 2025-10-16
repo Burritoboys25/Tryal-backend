@@ -3,8 +3,8 @@ package com.backend.tryal.user.service;
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.experience.Experience;
-import com.backend.tryal.security.dto.RefreshTokenRequest;
-import com.backend.tryal.security.dto.TokenPair;
+import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
+import com.backend.tryal.security.dto.TokenPairDTO;
 import com.backend.tryal.security.service.JwtService;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.UserRepository;
@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public TokenPair loginUser(UserLoginDTO loginDTO) {
+    public TokenPairDTO loginUser(UserLoginDTO loginDTO) {
         // Authenticate user
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
 
@@ -94,8 +94,8 @@ public class UserServiceImpl implements UserService {
         return jwtService.generateTokenPair(authentication);
     }
 
-    public TokenPair refreshToken(@Valid RefreshTokenRequest refreshTokenRequest) {
-        String refreshToken = refreshTokenRequest.getRefreshToken();
+    public TokenPairDTO refreshToken(@Valid RefreshTokenRequestDTO refreshTokenRequestDTO) {
+        String refreshToken = refreshTokenRequestDTO.getRefreshToken();
 
         // check if still valid refresh token
         if (!jwtService.isRefreshToken(refreshToken)) {
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
                 );
 
         String accessToken = jwtService.generateAccessToken(authentication);
-        return new TokenPair(accessToken, refreshToken);
+        return new TokenPairDTO(accessToken, refreshToken);
     }
 
     @Override

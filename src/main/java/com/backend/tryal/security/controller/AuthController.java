@@ -6,8 +6,8 @@ import com.backend.tryal.business.dto.BusinessLoginDTO;
 import com.backend.tryal.business.dto.BusinessSignupDTO;
 import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.business.service.BusinessService;
-import com.backend.tryal.security.dto.RefreshTokenRequest;
-import com.backend.tryal.security.dto.TokenPair;
+import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
+import com.backend.tryal.security.dto.TokenPairDTO;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
@@ -42,14 +42,14 @@ public class AuthController {
 
   // Login User
   @PostMapping("/user/login")
-  public TokenPair loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
+  public TokenPairDTO loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
     return userService.loginUser(loginDTO);
   }
 
   // Refresh user token
   @PostMapping("/user/refresh-token")
-  public TokenPair refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-    return userService.refreshToken(refreshTokenRequest);
+  public TokenPairDTO refreshToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+    return userService.refreshToken(refreshTokenRequestDTO);
   }
 
   // Signup business
@@ -61,14 +61,14 @@ public class AuthController {
 
   // Login business
   @PostMapping("/business/login")
-  public TokenPair loginBusiness(@Valid @RequestBody BusinessLoginDTO loginDTO) {
+  public TokenPairDTO loginBusiness(@Valid @RequestBody BusinessLoginDTO loginDTO) {
     return businessService.loginBusiness(loginDTO);
   }
 
   // Refresh business token
   @PostMapping("/business/refresh-token")
-  public TokenPair refreshBusinessToken(
-      @Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
-    return businessService.refreshToken(refreshTokenRequest);
+  public TokenPairDTO refreshBusinessToken(
+      @Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+    return businessService.refreshToken(refreshTokenRequestDTO);
   }
 }

@@ -3,8 +3,8 @@ package com.backend.tryal.security.dto;
 import lombok.Data;
 
 @Data
-public class RefreshTokenRequest {
+public class RefreshTokenRequestDTO {
     private String refreshToken;
 
-    public RefreshTokenRequest() {}
+    public RefreshTokenRequestDTO() {}
 }

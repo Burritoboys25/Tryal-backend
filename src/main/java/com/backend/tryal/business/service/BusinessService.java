@@ -3,8 +3,8 @@ package com.backend.tryal.business.service;
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.dto.*;
 import com.backend.tryal.experience.Experience;
-import com.backend.tryal.security.dto.RefreshTokenRequest;
-import com.backend.tryal.security.dto.TokenPair;
+import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
+import com.backend.tryal.security.dto.TokenPairDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,8 +15,8 @@ public interface BusinessService {
     List<String> getBusinessCategories(UUID businessId);
     Business getBusinessById(UUID businessId);
     Business createBusiness(BusinessSignupDTO signupDTO) throws IllegalArgumentException;
-    TokenPair loginBusiness(BusinessLoginDTO loginDTO);
-    TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
+    TokenPairDTO loginBusiness(BusinessLoginDTO loginDTO);
+    TokenPairDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO);
     Business updateBusinessById(UUID businessId, Business business);
     void deleteBusinessById(UUID businessId);
 

@@ -1,6 +1,6 @@
 package com.backend.tryal.security.service;
 
-import com.backend.tryal.security.dto.TokenPair;
+import com.backend.tryal.security.dto.TokenPairDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -44,11 +44,11 @@ public class JwtService {
     }
   }
 
-  public TokenPair generateTokenPair(Authentication authentication) {
+  public TokenPairDTO generateTokenPair(Authentication authentication) {
     String accessToken = generateAccessToken(authentication);
     String refreshToken = generateRefreshToken(authentication);
 
-    return new TokenPair(accessToken, refreshToken);
+    return new TokenPairDTO(accessToken, refreshToken);
   }
 
   // Generate access token

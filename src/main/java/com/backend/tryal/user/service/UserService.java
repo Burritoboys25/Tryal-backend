@@ -1,7 +1,7 @@
 package com.backend.tryal.user.service;
 
-import com.backend.tryal.security.dto.RefreshTokenRequest;
-import com.backend.tryal.security.dto.TokenPair;
+import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
+import com.backend.tryal.security.dto.TokenPairDTO;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserBookmarkRequestDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
@@ -15,8 +15,8 @@ public interface UserService {
     List<User> getAllUsers();
     User getUserById(UUID userId);
     User createUser(UserSignupDTO signupDTO) throws IllegalArgumentException;
-    TokenPair loginUser(UserLoginDTO loginDTO);
-    TokenPair refreshToken(RefreshTokenRequest refreshTokenRequest);
+    TokenPairDTO loginUser(UserLoginDTO loginDTO);
+    TokenPairDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO);
     User updateUserById(UUID userId, User user);
     void deleteUserById(UUID userId);
 
