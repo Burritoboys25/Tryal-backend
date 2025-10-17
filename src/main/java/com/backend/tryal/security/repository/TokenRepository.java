@@ -1,15 +1,13 @@
 package com.backend.tryal.security.repository;
 
 import java.util.concurrent.TimeUnit;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@AllArgsConstructor
 public class TokenRepository {
-  private final RedisTemplate redisTemplate;
+  private final RedisTemplate<String, Object> redisTemplate;
 
   // key prefixes for token storage
   private static final String ACCESS_TOKEN_KEY_PREFIX = "user:access:";
@@ -22,10 +20,14 @@ public class TokenRepository {
   @Value("${app.jwt.expiration}")
   private long jwtExpiration;
 
-  @Value("${app.jwt.refreshExpiration}")
+  @Value("${app.jwt.refresh-expiration}")
   private long refreshTokenExpiration;
 
-//  Store both access and refresh token for user
+  public TokenRepository(RedisTemplate<String, Object> redisTemplate) {
+    this.redisTemplate = redisTemplate;
+  }
+
+  //  Store both access and refresh token for user
   public void storeTokens(
       String username,
       String accessToken,
@@ -83,6 +85,16 @@ public class TokenRepository {
       String refreshBlackListKey = REFRESH_TOKEN_KEY_PREFIX+refreshToken;
       blackListToken(refreshBlackListKey, refreshTokenExpiration);
     }
+  }
+
+  public void removeAccessToken(String username) {
+    String accessToken = getAccessToken(username);
+    String accessKey = ACCESS_TOKEN_KEY_PREFIX + username;
+    redisTemplate.delete(accessKey);
+
+    // Blacklist token
+    String accessBlackListKey = ACCESS_BLACKLIST_PREFIX+accessToken;
+    blackListToken(accessBlackListKey, jwtExpiration);
   }
 
   private void blackListToken(String blacklistKey, long expiration) {

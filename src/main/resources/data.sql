@@ -300,15 +300,15 @@ INSERT INTO bookings (booking_id, user_id, timeslot_id, booking_status, party, c
 
 -- Insert plans with 5 unique valid UUIDs
 INSERT INTO plans (plan_id, name, price, credits, stripe_price_id, plan_type, is_active, created_at) VALUES
-  ('60f644b1-d0b2-4848-96b5-da8ce546207f', 'Starter', 25.00, 8, 'price_001', 'SUBSCRIPTION', true, now()),
-  ('0b77fbad-afba-462f-9800-09d69e3e0a3d', 'Explorer', 45.00, 14, 'price_002', 'SUBSCRIPTION', true, now()),
-  ('8b9c72a1-0de9-4a39-8d59-7e0cb3a5f7a4', 'Balance', 75.00, 28, 'price_003', 'SUBSCRIPTION', true, now()),
-  ('2a6c14c3-13d0-4f2c-9b39-42f98f3679e7', 'Premium', 110.00, 46, 'price_004', 'SUBSCRIPTION', true, now()),
-  ('fa4b91ce-5c7f-45c9-bc55-df4e9f8e5a0d', 'Elite', 150.00, 66, 'price_005', 'SUBSCRIPTION', true, now());
+  ('60f644b1-d0b2-4848-96b5-da8ce546207f', 'Starter', 25.00, 8, 'price_001', 'MONTH', true, now()),
+  ('0b77fbad-afba-462f-9800-09d69e3e0a3d', 'Explorer', 45.00, 14, 'price_002', 'MONTH', true, now()),
+  ('8b9c72a1-0de9-4a39-8d59-7e0cb3a5f7a4', 'Balance', 75.00, 28, 'price_003', 'MONTH', true, now()),
+  ('2a6c14c3-13d0-4f2c-9b39-42f98f3679e7', 'Premium', 110.00, 46, 'price_004', 'MONTH', true, now()),
+  ('fa4b91ce-5c7f-45c9-bc55-df4e9f8e5a0d', 'Elite', 150.00, 66, 'price_005', 'MONTH', true, now());
 
 -- Insert subscription with a new unique subscription_id
-INSERT INTO subscriptions (subscription_id, plan_id, user_id, start_at, created_at) VALUES
-  ('3c1f5a89-4c2b-4c6a-8f43-bb5c6c1d3e12', '60f644b1-d0b2-4848-96b5-da8ce546207f', '272d2788-ee1e-4056-ae09-4829aff17909', now(), now());
+INSERT INTO subscriptions (subscription_id, stripe_subscription_id, plan_id, user_id, start_at, created_at) VALUES
+  ('3c1f5a89-4c2b-4c6a-8f43-bb5c6c1d3e12', 'stripe_subId_1', '60f644b1-d0b2-4848-96b5-da8ce546207f', '272d2788-ee1e-4056-ae09-4829aff17909', now(), now());
 
 -- Insert token transaction with a new unique token_trans_id
 INSERT INTO token_transactions (token_trans_id, user_id, subscription_id, booking_id, created_at) VALUES

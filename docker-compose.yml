@@ -29,6 +29,15 @@ services:
       - h2ak_network
     restart: unless-stopped
 
+  redis:
+    container_name: redis_container
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"            # expose Redis to your host
+    networks:
+      - h2ak_network
+    restart: unless-stopped
+
 volumes:
   postgres:
   pgadmin:

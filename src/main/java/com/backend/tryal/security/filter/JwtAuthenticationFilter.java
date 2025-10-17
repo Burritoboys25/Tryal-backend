@@ -1,11 +1,13 @@
 package com.backend.tryal.security.filter;
 
+import com.backend.tryal.security.repository.TokenRepository;
 import com.backend.tryal.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,19 +17,23 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+@Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
+  private final TokenRepository tokenRepository;
   private final UserDetailsService userDetailsService;
   private final UserDetailsService businessDetailsService;
 
   public JwtAuthenticationFilter(
       JwtService jwtService,
+      TokenRepository tokenRepository,
       @Qualifier("customUserDetailsService") UserDetailsService userDetailsService,
       @Qualifier("customBusinessDetailsService") UserDetailsService businessDetailsService
   ) {
     this.jwtService = jwtService;
+    this.tokenRepository = tokenRepository;
     this.userDetailsService = userDetailsService;
     this.businessDetailsService = businessDetailsService;
   }
@@ -54,6 +60,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     username = jwtService.extractUsernameFromToken(jwt);
+
+    // verify token matches stored token for user
+    String storedToken = tokenRepository.getAccessToken(username);
+
+    if (storedToken == null || !storedToken.equals(jwt)) {
+      log.warn("Token mismatch for user: {}", username);
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
       UserDetails userDetails;

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.IOException;
@@ -100,6 +101,14 @@ public class GlobalExceptionHandler {
             e
     );
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+  }
+
+  @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
+  public ResponseEntity<ErrorResponse<String>> handleUnauthorizedException(HttpClientErrorException.Unauthorized e,
+      HttpServletRequest request) {
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.UNAUTHORIZED,
+        e.getMessage(), request.getRequestURI(), e);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
   }
 
   @ExceptionHandler(Exception.class)
