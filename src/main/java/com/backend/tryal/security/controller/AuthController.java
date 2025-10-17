@@ -1,10 +1,7 @@
 package com.backend.tryal.security.controller;
 
-import com.backend.tryal.business.Business;
-import com.backend.tryal.business.dto.BusinessDTO;
 import com.backend.tryal.business.dto.BusinessLoginDTO;
 import com.backend.tryal.business.dto.BusinessSignupDTO;
-import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.security.dto.LoginRequestDTO;
 import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
@@ -12,11 +9,8 @@ import com.backend.tryal.security.dto.TokenPairDTO;
 import com.backend.tryal.security.response.AuthenticationResponse;
 import com.backend.tryal.security.service.AuthService;
 import com.backend.tryal.shared.response.ApiResponse;
-import com.backend.tryal.user.User;
-import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.dto.UserLoginDTO;
 import com.backend.tryal.user.dto.UserSignupDTO;
-import com.backend.tryal.user.mapper.UserMapper;
 import com.backend.tryal.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,25 +28,16 @@ public class AuthController {
   private final BusinessService businessService;
   private final AuthService authService;
 
-//  public AuthController(UserService userService, BusinessService businessService) {
-//    this.userService = userService;
-//    this.businessService = businessService;
-//  }
-
   // Signup User
   @PostMapping("/user/signup")
-//  public UserDTO signupUser(@Valid @RequestBody UserSignupDTO signupDTO) {
-//    User user = userService.createUser(signupDTO);
-//    return UserMapper.mapUserDTO(user);
-//  }
   public AuthenticationResponse signupUser(@Valid @RequestBody UserSignupDTO signupDTO) {
     return authService.registerUser(signupDTO);
   }
 
-  // Login User
-  @PostMapping("/user/login")
-  public TokenPairDTO loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
-    return userService.loginUser(loginDTO);
+  // Signup business
+  @PostMapping("/business/signup")
+  public AuthenticationResponse signupBusiness(@Valid @RequestBody BusinessSignupDTO signupDTO) {
+    return authService.registerBusiness(signupDTO);
   }
 
   // login user or business
@@ -70,25 +55,25 @@ public class AuthController {
 
   // Refresh user/business token
   @PostMapping("/refresh-token")
-  public AuthenticationResponse refreshAccessToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+  public AuthenticationResponse refreshAccessToken(
+      @Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
     return authService.refreshToken(refreshTokenRequestDTO);
+  }
+
+  /* DELETE ENDPOINTS BELOW */
+  // Login User
+  @PostMapping("/user/login")
+  public TokenPairDTO loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
+    return userService.loginUser(loginDTO);
   }
 
   // Refresh user token
   @PostMapping("/user/refresh-token")
-  public TokenPairDTO refreshUserToken(@Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+  public TokenPairDTO refreshUserToken(
+      @Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
     return userService.refreshToken(refreshTokenRequestDTO);
   }
 
-  // Signup business
-  @PostMapping("/business/signup")
-//  public BusinessDTO signupBusiness(@Valid @RequestBody BusinessSignupDTO signupDTO) {
-//    Business business = businessService.createBusiness(signupDTO);
-//    return BusinessMapper.mapBusinessDTO(business);
-//  }
-  public AuthenticationResponse signupBusiness(@Valid @RequestBody BusinessSignupDTO signupDTO) {
-    return authService.registerBusiness(signupDTO);
-  }
 
   // Login business
   @PostMapping("/business/login")
