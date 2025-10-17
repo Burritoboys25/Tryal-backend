@@ -156,9 +156,9 @@ public class AuthService {
     UserDetails userDetails;
 
     if (isBusiness) {
-      userDetails = userDetailsService.loadUserByUsername(email);
-    } else {
       userDetails = businessDetailsService.loadUserByUsername(email);
+    } else {
+      userDetails = userDetailsService.loadUserByUsername(email);
     }
 
     // Create authentication object
