@@ -39,64 +39,60 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    // Intercept the request
-    final String authHeader = request.getHeader("Authorization");
-    final String jwt;
-    final String username;
 
-    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    final String header = request.getHeader("Authorization");
+    if (header == null || !header.startsWith("Bearer ")) {
+      // No token → continue; later filters will cause 401 via entry point
       filterChain.doFilter(request, response);
       return;
     }
 
-    jwt = getJwtFormRequest(request);
+    final String jwt = header.substring(7);
 
-    // check if token is valid
-    if (!jwtService.isValidToken(jwt)) {
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    username = jwtService.extractUsernameFromToken(jwt);
-
-    // verify token matches stored token for user
-    String storedToken = tokenRepository.getAccessToken(username);
-
-    if (storedToken == null || !storedToken.equals(jwt)) {
-      log.warn("Token mismatch for user: {}", username);
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-      UserDetails userDetails;
-
-      // Decide which service to use based on claim in the token
-      if (jwtService.isBusinessUser(jwt)) {
-        userDetails = businessDetailsService.loadUserByUsername(username);
-      } else {
-        userDetails = userDetailsService.loadUserByUsername(username);
+    try {
+      if (!jwtService.isValidToken(jwt)) {
+        throw new org.springframework.security.authentication.BadCredentialsException(
+            "Invalid token");
       }
 
-      if (jwtService.validateTokenForUsers(jwt, userDetails)) {
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-            userDetails, null, userDetails.getAuthorities());
+      final String username = jwtService.extractUsernameFromToken(jwt);
 
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+      String stored = tokenRepository.getAccessToken(username);
+      if (stored == null || !stored.equals(jwt)) {
+        throw new org.springframework.security.authentication.BadCredentialsException(
+            "Invalid token");
       }
 
-      filterChain.doFilter(request, response);
+      if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        UserDetails ud = jwtService.isBusinessUser(jwt)
+            ? businessDetailsService.loadUserByUsername(username)
+            : userDetailsService.loadUserByUsername(username);
+
+        if (!jwtService.validateTokenForUsers(jwt, ud)) {
+          throw new org.springframework.security.authentication.BadCredentialsException(
+              "Invalid token");
+        }
+
+        UsernamePasswordAuthenticationToken auth =
+            new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+      }
+
+    } catch (org.springframework.security.core.AuthenticationException ex) {
+      // Let ExceptionTranslationFilter trigger your JsonAuthenticationEntryPoint
+      throw ex;
     }
 
+    filterChain.doFilter(request, response);
   }
 
-  private String getJwtFormRequest(HttpServletRequest request) {
-    final String authHeader = request.getHeader("Authorization");
-    // Bearer <token>
-    return authHeader.substring(7);
-  }
+//  private String getJwtFormRequest(HttpServletRequest request) {
+//    final String authHeader = request.getHeader("Authorization");
+//    // Bearer <token>
+//    return authHeader.substring(7);
+//  }
 }

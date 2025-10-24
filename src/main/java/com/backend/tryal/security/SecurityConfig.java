@@ -1,6 +1,8 @@
 package com.backend.tryal.security;
 
 import com.backend.tryal.security.filter.JwtAuthenticationFilter;
+import com.backend.tryal.security.handler.JsonAccessDeniedHandler;
+import com.backend.tryal.security.handler.JsonAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -39,7 +40,10 @@ public class SecurityConfig {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http,
+      JsonAuthenticationEntryPoint authEntryPoint,
+      JsonAccessDeniedHandler accessDeniedHandler,
+      JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
 
     if (envVariable.equals("dev")) {
       return http.csrf(AbstractHttpConfigurer::disable)
@@ -49,14 +53,22 @@ public class SecurityConfig {
           .build();
     }
 
-    return http.csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(request -> request
+    return http
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint(authEntryPoint)
+            .accessDeniedHandler(accessDeniedHandler)
+        )
+        // IMPORTANT: disable these so they don't register their own entry points
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .logout(AbstractHttpConfigurer::disable)
+
+        .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/auth/**").permitAll()
             .anyRequest().authenticated()
         )
-        .httpBasic(Customizer.withDefaults())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
