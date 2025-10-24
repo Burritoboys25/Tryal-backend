@@ -139,7 +139,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
   }
 
-  // 1) Respect ResponseStatusException's own status & reason
   @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
   public ResponseEntity<ErrorResponse<String>> handleRSE(
       org.springframework.web.server.ResponseStatusException e,
@@ -155,7 +154,6 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(status).body(body);
   }
 
-  // 4) Forbidden (authenticated but insufficient authority) → 403
   @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
   public ResponseEntity<ErrorResponse<String>> handleDenied(
       org.springframework.security.access.AccessDeniedException e,
