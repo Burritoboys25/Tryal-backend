@@ -1,32 +1,34 @@
 package com.backend.tryal.shared.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.database:0}")
-    private int database;
+  // Manages connections to Redis
+  @Bean
+  public RedisConnectionFactory redisConnectionFactory() {
+    return new LettuceConnectionFactory();
+  }
 
-    @Value("${spring.redis.host}")
-    private String host;
+  @Bean
+  public RedisTemplate<String, Object> redisTemplate() {
+    RedisTemplate<String, Object> template = new RedisTemplate<>();
+    template.setConnectionFactory(redisConnectionFactory());
+    template.setKeySerializer(new StringRedisSerializer());
+    template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
-    @Value("${spring.redis.port}")
-    private int port;
+    template.setHashKeySerializer(new StringRedisSerializer());
+    template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
 
-    @Value("${spring.redis.password}")
-    private String password;
+    template.afterPropertiesSet();
 
-    // Manages connections to Redis
-    @Bean
-    public JedisPool jedisPool() {
-        JedisPoolConfig poolConfig = new JedisPoolConfig();
-
-        return new JedisPool(poolConfig, host, port, Protocol.DEFAULT_TIMEOUT, password, database);
-    }
+    return template;
+  }
 }

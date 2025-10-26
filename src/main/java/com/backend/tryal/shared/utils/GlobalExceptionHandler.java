@@ -4,14 +4,14 @@ import com.backend.tryal.shared.response.ErrorResponse;
 import com.stripe.exception.StripeException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.io.IOException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -66,40 +66,106 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(com.stripe.exception.SignatureVerificationException.class)
   public ResponseEntity<ErrorResponse<String>> handleSignatureVerificationException(
-          com.stripe.exception.SignatureVerificationException e,
-          HttpServletRequest request) {
+      com.stripe.exception.SignatureVerificationException e,
+      HttpServletRequest request) {
 
     ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
-            HttpStatus.UNAUTHORIZED,
-            "Invalid Stripe webhook signature: " + e.getMessage(),
-            request.getRequestURI(),
-            e
+        HttpStatus.UNAUTHORIZED,
+        "Invalid Stripe webhook signature: " + e.getMessage(),
+        request.getRequestURI(),
+        e
     );
 
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
   }
 
   @ExceptionHandler(IOException.class)
-  public ResponseEntity<ErrorResponse<String>> handleIOException(IOException e, HttpServletRequest request) {
+  public ResponseEntity<ErrorResponse<String>> handleIOException(IOException e,
+      HttpServletRequest request) {
     ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            e.getMessage(),
-            request.getRequestURI(),
-            e
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        e.getMessage(),
+        request.getRequestURI(),
+        e
     );
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
   }
 
   @ExceptionHandler(IllegalStateException.class)
   public ResponseEntity<ErrorResponse<String>> handleIllegalStateException(
-          IllegalStateException e, HttpServletRequest request) {
+      IllegalStateException e, HttpServletRequest request) {
     ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
-            HttpStatus.UNPROCESSABLE_ENTITY,
-            e.getMessage(),
-            request.getRequestURI(),
-            e
+        HttpStatus.UNPROCESSABLE_ENTITY,
+        e.getMessage(),
+        request.getRequestURI(),
+        e
     );
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+  }
+
+  @ExceptionHandler(HttpClientErrorException.Unauthorized.class)
+  public ResponseEntity<ErrorResponse<String>> handleUnauthorizedException(
+      HttpClientErrorException.Unauthorized e,
+      HttpServletRequest request) {
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(HttpStatus.UNAUTHORIZED,
+        e.getMessage(), request.getRequestURI(), e);
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+  }
+
+  @ExceptionHandler({org.springframework.security.core.AuthenticationException.class})
+  public ResponseEntity<ErrorResponse<String>> handleAuthenticationException(
+      org.springframework.security.core.AuthenticationException e,
+      HttpServletRequest request) {
+
+    ErrorResponse<String> error = ExceptionUtil.buildErrorResponse(
+        HttpStatus.UNAUTHORIZED,
+        "Invalid email or password", // avoid leaking details
+        request.getRequestURI(),
+        e
+    );
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+  }
+
+  @ExceptionHandler(io.jsonwebtoken.JwtException.class)
+  public ResponseEntity<ErrorResponse<String>> handleJwtException(
+      io.jsonwebtoken.JwtException e, HttpServletRequest request) {
+
+    ErrorResponse<String> body = ExceptionUtil.buildErrorResponse(
+        HttpStatus.UNAUTHORIZED,
+        "Invalid refresh token",
+        request.getRequestURI(),
+        e
+    );
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+  }
+
+  @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+  public ResponseEntity<ErrorResponse<String>> handleRSE(
+      org.springframework.web.server.ResponseStatusException e,
+      jakarta.servlet.http.HttpServletRequest request) {
+
+    var status = e.getStatusCode(); // HttpStatusCode in Boot 3
+    ErrorResponse<String> body = ExceptionUtil.buildErrorResponse(
+        org.springframework.http.HttpStatus.valueOf(status.value()),
+        e.getReason() != null ? e.getReason() : "Request failed",
+        request.getRequestURI(),
+        e
+    );
+    return ResponseEntity.status(status).body(body);
+  }
+
+  @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+  public ResponseEntity<ErrorResponse<String>> handleDenied(
+      org.springframework.security.access.AccessDeniedException e,
+      jakarta.servlet.http.HttpServletRequest request) {
+
+    ErrorResponse<String> body = ExceptionUtil.buildErrorResponse(
+        org.springframework.http.HttpStatus.FORBIDDEN,
+        "Access denied",
+        request.getRequestURI(),
+        e
+    );
+    return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).body(body);
   }
 
   @ExceptionHandler(Exception.class)

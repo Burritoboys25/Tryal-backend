@@ -1,6 +1,8 @@
 package com.backend.tryal.security;
 
 import com.backend.tryal.security.filter.JwtAuthenticationFilter;
+import com.backend.tryal.security.handler.JsonAccessDeniedHandler;
+import com.backend.tryal.security.handler.JsonAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,9 +12,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,62 +24,75 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Value("${spring.application.environment}")
-    private String envVariable;
 
-    @Autowired
-    @Qualifier("customUserDetailsService") // Inject CustomUserDetailsService
-    private UserDetailsService userDetailsService;
+  @Value("${spring.application.environment}")
+  private String envVariable;
 
-    @Autowired
-    @Qualifier("customBusinessDetailsService") // Inject CustomBusinessDetailsService
-    private UserDetailsService businessDetailsService;
+  @Autowired
+  @Qualifier("customUserDetailsService") // Inject CustomUserDetailsService
+  private UserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+  @Autowired
+  @Qualifier("customBusinessDetailsService") // Inject CustomBusinessDetailsService
+  private UserDetailsService businessDetailsService;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  @Autowired
+  private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-        if (envVariable.equals("dev")) {
-            return http.csrf(customizer -> customizer.disable())
-                    .authorizeHttpRequests(request -> request
-                            .anyRequest().permitAll()
-                    )
-                    .build();
-        }
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http,
+      JsonAuthenticationEntryPoint authEntryPoint,
+      JsonAccessDeniedHandler accessDeniedHandler,
+      JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
 
-        return http.csrf(customizer -> customizer.disable())
-            .authorizeHttpRequests(request -> request
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .anyRequest().authenticated()
-            )
-            .httpBasic(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .build();
+    if (envVariable.equals("dev")) {
+      return http.csrf(AbstractHttpConfigurer::disable)
+          .authorizeHttpRequests(request -> request
+              .anyRequest().permitAll()
+          )
+          .build();
     }
 
-    @Bean
-    public AuthenticationProvider userAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(userDetailsService);
-        return provider;
-    }
+    return http
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .exceptionHandling(ex -> ex
+            .authenticationEntryPoint(authEntryPoint)
+            .accessDeniedHandler(accessDeniedHandler)
+        )
+        // IMPORTANT: disable these so they don't register their own entry points
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .formLogin(AbstractHttpConfigurer::disable)
+        .logout(AbstractHttpConfigurer::disable)
 
-    @Bean
-    public AuthenticationProvider businessAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-        provider.setUserDetailsService(businessDetailsService);
-        return provider;
-    }
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()
+            .anyRequest().authenticated()
+        )
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .build();
+  }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationProvider userAuthenticationProvider,
-            AuthenticationProvider businessAuthenticationProvider) throws Exception {
-        return new ProviderManager(userAuthenticationProvider, businessAuthenticationProvider);
-    }
+  @Bean
+  public AuthenticationProvider userAuthenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+    provider.setUserDetailsService(userDetailsService);
+    return provider;
+  }
+
+  @Bean
+  public AuthenticationProvider businessAuthenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
+    provider.setUserDetailsService(businessDetailsService);
+    return provider;
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(
+      AuthenticationProvider userAuthenticationProvider,
+      AuthenticationProvider businessAuthenticationProvider) throws Exception {
+    return new ProviderManager(userAuthenticationProvider, businessAuthenticationProvider);
+  }
 }

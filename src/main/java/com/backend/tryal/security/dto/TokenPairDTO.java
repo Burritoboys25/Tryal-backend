@@ -3,13 +3,13 @@ package com.backend.tryal.security.dto;
 import lombok.Data;
 
 @Data
-public class TokenPair {
+public class TokenPairDTO {
     private String accessToken;
     private String refreshToken;
 
-    public TokenPair() {}
+    public TokenPairDTO() {}
 
-    public TokenPair(String accessToken, String refreshToken) {
+    public TokenPairDTO(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
