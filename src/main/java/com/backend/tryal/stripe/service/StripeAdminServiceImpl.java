@@ -4,6 +4,8 @@ import com.backend.tryal.plan.Plan;
 import com.backend.tryal.plan.PlanRepository;
 import com.backend.tryal.stripe.dto.StripePriceRequestDTO;
 import com.backend.tryal.stripe.dto.StripeProductRequestDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Price;
@@ -48,6 +50,9 @@ public class StripeAdminServiceImpl implements StripeAdminService{
         for(Price price : prices.getData()){
             String priceId = price.getId();
             String productId = price.getProduct();
+
+            System.out.println("test");
+            System.out.println(price);
 
             activePriceIds.add(priceId);
 
@@ -112,20 +117,21 @@ public class StripeAdminServiceImpl implements StripeAdminService{
     }
 
     @Override
-    public Product createProduct(StripeProductRequestDTO stripeProductRequestDTO) throws StripeException {
+    public Map<String, Object> createProduct(StripeProductRequestDTO stripeProductRequestDTO) throws StripeException, JsonProcessingException {
         ProductCreateParams params = ProductCreateParams.builder()
                 .setName(stripeProductRequestDTO.getName())
                 .setActive(stripeProductRequestDTO.getIsActive())
                 .setDescription(stripeProductRequestDTO.getDescription())
                 .setTaxCode("txcd_10000000")
                 .build();
-
         Product product = Product.create(params);
-        return product;
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(product.toJson(), Map.class);
     }
 
     @Override
-    public Price createPrice(String productId, StripePriceRequestDTO stripePriceRequestDTO) throws StripeException {
+    public Map<String, Object> createPrice(String productId, StripePriceRequestDTO stripePriceRequestDTO) throws StripeException, JsonProcessingException {
         PriceCreateParams.TaxBehavior taxBehavior = switch (stripePriceRequestDTO.getTaxBehavior()) {
             case EXCLUSIVE -> PriceCreateParams.TaxBehavior.EXCLUSIVE;
             case INCLUSIVE -> PriceCreateParams.TaxBehavior.INCLUSIVE;
@@ -154,11 +160,13 @@ public class StripeAdminServiceImpl implements StripeAdminService{
                     .build());
         }
 
-        return Price.create(builder.build());
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(Price.create(builder.build()).toJson(), Map.class);
     }
 
     @Override
-    public Price deactivatePrice(String priceId) throws StripeException {
+    public Map<String, Object> deactivatePrice(String priceId) throws StripeException, JsonProcessingException {
         Plan plan = planRepository.findByStripePriceId(priceId).orElse(null);
 
         if(plan == null){
@@ -174,6 +182,8 @@ public class StripeAdminServiceImpl implements StripeAdminService{
                 PriceUpdateParams.builder().setActive(false).build();
 
         Price price = resource.update(params);
-        return price;
+
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(price.toJson(), Map.class);
     }
 }
