@@ -61,19 +61,6 @@ public class AuthController {
   }
 
   /* DELETE ENDPOINTS BELOW */
-  // Login User
-  @PostMapping("/user/login")
-  public TokenPairDTO loginUser(@Valid @RequestBody UserLoginDTO loginDTO) {
-    return userService.loginUser(loginDTO);
-  }
-
-  // Refresh user token
-  @PostMapping("/user/refresh-token")
-  public TokenPairDTO refreshUserToken(
-      @Valid @RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
-    return userService.refreshToken(refreshTokenRequestDTO);
-  }
-
 
   // Login business
   @PostMapping("/business/login")
