@@ -1,14 +1,12 @@
 package com.backend.tryal.security.controller;
 
 import com.backend.tryal.business.dto.BusinessSignupDTO;
-import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.security.dto.LoginRequestDTO;
 import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
 import com.backend.tryal.security.response.AuthenticationResponse;
 import com.backend.tryal.security.service.AuthService;
 import com.backend.tryal.shared.response.ApiResponse;
 import com.backend.tryal.user.dto.UserSignupDTO;
-import com.backend.tryal.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-  private final UserService userService;
-  private final BusinessService businessService;
   private final AuthService authService;
 
   // Signup User
