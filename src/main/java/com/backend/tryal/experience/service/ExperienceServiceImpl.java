@@ -1,13 +1,10 @@
 package com.backend.tryal.experience.service;
 
-import static java.util.stream.Collectors.toList;
-
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.experience.Experience;
 import com.backend.tryal.experience.ExperienceRepository;
 import com.backend.tryal.experience.dto.BusinessExperienceDTO;
-import com.backend.tryal.experience.dto.ExperienceDTO;
 import com.backend.tryal.experience.dto.ExperienceRequestDTO;
 import com.backend.tryal.experience.mapper.ExperienceMapper;
 import com.backend.tryal.timeslot.Timeslot;
@@ -16,11 +13,8 @@ import com.backend.tryal.timeslot.dto.TimeslotDTO;
 import com.backend.tryal.timeslot.mapper.TimeslotMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,16 +57,20 @@ public class ExperienceServiceImpl implements ExperienceService {
             .stream()
             .map(ExperienceMapper::mapBusinessExperiencesDto)
             .toList();
-    System.out.println("1:");
-    List<TimeslotDTO> timeslots = timeslotRepository.findByBusinessId(businessId)
-            .stream()
-                .map(TimeslotMapper::mapTimeslotDto)
-                    .toList();
 
-    for (BusinessExperienceDTO businessExperienceDTO: experiences) {
+    List<Timeslot> timeslots = timeslotRepository.findByBusinessId(businessId);
+    if (timeslots.isEmpty()) {
+      return experiences;
+    }
+
+    List<TimeslotDTO> timeslotDTOList = timeslots.stream()
+        .map(TimeslotMapper::mapTimeslotDto)
+        .toList();
+
+    for (BusinessExperienceDTO businessExperienceDTO : experiences) {
       List<TimeslotDTO> filteredTimeslots = new ArrayList<>();
 
-      for (TimeslotDTO timeslotDTO : timeslots) {
+      for (TimeslotDTO timeslotDTO : timeslotDTOList) {
         if (timeslotDTO.getExperienceId() == businessExperienceDTO.getExperienceId()) {
           filteredTimeslots.add(timeslotDTO);
         }

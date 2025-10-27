@@ -18,7 +18,7 @@ public interface TimeslotRepository extends JpaRepository<Timeslot, UUID> {
           SELECT
             t.*
           FROM experiences e
-          LEFT JOIN timeslots t
+          INNER JOIN timeslots t
               ON e.experience_id = t.experience_id
           WHERE e.business_id = :businessId
         """,
