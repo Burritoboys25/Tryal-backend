@@ -7,6 +7,8 @@ import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.security.dto.LoginRequestDTO;
 import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
 import com.backend.tryal.security.dto.TokenPairDTO;
+import com.backend.tryal.security.model.BusinessPrincipal;
+import com.backend.tryal.security.model.UserPrincipal;
 import com.backend.tryal.security.repository.TokenRepository;
 import com.backend.tryal.security.response.AuthenticationResponse;
 import com.backend.tryal.user.User;
@@ -14,6 +16,7 @@ import com.backend.tryal.user.UserRepository;
 import com.backend.tryal.user.dto.UserSignupDTO;
 import com.backend.tryal.user.mapper.UserMapper;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -110,10 +113,15 @@ public class AuthServiceImpl implements AuthService {
         tokenPairDTO.getRefreshToken()
     );
 
+    // 5) Load principal (user or business) based on claim
+    final boolean isBusiness = jwtService.isBusinessUser(tokenPairDTO.getRefreshToken());
+    UUID userId = isBusiness ? ((BusinessPrincipal) userDetails).getUserId()
+        : ((UserPrincipal) userDetails).getUserId();
+
     return new AuthenticationResponse(
         tokenPairDTO.getAccessToken(),
         tokenPairDTO.getRefreshToken(),
-        userDetails.getUsername()
+        userId
     );
   }
 
@@ -157,6 +165,9 @@ public class AuthServiceImpl implements AuthService {
           ? businessDetailsService.loadUserByUsername(email)
           : userDetailsService.loadUserByUsername(email);
 
+      UUID userId = isBusiness ? ((BusinessPrincipal) userDetails).getUserId()
+          : ((UserPrincipal) userDetails).getUserId();
+
       // 6) Create auth and mint new access token
       final UsernamePasswordAuthenticationToken authenticationToken =
           new UsernamePasswordAuthenticationToken(
@@ -169,7 +180,8 @@ public class AuthServiceImpl implements AuthService {
       tokenRepository.storeTokens(userDetails.getUsername(), newAccessToken, refreshToken);
 
       // 8) Return response
-      return new AuthenticationResponse(newAccessToken, refreshToken, userDetails.getUsername());
+      return new AuthenticationResponse(newAccessToken, refreshToken,
+          userId);
 
     } catch (io.jsonwebtoken.JwtException ex) {
       // Signature/expired/malformed tokens → 401

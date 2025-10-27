@@ -1,5 +1,6 @@
 package com.backend.tryal.security.response;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,5 +9,5 @@ import lombok.Data;
 public class AuthenticationResponse {
   private String accessToken;
   private String refreshToken;
-  private String email;
+  private UUID userId;
 }
