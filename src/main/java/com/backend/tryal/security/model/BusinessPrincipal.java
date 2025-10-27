@@ -1,6 +1,7 @@
 package com.backend.tryal.security.model;
 
 import com.backend.tryal.business.Business;
+import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,10 @@ public class BusinessPrincipal implements UserDetails {
     @Override
     public String getUsername() {
         return business.getEmail();
+    }
+
+    public UUID getUserId() {
+      return business.getBusinessId();
     }
 
     @Override
