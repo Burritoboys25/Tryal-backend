@@ -4,6 +4,7 @@ import com.backend.tryal.business.Business;
 import com.backend.tryal.business.dto.BusinessCreditRangeDTO;
 import com.backend.tryal.business.dto.BusinessFilteredRequestDTO;
 import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
+import com.backend.tryal.business.dto.OnboardingStatusUpdateRequest;
 import com.backend.tryal.experience.Experience;
 import com.backend.tryal.security.dto.RefreshTokenRequestDTO;
 import com.backend.tryal.security.dto.TokenPairDTO;
@@ -27,4 +28,6 @@ public interface BusinessService {
   List<BusinessFilteredResponseDTO> getFilteredBusinesses(BusinessFilteredRequestDTO filters);
 
   BusinessCreditRangeDTO getBusinessCreditRangeById(UUID businessId);
+
+  Business updateBusinessOnboardingStatus(UUID businessId, Business.OnboardingStatus status);
 }

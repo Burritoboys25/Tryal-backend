@@ -197,4 +197,13 @@ public class BusinessServiceImpl implements BusinessService {
     }
     return null;
   }
+
+  @Override
+  public Business updateBusinessOnboardingStatus(UUID businessId, Business.OnboardingStatus status) {
+    Business business = businessRepository.findById(businessId)
+            .orElseThrow(() -> new EntityNotFoundException("Business not found"));
+
+    business.setOnboardingStatus(status);
+    return businessRepository.save(business);
+  }
 }

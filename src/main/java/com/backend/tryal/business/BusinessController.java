@@ -3,6 +3,7 @@ package com.backend.tryal.business;
 import com.backend.tryal.business.dto.BusinessDTO;
 import com.backend.tryal.business.dto.BusinessFilteredRequestDTO;
 import com.backend.tryal.business.dto.BusinessFilteredResponseDTO;
+import com.backend.tryal.business.dto.OnboardingStatusUpdateRequest;
 import com.backend.tryal.business.mapper.BusinessMapper;
 import com.backend.tryal.business.service.BusinessService;
 import com.backend.tryal.experience.Experience;
@@ -10,14 +11,8 @@ import com.backend.tryal.shared.response.ApiResponse;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/businesses")
@@ -92,5 +87,11 @@ public class BusinessController {
   @GetMapping("/{businessId}/categories")
   public List<String> getBusinessCategories(@PathVariable UUID businessId) {
     return businessService.getBusinessCategories(businessId);
+  }
+
+  @PatchMapping("/{businessId}/onboarding")
+  public BusinessDTO updateBusinessOnboardingStatus(@PathVariable UUID businessId, @RequestBody OnboardingStatusUpdateRequest request) {
+    Business updatedBusiness = businessService.updateBusinessOnboardingStatus(businessId, request.getOnboardingStatus());
+    return BusinessMapper.mapBusinessDTO(updatedBusiness);
   }
 }
