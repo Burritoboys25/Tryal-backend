@@ -17,6 +17,16 @@ import java.util.*;
 @Entity
 @Table(name = "businesses")
 public class Business {
+    public enum OnboardingStatus {
+        INVITED,               // Business has been vetted and sent a one-time signup link
+        ACCOUNT_CREATED,       // Business has set a password and activated account
+        BUSINESS_INFO_COMPLETED,  // Filled out "About your business" form
+        EXPERIENCES_ADDED,        // Added experiences/workshops
+        SUBMITTED_FOR_REVIEW,     // Finished onboarding and submitted for review
+        APPROVED,                 // Admin approved the business
+        REJECTED                  // (Optional) Admin rejected the business for some reason
+    }
+
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     @Column(name = "business_id")
@@ -65,10 +75,13 @@ public class Business {
     @Column(name = "latitude")
     private Double latitude;
 
+    @Enumerated(EnumType.STRING)
+    private OnboardingStatus onboardingStatus = OnboardingStatus.INVITED;
+
     public Business() {
     }
 
-    public Business(UUID businessId, String stripeAccountId, String name, String email, String passwordHash, String website, String address, String phoneNumber, List<Experience> experiences, Double longitude, Double latitude, User user) {
+    public Business(UUID businessId, String stripeAccountId, String name, String email, String passwordHash, String website, String address, String phoneNumber, List<Experience> experiences, Double longitude, Double latitude, User user, OnboardingStatus onboardingStatus) {
         this.businessId = businessId;
         this.stripeAccountId = stripeAccountId;
         this.name = name;
@@ -81,6 +94,7 @@ public class Business {
         this.longitude = longitude;
         this.latitude = latitude;
         this.users = Collections.singleton(user);
+        this.onboardingStatus = onboardingStatus != null ? onboardingStatus : OnboardingStatus.INVITED;
     }
 
     @Override
