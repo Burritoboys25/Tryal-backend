@@ -115,13 +115,13 @@ public class AuthServiceImpl implements AuthService {
 
     // 5) Load principal (user or business) based on claim
     final boolean isBusiness = jwtService.isBusinessUser(tokenPairDTO.getRefreshToken());
-    UUID userId = isBusiness ? ((BusinessPrincipal) userDetails).getUserId()
+    UUID id = isBusiness ? ((BusinessPrincipal) userDetails).getBusinessId()
         : ((UserPrincipal) userDetails).getUserId();
 
     return new AuthenticationResponse(
         tokenPairDTO.getAccessToken(),
         tokenPairDTO.getRefreshToken(),
-        userId
+        id
     );
   }
 
@@ -165,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
           ? businessDetailsService.loadUserByUsername(email)
           : userDetailsService.loadUserByUsername(email);
 
-      UUID userId = isBusiness ? ((BusinessPrincipal) userDetails).getUserId()
+      UUID id = isBusiness ? ((BusinessPrincipal) userDetails).getBusinessId()
           : ((UserPrincipal) userDetails).getUserId();
 
       // 6) Create auth and mint new access token
@@ -181,7 +181,7 @@ public class AuthServiceImpl implements AuthService {
 
       // 8) Return response
       return new AuthenticationResponse(newAccessToken, refreshToken,
-          userId);
+          id);
 
     } catch (io.jsonwebtoken.JwtException ex) {
       // Signature/expired/malformed tokens → 401

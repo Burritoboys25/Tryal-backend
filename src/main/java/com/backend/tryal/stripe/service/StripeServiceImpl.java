@@ -358,6 +358,7 @@ public class StripeServiceImpl implements StripeService {
             Session session = Session.create(params);
             return session.getClientSecret();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new IllegalStateException("Failed to create checkout session for user: " + userId, e);
         }
     }
