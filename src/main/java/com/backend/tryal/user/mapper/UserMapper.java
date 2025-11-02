@@ -25,6 +25,8 @@ public class UserMapper {
         userDTO.setProfileImageUrl(user.getProfileImageUrl());
         userDTO.setCreditBalance(user.getCreditBalance());
         userDTO.setStripeCustomerId(user.getStripeCustomerId());
+        userDTO.setCreatedAtYear(user.getCreatedAt() != null ? user.getCreatedAt().getYear() : null);
+
 
         return userDTO;
     }
