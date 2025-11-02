@@ -4,11 +4,8 @@ import com.backend.tryal.shared.response.ApiResponse;
 import com.backend.tryal.user.User;
 import com.backend.tryal.user.dto.UserDTO;
 import com.backend.tryal.user.mapper.UserMapper;
-import com.backend.tryal.user.response.UserResponse;
 import com.backend.tryal.user.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,8 +32,9 @@ public class UserController {
 
     // get User by ID
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable UUID userId) {
-        return userService.getUserById(userId);
+    public UserDTO getUserById(@PathVariable UUID userId) {
+        User user = userService.getUserById(userId);
+        return UserMapper.mapUserDTO(user);
     }
 
     // Patch User
