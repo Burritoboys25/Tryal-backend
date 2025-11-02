@@ -1,16 +1,15 @@
 package com.backend.tryal.security.service;
 
 import com.backend.tryal.security.dto.TokenPairDTO;
+import com.backend.tryal.security.model.BusinessPrincipal;
+import com.backend.tryal.security.model.UserPrincipal;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
@@ -78,11 +77,18 @@ public class JwtServiceImpl implements JwtService{
     // Add accountType to the claims
     claims.put("accountType", isBusiness ? "BUSINESS" : "USER");
 
+    UUID subId;
+    if (isBusiness) {
+      subId = ((BusinessPrincipal) userPrincipal).getBusinessId();
+    } else {
+      subId = ((UserPrincipal) userPrincipal).getUserId();
+    }
+
     return Jwts.builder()
         .header()
         .add("typ", "JWT")
         .and()
-        .subject(userPrincipal.getUsername())
+        .subject(subId.toString())
         .claims(claims)
         .issuedAt(now)
         .expiration(expiryDate)

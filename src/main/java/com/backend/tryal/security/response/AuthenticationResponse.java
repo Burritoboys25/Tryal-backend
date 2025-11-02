@@ -9,5 +9,5 @@ import lombok.Data;
 public class AuthenticationResponse {
   private String accessToken;
   private String refreshToken;
-  private UUID userId;
+  private UUID id;
 }

@@ -31,7 +31,7 @@ public class BusinessPrincipal implements UserDetails {
         return business.getEmail();
     }
 
-    public UUID getUserId() {
+    public UUID getBusinessId() {
       return business.getBusinessId();
     }
 
