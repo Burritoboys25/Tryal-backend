@@ -340,10 +340,6 @@ public class StripeServiceImpl implements StripeService {
             throw new IllegalArgumentException("Invalid plan: " + planId);
         }
 
-        System.out.println("Creating Stripe session with price: " + plan.getStripePriceId());
-        System.out.println("User ID: " + userId + ", Plan ID: " + planId);
-        System.out.println("Return URL: " + domain + "/stripe/return?session_id={CHECKOUT_SESSION_ID}");
-
         SessionCreateParams params = SessionCreateParams.builder()
                 .setUiMode(SessionCreateParams.UiMode.EMBEDDED)
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
@@ -360,8 +356,6 @@ public class StripeServiceImpl implements StripeService {
 
         try {
             Session session = Session.create(params);
-
-            System.out.println(session);
             return session.getClientSecret();
         } catch (Exception e) {
             e.printStackTrace();
