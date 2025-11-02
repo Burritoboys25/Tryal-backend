@@ -17,4 +17,5 @@ public class UserDTO {
     private String profileImageUrl;
     private Integer creditBalance;
     private String stripeCustomerId;
+    private Integer createdAtYear;
 }
