@@ -82,7 +82,7 @@ public class TokenRepository {
     }
 
     if (refreshToken != null) {
-      String refreshBlackListKey = REFRESH_TOKEN_KEY_PREFIX+refreshToken;
+      String refreshBlackListKey = REFRESH_BLACKLIST_PREFIX+refreshToken;
       blackListToken(refreshBlackListKey, refreshTokenExpiration);
     }
   }

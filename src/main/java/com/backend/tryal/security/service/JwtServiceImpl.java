@@ -77,6 +77,8 @@ public class JwtServiceImpl implements JwtService{
     // Add accountType to the claims
     claims.put("accountType", isBusiness ? "BUSINESS" : "USER");
 
+    claims.put("username", userPrincipal.getUsername());
+
     UUID subId;
     if (isBusiness) {
       subId = ((BusinessPrincipal) userPrincipal).getBusinessId();
@@ -147,7 +149,7 @@ public class JwtServiceImpl implements JwtService{
     Claims claims = extractAllClaims(token);
 
     if (claims != null) {
-      return claims.getSubject();
+      return claims.get("username").toString();
     }
     return null;
   }
