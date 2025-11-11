@@ -8,10 +8,13 @@ public interface JwtService {
     TokenPairDTO generateTokenPair(Authentication authentication);
     String generateAccessToken(Authentication authentication);
     String generateRefreshToken(Authentication authentication);
+    String issueAndStoreRefreshToken(Authentication authentication);
     Boolean validateTokenForUsers(String token, UserDetails userDetails);
     Boolean isValidToken(String token);
+    Boolean isTokenExpired(String token);
     Boolean isRefreshToken(String token);
     Boolean isBusinessUser(String token);
     String extractUsernameFromToken(String token);
+    String extractSubjectFromToken(String token);
 
 }

@@ -42,12 +42,16 @@ public class AuthServiceImpl implements AuthService {
 
   private final UserDetailsService userDetailsService;
   private final UserDetailsService businessDetailsService;
+  private final CustomUserDetailsService customUserDetailsService;
+  private final CustomBusinessDetailsService customBusinessDetailsService;
 
   public AuthServiceImpl(UserRepository userRepository, BusinessRepository businessRepository,
       AuthenticationManager authenticationManager,
       JwtService jwtService, TokenRepository tokenRepository,
       @Qualifier("customUserDetailsService") UserDetailsService userDetailsService,
-      @Qualifier("customBusinessDetailsService") UserDetailsService businessDetailsService) {
+      @Qualifier("customBusinessDetailsService") UserDetailsService businessDetailsService,
+      CustomUserDetailsService customUserDetailsService,
+      CustomBusinessDetailsService customBusinessDetailsService) {
     this.userRepository = userRepository;
     this.businessRepository = businessRepository;
     this.passwordEncoder = new BCryptPasswordEncoder();
@@ -56,6 +60,8 @@ public class AuthServiceImpl implements AuthService {
     this.tokenRepository = tokenRepository;
     this.userDetailsService = userDetailsService;
     this.businessDetailsService = businessDetailsService;
+    this.customUserDetailsService = customUserDetailsService;
+    this.customBusinessDetailsService = customBusinessDetailsService;
   }
 
   // Register a new User
@@ -93,6 +99,56 @@ public class AuthServiceImpl implements AuthService {
     return authenticateUser(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
   }
 
+  // Login user/business
+  public TokenPairDTO login2(LoginRequestDTO loginRequestDTO) {
+    Authentication auth = authenticate(loginRequestDTO.getEmail(), loginRequestDTO.getPassword());
+    String access = jwtService.generateAccessToken(auth);
+    String refresh = jwtService.issueAndStoreRefreshToken(auth);
+
+    return new TokenPairDTO(access, refresh);
+  }
+
+  // refresh and rotate token
+  public TokenPairDTO refresh(String refreshToken) {
+    // 1) Must be a valid *refresh* token (structure/signature/claims)
+    if (!jwtService.isRefreshToken(refreshToken)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+    }
+
+    // 2) Not blacklisted
+    if (tokenRepository.isRefreshTokenBlackListed(refreshToken)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is blacklisted");
+    }
+
+    // Check if token is expired
+    if (jwtService.isTokenExpired(refreshToken)) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid: Token is expired");
+    }
+
+    // 3) Extract username
+    final String email = jwtService.extractUsernameFromToken(refreshToken);
+    final UUID id = UUID.fromString(jwtService.extractSubjectFromToken(refreshToken));
+
+    // 5) Load principal (user or business) based on claim
+    final boolean isBusiness = jwtService.isBusinessUser(refreshToken);
+    final UserDetails userDetails = isBusiness
+        ? businessDetailsService.loadUserByUsername(email)
+        : userDetailsService.loadUserByUsername(email);
+
+    // 6) Create auth and mint new access token
+    final UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(
+            userDetails, null, userDetails.getAuthorities());
+
+    final String newAccessToken = jwtService.generateAccessToken(authenticationToken);
+
+    // 7) Rotate refresh token -- blacklist and issue new one
+    tokenRepository.removeRefreshToken(id);
+    final String newRefreshToken = jwtService.issueAndStoreRefreshToken(authenticationToken);
+
+    return new TokenPairDTO(newAccessToken, newRefreshToken);
+  }
+
   private AuthenticationResponse authenticateUser(String email, String password) {
     // Authenticate user
     Authentication authentication = authenticationManager.authenticate(
@@ -106,17 +162,17 @@ public class AuthServiceImpl implements AuthService {
 
     // Store token in Redis
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-    tokenRepository.storeTokens(
-        userDetails.getUsername(),
-        tokenPairDTO.getAccessToken(),
-        tokenPairDTO.getRefreshToken()
-    );
-
     // 5) Load principal (user or business) based on claim
     final boolean isBusiness = jwtService.isBusinessUser(tokenPairDTO.getRefreshToken());
     UUID id = isBusiness ? ((BusinessPrincipal) userDetails).getBusinessId()
         : ((UserPrincipal) userDetails).getUserId();
+
+    tokenRepository.storeTokens(
+        id,
+        tokenPairDTO.getAccessToken(),
+        tokenPairDTO.getRefreshToken()
+    );
+
 
     return new AuthenticationResponse(
         tokenPairDTO.getAccessToken(),
@@ -125,14 +181,32 @@ public class AuthServiceImpl implements AuthService {
     );
   }
 
+  // authenticate user
+  public Authentication authenticate(String email, String password) {
+    // Authenticate user
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(email, password));
+
+    // Set authentication in security context
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    return authentication;
+  }
+
   // logout user/business
   public void logout() {
-    // Get current authenticated user
+    /*// Get current authenticated user
     UserDetails userDetails = (UserDetails) SecurityContextHolder
         .getContext().getAuthentication().getPrincipal();
 
     // remove all tokens for this user
-    tokenRepository.removeAllTokens(userDetails.getUsername());
+    tokenRepository.removeAllTokens(userDetails.getUsername());*/
+  }
+
+  // logout user/business
+  public void logout2(String accessToken) {
+    final UUID id = UUID.fromString(jwtService.extractSubjectFromToken(accessToken));
+    tokenRepository.removeRefreshToken(id);
   }
 
   // refresh token
@@ -152,9 +226,10 @@ public class AuthServiceImpl implements AuthService {
 
       // 3) Extract subject
       final String email = jwtService.extractUsernameFromToken(refreshToken);
+      final UUID subject = UUID.fromString(jwtService.extractSubjectFromToken(refreshToken));
 
       // 4) Must match the stored refresh token for this user
-      final String storedRefreshToken = tokenRepository.getRefreshToken(email);
+      final String storedRefreshToken = tokenRepository.getRefreshToken(subject);
       if (storedRefreshToken == null || !storedRefreshToken.equals(refreshToken)) {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
       }
@@ -176,8 +251,8 @@ public class AuthServiceImpl implements AuthService {
       final String newAccessToken = jwtService.generateAccessToken(authenticationToken);
 
       // 7) Rotate access token in Redis (keep same refresh token)
-      tokenRepository.removeAccessToken(email);
-      tokenRepository.storeTokens(userDetails.getUsername(), newAccessToken, refreshToken);
+      tokenRepository.removeAccessToken(id);
+      tokenRepository.storeTokens(id, newAccessToken, refreshToken);
 
       // 8) Return response
       return new AuthenticationResponse(newAccessToken, refreshToken,

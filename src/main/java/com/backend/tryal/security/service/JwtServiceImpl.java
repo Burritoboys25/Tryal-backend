@@ -3,6 +3,7 @@ package com.backend.tryal.security.service;
 import com.backend.tryal.security.dto.TokenPairDTO;
 import com.backend.tryal.security.model.BusinessPrincipal;
 import com.backend.tryal.security.model.UserPrincipal;
+import com.backend.tryal.security.repository.TokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,6 +14,7 @@ import java.util.*;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class JwtServiceImpl implements JwtService{
+
+  @Autowired
+  TokenRepository tokenRepository;
 
   private String jwtSecret = "";
 
@@ -98,6 +103,15 @@ public class JwtServiceImpl implements JwtService{
         .compact();
   }
 
+  // generate and store refresh token
+  public String issueAndStoreRefreshToken(Authentication authentication) {
+    String refreshToken = generateRefreshToken(authentication);
+    UUID id = UUID.fromString(extractSubjectFromToken(refreshToken));
+    tokenRepository.storeRefreshToken(id, refreshToken);
+
+    return refreshToken;
+  }
+
   // Validate token
   public Boolean validateTokenForUsers(String token, UserDetails userDetails) {
     final String username = extractUsernameFromToken(token);// Extract email from token
@@ -107,6 +121,12 @@ public class JwtServiceImpl implements JwtService{
 
   public Boolean isValidToken(String token) {
     return extractAllClaims(token) != null;
+  }
+
+  public Boolean isTokenExpired(String token) {
+    Claims claims = extractAllClaims(token);
+    Date expirationDate = claims.getExpiration();
+    return expirationDate.before(new Date());
   }
 
   // Validate if refresh token
@@ -150,6 +170,15 @@ public class JwtServiceImpl implements JwtService{
 
     if (claims != null) {
       return claims.get("username").toString();
+    }
+    return null;
+  }
+
+  public String extractSubjectFromToken(String token) {
+    Claims claims = extractAllClaims(token);
+
+    if (claims != null) {
+      return claims.getSubject();
     }
     return null;
   }

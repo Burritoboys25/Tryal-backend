@@ -1,4 +1,4 @@
-package com.backend.tryal.security;
+package com.backend.tryal.security.config;
 
 import com.backend.tryal.security.filter.JwtAuthenticationFilter;
 import com.backend.tryal.security.handler.JsonAccessDeniedHandler;

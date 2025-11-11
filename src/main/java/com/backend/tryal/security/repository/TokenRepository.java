@@ -1,5 +1,6 @@
 package com.backend.tryal.security.repository;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,16 +30,16 @@ public class TokenRepository {
 
   //  Store both access and refresh token for user
   public void storeTokens(
-      String username,
+      UUID id,
       String accessToken,
       String refreshToken
   ) {
 //    Store access token
-    String accessKey = ACCESS_TOKEN_KEY_PREFIX+username;
+    String accessKey = ACCESS_TOKEN_KEY_PREFIX+ id;
     storeToken(accessKey, accessToken, jwtExpiration);
 
 //    store refresh token
-    String refreshKey = REFRESH_TOKEN_KEY_PREFIX+username;
+    String refreshKey = REFRESH_TOKEN_KEY_PREFIX+ id;
     storeToken(refreshKey, refreshToken, refreshTokenExpiration);
   }
 
@@ -47,15 +48,21 @@ public class TokenRepository {
     redisTemplate.expire(key, expiration, TimeUnit.MILLISECONDS);
   }
 
+  // Store refresh token
+  public void storeRefreshToken(UUID id, String refreshToken) {
+    String refreshKey = REFRESH_TOKEN_KEY_PREFIX+id;
+    storeToken(refreshKey, refreshToken, refreshTokenExpiration);
+  }
+
   // retrieve access token for a user
-  public String getAccessToken(String username) {
-    String accessKey = ACCESS_TOKEN_KEY_PREFIX + username;
+  public String getAccessToken(UUID id) {
+    String accessKey = ACCESS_TOKEN_KEY_PREFIX + id;
     return getToken(accessKey);
   }
 
   // retrieve refresh token for a user
-  public String getRefreshToken(String username) {
-    String refreshKey = REFRESH_TOKEN_KEY_PREFIX + username;
+  public String getRefreshToken(UUID id) {
+    String refreshKey = REFRESH_TOKEN_KEY_PREFIX + id;
     return getToken(refreshKey);
   }
 
@@ -65,13 +72,13 @@ public class TokenRepository {
   }
 
   // remove all tokens for a user -- (COMPLETE LOGOUT)
-  public void removeAllTokens(String username) {
-    String accessToken = getAccessToken(username);
-    String refreshToken = getRefreshToken(username);
+  public void removeAllTokens(UUID id) {
+    String accessToken = getAccessToken(id);
+    String refreshToken = getRefreshToken(id);
 
     // Remove tokens
-    String accessKey = ACCESS_TOKEN_KEY_PREFIX + username;
-    String refreshKey = REFRESH_TOKEN_KEY_PREFIX + username;
+    String accessKey = ACCESS_TOKEN_KEY_PREFIX + id;
+    String refreshKey = REFRESH_TOKEN_KEY_PREFIX + id;
     redisTemplate.delete(accessKey);
     redisTemplate.delete(refreshKey);
 
@@ -87,14 +94,24 @@ public class TokenRepository {
     }
   }
 
-  public void removeAccessToken(String username) {
-    String accessToken = getAccessToken(username);
-    String accessKey = ACCESS_TOKEN_KEY_PREFIX + username;
+  public void removeAccessToken(UUID id) {
+    String accessToken = getAccessToken(id);
+    String accessKey = ACCESS_TOKEN_KEY_PREFIX + id;
     redisTemplate.delete(accessKey);
 
     // Blacklist token
     String accessBlackListKey = ACCESS_BLACKLIST_PREFIX+accessToken;
     blackListToken(accessBlackListKey, jwtExpiration);
+  }
+
+  public void removeRefreshToken(UUID id) {
+    String refreshToken = getRefreshToken(id);
+    String refreshKey = REFRESH_TOKEN_KEY_PREFIX + id;
+    redisTemplate.delete(refreshKey);
+
+    // Blacklist token
+    String refreshBlackListKey = REFRESH_BLACKLIST_PREFIX+refreshToken;
+    blackListToken(refreshBlackListKey, refreshTokenExpiration);
   }
 
   private void blackListToken(String blacklistKey, long expiration) {

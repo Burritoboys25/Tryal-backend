@@ -1,14 +1,18 @@
 package com.backend.tryal.security.filter;
 
 import com.backend.tryal.security.repository.TokenRepository;
+import com.backend.tryal.security.service.CustomBusinessDetailsService;
+import com.backend.tryal.security.service.CustomUserDetailsService;
 import com.backend.tryal.security.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,20 +26,26 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
-  private final TokenRepository tokenRepository;
-  private final UserDetailsService userDetailsService;
-  private final UserDetailsService businessDetailsService;
+//  private final TokenRepository tokenRepository;
+//  private final UserDetailsService userDetailsService;
+//  private final UserDetailsService businessDetailsService;
+  private final CustomUserDetailsService customUserDetailsService;
+  private final CustomBusinessDetailsService customBusinessDetailsService;
 
   public JwtAuthenticationFilter(
       JwtService jwtService,
-      TokenRepository tokenRepository,
-      @Qualifier("customUserDetailsService") UserDetailsService userDetailsService,
-      @Qualifier("customBusinessDetailsService") UserDetailsService businessDetailsService
+//      TokenRepository tokenRepository,
+//      @Qualifier("customUserDetailsService") UserDetailsService userDetailsService,
+//      @Qualifier("customBusinessDetailsService") UserDetailsService businessDetailsService,
+      CustomUserDetailsService customUserDetailsService,
+      CustomBusinessDetailsService customBusinessDetailsService
   ) {
     this.jwtService = jwtService;
-    this.tokenRepository = tokenRepository;
-    this.userDetailsService = userDetailsService;
-    this.businessDetailsService = businessDetailsService;
+//    this.tokenRepository = tokenRepository;
+//    this.userDetailsService = userDetailsService;
+//    this.businessDetailsService = businessDetailsService;
+    this.customUserDetailsService = customUserDetailsService;
+    this.customBusinessDetailsService = customBusinessDetailsService;
   }
 
   @Override
@@ -43,50 +53,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
-    final String header = request.getHeader("Authorization");
-    if (header == null || !header.startsWith("Bearer ")) {
-      // No token → continue; later filters will cause 401 via entry point
-      filterChain.doFilter(request, response);
-      return;
-    }
-
-    final String jwt = header.substring(7);
-
     try {
-      if (!jwtService.isValidToken(jwt)) {
-        throw new org.springframework.security.authentication.BadCredentialsException(
-            "Invalid token");
-      }
+      final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-      final String username = jwtService.extractUsernameFromToken(jwt);
+      if (header != null && header.startsWith("Bearer ")
+          && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-      String stored = tokenRepository.getAccessToken(username);
-      if (stored == null || !stored.equals(jwt)) {
-        throw new org.springframework.security.authentication.BadCredentialsException(
-            "Invalid token");
-      }
+        final String jwt = header.substring(7);
 
-      if (SecurityContextHolder.getContext().getAuthentication() == null) {
-        UserDetails ud = jwtService.isBusinessUser(jwt)
-            ? businessDetailsService.loadUserByUsername(username)
-            : userDetailsService.loadUserByUsername(username);
+        if (jwtService.isValidToken(jwt)) {
+          final UUID id = UUID.fromString(jwtService.extractSubjectFromToken(jwt));
 
-        if (!jwtService.validateTokenForUsers(jwt, ud)) {
-          throw new org.springframework.security.authentication.BadCredentialsException(
-              "Invalid token");
+          UserDetails userDetails = jwtService.isBusinessUser(jwt)
+              ? customBusinessDetailsService.loadUserById(id)
+              : customUserDetailsService.loadUserById(id);
+
+          UsernamePasswordAuthenticationToken auth =
+              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+          auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          SecurityContextHolder.getContext().setAuthentication(auth);
         }
-
-        UsernamePasswordAuthenticationToken auth =
-            new UsernamePasswordAuthenticationToken(ud, null, ud.getAuthorities());
-        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(auth);
       }
+      filterChain.doFilter(request, response);
 
     } catch (org.springframework.security.core.AuthenticationException ex) {
       // Let ExceptionTranslationFilter trigger your JsonAuthenticationEntryPoint
-      throw ex;
+//      throw ex;
     }
 
-    filterChain.doFilter(request, response);
+    //filterChain.doFilter(request, response);
   }
 }

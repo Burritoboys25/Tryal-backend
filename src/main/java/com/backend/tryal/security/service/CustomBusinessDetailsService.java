@@ -3,6 +3,9 @@ package com.backend.tryal.security.service;
 import com.backend.tryal.business.Business;
 import com.backend.tryal.business.BusinessRepository;
 import com.backend.tryal.security.model.BusinessPrincipal;
+import com.backend.tryal.security.model.UserPrincipal;
+import com.backend.tryal.user.User;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,4 +26,11 @@ public class CustomBusinessDetailsService implements UserDetailsService {
 
         return new BusinessPrincipal(business);
     }
+
+  public UserDetails loadUserById(UUID id) {
+    Business business = businessRepository.findById(id)
+        .orElseThrow(() -> new UsernameNotFoundException("Business not found with id: " + id));
+
+    return new BusinessPrincipal(business);
+  }
 }
