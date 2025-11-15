@@ -350,6 +350,12 @@ public class StripeServiceImpl implements StripeService {
                                 .setPrice(plan.getStripePriceId())
                                 .build()
                 )
+                .setSubscriptionData(
+                        SessionCreateParams.SubscriptionData.builder()
+                                .putMetadata("userId", userId)
+                                .putMetadata("planId", planId)
+                                .build()
+                )
                 .putMetadata("userId", userId)
                 .putMetadata("planId", planId)
                 .build();
